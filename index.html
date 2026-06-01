@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,48 +9,50 @@
             --bg-color: #08080c;
             --accent-color: #00ffcc;
             --text-color: #ffffff;
+            --card-bg: #12121a;
         }
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0; padding: 0; overflow-x: hidden;
         }
 
-        /* 📡 顶部导航栏 */
+        /* 📡 Navigation Bar */
         nav {
             position: fixed; top: 0; width: 100%;
             display: flex; justify-content: center;
             background: rgba(8, 8, 12, 0.8);
             backdrop-filter: blur(10px); z-index: 100;
-            padding: 15px 0; border-bottom: 1px solid #1a1a24;
+            padding: 20px 0; border-bottom: 1px solid #1a1a24;
         }
         nav button {
             background: none; border: none; color: #8a8a93;
-            font-size: 16px; margin: 0 20px; cursor: pointer; transition: 0.3s;
+            font-size: 16px; margin: 0 25px; cursor: pointer; transition: 0.3s;
+            letter-spacing: 1px;
         }
         nav button.active, nav button:hover {
             color: var(--accent-color); text-shadow: 0 0 10px var(--accent-color);
         }
 
-        /* 📑 页面容器 */
+        /* 📑 Page Containers */
         .page {
             display: none; min-height: 100vh; padding-top: 100px;
-            box-sizing: border-box; animation: fadeIn 0.5s ease;
+            box-sizing: border-box; animation: fadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 🌌 首页 Vision 级动态流体 */
+        /* 🌌 Hero Section with Visionary Shape */
         .hero {
             display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center;
         }
         .interactive-shape {
-            width: 150px; height: 150px;
+            width: 160px; height: 160px;
             background: linear-gradient(45deg, #00ffcc, #0099ff);
             border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
             animation: morph 8s ease-in-out infinite, rotate 20s linear infinite;
-            filter: blur(5px); box-shadow: 0 0 40px rgba(0,255,204,0.3);
+            filter: blur(4px); box-shadow: 0 0 50px rgba(0,255,204,0.3);
         }
         @keyframes morph {
             0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
@@ -58,66 +60,155 @@
         }
         @keyframes rotate { to { transform: rotate(360deg); } }
 
-        /* 📦 作品展示页：高级悬浮卡片 */
+        /* 📦 Works Grid & Cards */
         .grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px; padding: 40px; max-width: 1200px; margin: 0 auto;
         }
         .card {
-            background: #12121a; border: 1px solid #222230; border-radius: 16px;
-            padding: 25px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            background: var(--card-bg); border: 1px solid #222230; border-radius: 16px;
+            padding: 30px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); cursor: pointer;
         }
         .card:hover {
             transform: translateY(-8px); border-color: var(--accent-color);
-            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 255, 204, 0.15);
         }
-        .card h3 { margin-top: 0; color: var(--accent-color); }
-        .card p { color: #a1a1aa; font-size: 14px; line-height: 1.6; }
+        .card h3 { margin-top: 0; color: var(--accent-color); font-size: 20px; }
+        .card p { color: #8a8a93; font-size: 14px; line-height: 1.6; }
+
+        /* 🛠️ Visionary Project Modal (高级弹出层) */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 4, 6, 0.85); backdrop-filter: blur(15px);
+            z-index: 1000; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+        .modal.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: #111118; border: 1px solid #333345; border-radius: 24px;
+            padding: 40px; max-width: 600px; width: 90%; position: relative;
+            transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        .modal.active .modal-content { transform: scale(1); }
+        .close-btn {
+            position: absolute; top: 20px; right: 20px; background: none; border: none;
+            color: #8a8a93; font-size: 24px; cursor: pointer;
+        }
+        .close-btn:hover { color: #fff; }
+
+        /* Technical Data Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #222230; font-size: 14px; }
+        th { color: var(--accent-color); }
+        td { color: #c1c1ca; }
     </style>
 </head>
 <body>
 
-    <!-- 导航栏 -->
+    <!-- 📡 Navigation -->
     <nav>
-        <button onclick="switchPage('home')" id="btn-home" class="active">🚀 首页</button>
-        <button onclick="switchPage('works')" id="btn-works">📦 作品栏</button>
+        <button onclick="switchPage('home')" id="btn-home" class="active">INDEX</button>
+        <button onclick="switchPage('works')" id="btn-works">PROJECTS</button>
     </nav>
 
-    <!-- 🧭 页面 1：首页 -->
+    <!-- 🧭 Page 1: Home -->
     <div id="home" class="page active">
         <div class="hero">
             <div class="interactive-shape"></div>
-            <h1 style="font-size: 3rem; margin-top: 30px; letter-spacing: 2px;">Zeke's Studio</h1>
-            <p style="color: #8a8a93;">探索工业设计、结构美学与动态交互的边界</p>
+            <h1 style="font-size: 3.5rem; margin-top: 35px; letter-spacing: 3px;">ZEKE'S STUDIO</h1>
+            <p style="color: #8a8a93; font-size: 1.2rem;">Exploring the Dynamic Intersection of Product, Structure & Aerodynamics</p>
         </div>
     </div>
 
-    <!-- 🧭 页面 2：作品展示页 -->
+    <!-- 🧭 Page 2: Projects -->
     <div id="works" class="page">
-        <h2 style="text-align: center; margin-bottom: 10px;">设计项目集</h2>
-        <p style="text-align: center; color: #8a8a93; margin-bottom: 40px;">点击卡片可查看后续的交互方案</p>
+        <h2 style="text-align: center; font-size: 2rem; letter-spacing: 1px;">DESIGN PORTFOLIO</h2>
+        <p style="text-align: center; color: #8a8a93; margin-bottom: 40px;">Click any project card to discover advanced specifications.</p>
+        
         <div class="grid">
-            <div class="card">
-                <h3>🏍️ 1:5 智能电摩原型</h3>
-                <p>自锁式车架结构设计，结合流线型空气动力学优化。展示高效的工程可靠性与未来感形态。</p>
+            <!-- Card 1 -->
+            <div class="card" onclick="openModal('motorcycle')">
+                <h3>🏍️ 1:5 Scale Electric Motorcycle</h3>
+                <p>An aerodynamic optimization project featuring a self-locking frame structure and reliability testing setup.</p>
             </div>
-            <div class="card">
-                <h3>🧳 创新折叠轮行李箱</h3>
-                <p>专为高频出行研发的连杆折叠机构。轮体可平滑收纳至箱体内部，大幅降低运输中的撞击损耗。</p>
+            <!-- Card 2 -->
+            <div class="card" onclick="openModal('suitcase')">
+                <h3>🧳 Modular Suitcase Prototype</h3>
+                <p>Innovative transit architecture equipped with a collapsible wheel mechanism to enhance reliability during transit.</p>
             </div>
-            <div class="card">
-                <h3>📦 几何模块化收纳盒</h3>
-                <p>基于严格尺寸推演的堆叠系统。支持多场景自由组合，兼顾空间利用率与极简视觉。</p>
+            <!-- Card 3 -->
+            <div class="card" onclick="openModal('storage')">
+                <h3>📦 Geometric Modular Storage System</h3>
+                <p>A space-efficient stacking system derived from precise dimension annotations and aesthetic geometric layouts.</p>
             </div>
+        </div>
+    </div>
+
+    <!-- 🛠️ Dynamic Interactive Modal Container -->
+    <div id="projectModal" class="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <h2 id="modalTitle" style="color: var(--accent-color); margin-top: 0;">Project Title</h2>
+            <p id="modalDesc" style="color: #b1b1ba; line-height: 1.6;">Project description will load dynamically.</p>
+            
+            <h4 style="margin-bottom: 5px; letter-spacing: 1px;">TECHNICAL PROTOCOL</h4>
+            <table>
+                <thead>
+                    <tr><th>Parameter</th><th>Specification</th></tr>
+                </thead>
+                <tbody id="modalTableBody">
+                    <!-- Dynamic Rows Go Here -->
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
+        // Page Switching Logic
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-' + pageId).classList.add('active');
+        }
+
+        // Advanced Interactive Modal Data Bank
+        const projectData = {
+            motorcycle: {
+                title: "1:5 Scale Electric Motorcycle",
+                desc: "This design introduces an optimized aerodynamic silhouette paired with a robust self-locking mechanism. Engineered to withstand high-velocity stress while maintaining an ultra-sleek, futurist aesthetic prototype.",
+                specs: [["Scale Ratio", "1:5 Prototype"], ["Frame Tech", "Self-Locking Configuration"], ["Optimization", "Aerodynamic Drag Reduction"]]
+            },
+            suitcase: {
+                title: "Modular Suitcase Prototype",
+                desc: "A re-engineered luggage system addressing high-frequency transit vulnerabilities. The custom-designed linkage mechanism allows wheels to fold seamlessly into the chassis, preventing external impact damage.",
+                specs: [["Mechanism", "Collapsible Articulation"], ["Durability", "High-Impact Absorption"], ["Target Use", "Long-Transit Reliability"]]
+            },
+            storage: {
+                title: "Geometric Modular Storage System",
+                desc: "An adaptive stacking ecosystem defined by strict geometric parameters. Each independent module seamlessly locks together, balancing high volumetric spatial efficiency with a minimal visual footprint.",
+                specs: [["Form Factor", "Isometric Geometric Blocks"], ["Modularity", "Universal Interlocking Interface"], ["Efficiency", "+35% Volume Utilization"]]
+            }
+        };
+
+        function openModal(projectId) {
+            const data = projectData[projectId];
+            document.getElementById('modalTitle').innerText = data.title;
+            document.getElementById('modalDesc').innerText = data.desc;
+            
+            let tableHTML = "";
+            data.specs.forEach(spec => {
+                tableHTML += `<tr><td>${spec[0]}</td><td>${spec[1]}</td></tr>`;
+            });
+            document.getElementById('modalTableBody').innerHTML = tableHTML;
+
+            const modal = document.getElementById('projectModal');
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('projectModal').classList.remove('active');
         }
     </script>
 </body>
