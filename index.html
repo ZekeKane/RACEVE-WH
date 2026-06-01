@@ -7,33 +7,41 @@
     <style>
         :root { --accent-color: #00F2FF; --text-color: #ffffff; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; background-color: #050508; color: white; font-family: -apple-system, sans-serif; -webkit-overflow-scrolling: touch; }
+        
         #bg-canvas, #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         #bg-canvas { z-index: 0; }
         #top-canvas { z-index: 50; }
+        
         .content-layer { position: relative; z-index: 10; width: 100%; min-height: 100vh; }
         nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(5,5,8,1), rgba(5,5,8,0)); }
         nav button { background: none; border: none; color: #aaa; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
         nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
+        
         .page { display: none; padding-top: 150px; text-align: center; width: 100%; }
         .page.active { display: block; animation: fadeIn 0.8s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; padding: 40px; max-width: 1000px; margin: 0 auto; }
         .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 30px; cursor: pointer; transition: 0.4s; touch-action: auto; }
         .card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); }
     </style>
 </head>
 <body>
+
     <canvas id="bg-canvas"></canvas>
     <canvas id="top-canvas"></canvas>
+
     <div class="content-layer">
         <nav>
-            <button onclick="switchPage('home')" id="btn-home" class="active">INDEX</button>
-            <button onclick="switchPage('works')" id="btn-works">PROJECTS</button>
+            <button onclick="window.switchPage('home')" id="btn-home" class="active">INDEX</button>
+            <button onclick="window.switchPage('works')" id="btn-works">PROJECTS</button>
         </nav>
+
         <div id="home" class="page active">
             <h1 style="font-size: 4rem; letter-spacing: 10px; margin: 0;">ZEKE'S STUDIO</h1>
             <p style="color: #666; margin-top: 10px;">Aerodynamics & Structure Design</p>
         </div>
+
         <div id="works" class="page">
             <div class="grid">
                 <div class="card" onclick="alert('Electric Motorcycle Analysis')"><h3>Electric Motorcycle</h3></div>
@@ -43,6 +51,7 @@
     </div>
 
     <script>
+        // 1. 全局作用域修复：将函数绑定到 window
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
@@ -50,17 +59,18 @@
             document.getElementById('btn-'+p).classList.add('active');
         };
 
-        const topCanvas = document.getElementById('top-canvas');
-        const topCtx = topCanvas.getContext('2d');
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
+        const topCanvas = document.getElementById('top-canvas');
+        const topCtx = topCanvas.getContext('2d');
+
         let w = bgCanvas.width = topCanvas.width = window.innerWidth;
         let h = bgCanvas.height = topCanvas.height = window.innerHeight;
 
-        let globalTime = 0; // 呼吸时间戳
         const particles = [];
         const totalParticles = 6000;
         const colors = ['#FF007F', '#00F2FF', '#8A2BE2', '#FFD700', '#7FFF00'];
+        let globalTime = 0;
 
         class Particle {
             constructor() { this.reset(); }
@@ -74,12 +84,10 @@
                 this.angle = Math.random() * Math.PI * 2;
             }
             update(mouse, time) {
-                // 核心：丝绸流场逻辑 (基于正弦波的时间场)
                 this.angle = Math.sin(time * 0.001 + this.x * 0.002) * Math.PI;
                 this.x += Math.cos(this.angle) * this.velocity;
                 this.y += Math.sin(this.angle) * this.velocity;
 
-                // 呼吸效果：随着 time 缓慢聚拢
                 let breathingRadius = 150 + Math.sin(time * 0.002) * 100;
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
@@ -93,6 +101,7 @@
                 if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
                 this.rotation += 0.02;
             }
+            // 2. 显式传入 ctx 参数，确保不会报错
             draw(ctx) {
                 ctx.save();
                 ctx.translate(this.x, this.y);
@@ -112,12 +121,14 @@
         }, { passive: true });
 
         function animate() {
-            globalTime++; // 推进时间
-            bgCtx.fillStyle = 'rgba(5, 5, 8, 0.1)'; // 加深拖尾效果
+            globalTime++;
+            bgCtx.fillStyle = 'rgba(5, 5, 8, 0.1)';
             bgCtx.fillRect(0, 0, w, h);
+            
             topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
 
+            // 3. 循环调用时将 topCtx 传给 draw 方法
             particles.forEach(p => {
                 p.update(mouse, globalTime);
                 p.draw(topCtx);
