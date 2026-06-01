@@ -8,24 +8,41 @@
         :root {
             --accent-color: #0055ff; 
             --text-color: #111115; 
-            --card-bg: rgba(255, 255, 255, 0.85); 
+            /* 卡片采用呼吸感更强的半透明毛玻璃底色 */
+            --card-bg: rgba(255, 255, 255, 0.65); 
         }
-        body {
-            /* 🌄 保持你最爱的蓝天白云风景线 */
-            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-            background-size: cover;
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            margin: 0; padding: 0; overflow-x: hidden;
+        
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            overflow-x: hidden;
+            background-color: #f3f4f6; /* 极其利落的极客白基底 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        /* 📡 Navigation Bar */
+        /* 🪐 1. 全屏幕毛玻璃纹理防护罩 */
+        .glass-background {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none; /* 让鼠标穿透它，好让用户能和底层粒子互动 */
+            background: rgba(255, 255, 255, 0.4); 
+            backdrop-filter: blur(40px) saturate(160%); /* 超高密度的毛玻璃花纹 */
+            -webkit-backdrop-filter: blur(40px) saturate(160%);
+        }
+
+        /* 📡 2. 全屏幕粒子画布 */
+        #gemini-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; /* 躺在最底层肆意飞舞 */
+        }
+
+        /* 📡 Navigation Bar (带有毛玻璃质感) */
         nav {
             position: fixed; top: 0; width: 100%;
             display: flex; justify-content: center;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(15px); z-index: 100;
-            padding: 20px 0; border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 100; padding: 20px 0; 
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
         }
         nav button {
             background: none; border: none; color: #4b5563;
@@ -38,28 +55,26 @@
 
         /* 📑 Page Containers */
         .page {
-            display: none; min-height: 100vh; padding-top: 100px;
-            box-sizing: border-box; animation: fadeIn 0.5s ease;
+            display: none; min-height: 100vh; padding-top: 120px;
+            box-sizing: border-box; animation: fadeIn 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative; z-index: 10; /* 确保文字在毛玻璃防护罩上方 */
         }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 🌌 Gemini Stage Container */
+        /* 🌌 Hero Section */
         .hero {
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            height: 85vh; text-align: center; position: relative;
+            height: 75vh; text-align: center; padding: 0 20px;
         }
-        /* 📡 Gemini 动态粒子画布容器 */
-        #gemini-container {
-            width: 100%; height: 380px; position: relative; display: flex; justify-content: center; align-items: center;
+        .hero h1 {
+            font-size: 3.5rem; letter-spacing: 3px; font-weight: 800; margin: 0;
+            background: linear-gradient(135deg, #111115 0%, #4b5563 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        canvas {
-            position: absolute; cursor: pointer;
-        }
-
-        .hero h1, .hero p {
-            text-shadow: 0 2px 12px rgba(255, 255, 255, 0.9);
-            z-index: 10; margin: 5px 0;
+        .hero p {
+            color: #3f3f46; font-size: 1.15rem; max-width: 600px; line-height: 1.7; 
+            font-weight: 500; margin-top: 15px;
         }
 
         /* 📦 Works Grid & Cards */
@@ -68,31 +83,33 @@
             gap: 30px; padding: 40px; max-width: 1200px; margin: 0 auto;
         }
         .card {
-            background: var(--card-bg); border: 1px solid rgba(229, 231, 235, 0.6); border-radius: 20px;
-            padding: 30px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); cursor: pointer;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            background: var(--card-bg); border: 1px solid rgba(229, 231, 235, 0.5); border-radius: 24px;
+            padding: 35px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); cursor: pointer;
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
         }
         .card:hover {
-            transform: translateY(-8px); border-color: var(--accent-color);
-            box-shadow: 0 20px 40px rgba(0, 85, 255, 0.12);
+            transform: translateY(-8px); border-color: rgba(0, 85, 255, 0.4);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 20px 40px rgba(0, 85, 255, 0.08);
         }
-        .card h3 { margin-top: 0; color: var(--text-color); font-size: 20px; }
-        .card p { color: #4b5563; font-size: 14px; line-height: 1.6; }
+        .card h3 { margin-top: 0; color: var(--text-color); font-size: 21px; font-weight: 700; }
+        .card p { color: #4b5563; font-size: 14.5px; line-height: 1.6; }
 
         /* 🛠️ Modern Project Modal */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             z-index: 1000; justify-content: center; align-items: center;
             opacity: 0; transition: opacity 0.4s ease;
         }
         .modal.active { display: flex; opacity: 1; }
         .modal-content {
-            background: #ffffff; border: 1px solid #e5e7eb; border-radius: 24px;
+            background: rgba(255, 255, 255, 0.9); border: 1px solid #e5e7eb; border-radius: 28px;
             padding: 40px; max-width: 600px; width: 90%; position: relative;
             transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.06); color: var(--text-color);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.05); color: var(--text-color);
         }
         .modal.active .modal-content { transform: scale(1); }
         .close-btn {
@@ -102,12 +119,16 @@
         .close-btn:hover { color: #000; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
-        th { color: var(--accent-color); }
+        th, td { padding: 13px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+        th { color: var(--accent-color); font-weight: 600; }
         td { color: #4b5563; }
     </style>
 </head>
 <body>
+
+    <canvas id="gemini-canvas"></canvas>
+
+    <div class="glass-background"></div>
 
     <nav>
         <button onclick="switchPage('home')" id="btn-home" class="active">INDEX</button>
@@ -116,15 +137,14 @@
 
     <div id="home" class="page active">
         <div class="hero">
-            <div id="gemini-container"></div>
-            <h1 style="font-size: 3.2rem; letter-spacing: 2px; font-weight: 800;">ZEKE'S STUDIO</h1>
-            <p style="color: #27272a; font-size: 1.1rem; max-width: 500px; line-height: 1.6; font-weight: 500;">Exploring the Dynamic Intersection of Product, Structure & Aerodynamics</p>
+            <h1>ZEKE'S STUDIO</h1>
+            <p>Exploring the Dynamic Intersection of Product, Structure & Aerodynamics</p>
         </div>
     </div>
 
     <div id="works" class="page">
-        <h2 style="text-align: center; font-size: 2rem; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(255,255,255,0.8);">DESIGN PORTFOLIO</h2>
-        <p style="text-align: center; color: #27272a; margin-bottom: 40px; font-weight: 500; text-shadow: 0 2px 10px rgba(255,255,255,0.8);">Click any project card to discover advanced specifications.</p>
+        <h2 style="text-align: center; font-size: 2rem; letter-spacing: 1px; margin-bottom: 5px;">DESIGN PORTFOLIO</h2>
+        <p style="text-align: center; color: #4b5563; margin-bottom: 40px; font-weight: 500;">Click any project card to discover advanced specifications.</p>
         
         <div class="grid">
             <div class="card" onclick="openModal('motorcycle')">
@@ -156,7 +176,7 @@
     </div>
 
     <script>
-        // 1. 页面切换逻辑
+        // 页面切换逻辑
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
@@ -164,7 +184,7 @@
             document.getElementById('btn-' + pageId).classList.add('active');
         }
 
-        // 2. 作品详情弹窗数据库
+        // 弹窗数据
         const projectData = {
             motorcycle: {
                 title: "1:5 Scale Electric Motorcycle",
@@ -190,73 +210,78 @@
             let tableHTML = "";
             data.specs.forEach(spec => { tableHTML += `<tr><td>${spec[0]}</td><td>${spec[1]}</td></tr>`; });
             document.getElementById('modalTableBody').innerHTML = tableHTML;
-            document.getElementById('projectModal').classList.add('add');
             document.getElementById('projectModal').classList.add('active');
         }
         function closeModal() { document.getElementById('projectModal').classList.remove('active'); }
 
-        // 🌌 3. Gemini 满血版双曲率流体粒子引擎 (HTML5 Canvas 高性能极光)
-        const container = document.getElementById('gemini-container');
-        const canvas = document.createElement('canvas');
-        container.appendChild(canvas);
+        // 🌌 Gemini 全屏大矩阵流体渲染核心
+        const canvas = document.getElementById('gemini-canvas');
         const ctx = canvas.getContext('2d');
 
-        let width = canvas.width = 400;
-        let height = canvas.height = 400;
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
 
-        const particleCount = 450; // 极其密集的绚丽星群
+        // 完美适配屏幕缩放
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const particleCount = 280; // 全屏平铺的最佳空气感密度
         const particles = [];
-        
-        // 捕捉交互坐标
         let mouse = { x: width / 2, y: height / 2, active: false, targetX: width / 2, targetY: height / 2 };
 
-        // 调配 Gemini 官方情绪色卡（深蓝、青绿、梦幻紫蓝）
+        // 调制高端全景浅色调粒子（深蓝、柔和翠绿、轻柔靛紫、天蓝）
         const colors = [
-            'rgba(0, 85, 255, ',   // Deep Electric Blue
-            'rgba(0, 225, 255, ',  // Cyan Glow
-            'rgba(110, 0, 255, ',  // Gemini Purple
-            'rgba(0, 170, 255, '   // Sky Indigo
+            'rgba(0, 102, 255, ',  
+            'rgba(0, 204, 153, ',  
+            'rgba(126, 34, 206, ', 
+            'rgba(14, 165, 233, '  
         ];
 
         class Particle {
             constructor() {
-                this.reset();
+                this.init();
             }
-            reset() {
-                this.x = width / 2 + (Math.random() - 0.5) * 40;
-                this.y = height / 2 + (Math.random() - 0.5) * 40;
-                this.radius = Math.random() * 2.5 + 0.5;
+            init() {
+                // 粒子随机散落在屏幕各处
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.radius = Math.random() * 4 + 1.5; // 轻微放大，加强毛玻璃透光折射感
                 this.baseColor = colors[Math.floor(Math.random() * colors.length)];
-                this.alpha = Math.random() * 0.6 + 0.2;
+                this.alpha = Math.random() * 0.35 + 0.15; // 保持柔和透明度，防止白色背景太刺眼
                 
-                // 轨道力学参数：让粒子形成双螺旋轨道盘旋
+                // 漂移物理参数
                 this.angle = Math.random() * Math.PI * 2;
-                this.velocity = Math.random() * 0.03 + 0.005;
-                this.distance = Math.random() * 110 + 20;
-                this.bumpiness = Math.random() * 15;
+                this.speed = Math.random() * 0.6 + 0.2;
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
             }
             update() {
-                this.angle += this.velocity;
-                
-                // 计算基础旋转圆轨道
-                let targetX = mouse.x + Math.cos(this.angle) * (this.distance + Math.sin(this.angle * 2) * this.bumpiness);
-                let targetY = mouse.y + Math.sin(this.angle) * (this.distance + Math.cos(this.angle * 2) * this.bumpiness);
-                
-                // 营造向中心或手指吸附的丝滑阻尼感
-                this.x += (targetX - this.x) * 0.06;
-                this.y += (targetY - this.y) * 0.06;
+                // 1. 自然惯性漂移
+                this.x += this.vx;
+                this.y += this.vy;
 
-                // 边缘淡出呼吸效应
-                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
-                    this.reset();
+                // 2. 捕捉鼠标/触控引力场
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 300) {
+                    // 当指针靠近时，粒子会被引力涡流悄悄牵引
+                    let force = (300 - distance) / 300;
+                    this.x += (dx / distance) * force * 1.8;
+                    this.y += (dy / distance) * force * 1.8;
                 }
+
+                // 3. 边界反弹
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
             }
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fillStyle = this.baseColor + this.alpha + ')';
-                // 开启硬件融合高亮，渲染出真正有穿透感的发光极光叠加效果
-                ctx.globalCompositeOperation = 'multiply'; 
                 ctx.fill();
             }
         }
@@ -266,54 +291,54 @@
             particles.push(new Particle());
         }
 
-        // 鼠标和手指缓动跟踪器
-        function updateMousePosition() {
-            mouse.x += (mouse.targetX - mouse.x) * 0.1;
-            mouse.y += (mouse.targetY - mouse.y) * 0.1;
+        // 丝滑阻尼坐标跟踪
+        function smoothMouse() {
+            mouse.x += (mouse.targetX - mouse.x) * 0.08;
+            mouse.y += (mouse.targetY - mouse.y) * 0.08;
         }
 
-        // 监听电脑鼠标晃动
-        container.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            mouse.targetX = e.clientX - rect.left;
-            mouse.targetY = e.clientY - rect.top;
+        // 侦测 Win11 鼠标晃动
+        window.addEventListener('mousemove', (e) => {
+            mouse.targetX = e.clientX;
+            mouse.targetY = e.clientY;
             mouse.active = true;
         });
 
-        // 监听 iPad 手指触摸滑动
-        container.addEventListener('touchmove', (e) => {
-            const rect = canvas.getBoundingClientRect();
+        // 侦测 iPad 手指滑动
+        window.addEventListener('touchmove', (e) => {
             const touch = e.touches[0];
-            mouse.targetX = touch.clientX - rect.left;
-            mouse.targetY = touch.clientY - rect.top;
+            mouse.targetX = touch.clientX;
+            mouse.targetY = touch.clientY;
             mouse.active = true;
         });
 
-        container.addEventListener('mouseleave', () => mouse.active = false);
-        container.addEventListener('touchend', () => mouse.active = false);
+        window.addEventListener('mouseleave', () => mouse.active = false);
+        window.addEventListener('touchend', () => mouse.active = false);
 
-        // 核心动力循环渲染
-        function renderLoop() {
-            ctx.clearRect(0, 0, width, height);
-            
+        // 主演播渲染循环
+        function animate() {
+            // 轻微的色彩残留，创造柔和的尾迹美感
+            ctx.fillStyle = 'rgba(243, 244, 246, 0.08)';
+            ctx.fillRect(0, 0, width, height);
+
             if (!mouse.active) {
-                // 当没人碰它时，让引力核心自己在中央像呼吸一样做唯美的八字慢速环绕
-                const time = Date.now() * 0.0015;
-                mouse.targetX = width / 2 + Math.cos(time) * 35;
-                mouse.targetY = height / 2 + Math.sin(time * 2) * 15;
+                // 没人碰时，引力波在全屏中央做轻柔的太极慢速环绕
+                const time = Date.now() * 0.0008;
+                mouse.targetX = width / 2 + Math.cos(time) * (width * 0.2);
+                mouse.targetY = height / 2 + Math.sin(time * 1.5) * (height * 0.15);
             }
 
-            updateMousePosition();
+            smoothMouse();
 
             particles.forEach(p => {
                 p.update();
                 p.draw();
             });
 
-            requestAnimationFrame(renderLoop);
+            requestAnimationFrame(animate);
         }
 
-        renderLoop();
+        animate();
     </script>
 </body>
 </html>
