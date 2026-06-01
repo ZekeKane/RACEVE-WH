@@ -8,12 +8,10 @@
         :root { --accent-color: #00F2FF; --text-color: #ffffff; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; background-color: #050508; color: white; font-family: -apple-system, sans-serif; }
         
-        /* 动效层 */
         #bg-canvas, #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         #bg-canvas { z-index: 0; }
         #top-canvas { z-index: 50; }
         
-        /* 交互内容层 */
         .content-layer { position: relative; z-index: 10; width: 100%; }
         nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(5,5,8,1), rgba(5,5,8,0)); }
         nav button { background: none; border: none; color: #aaa; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
@@ -26,11 +24,6 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 40px; max-width: 1000px; margin: 0 auto; }
         .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 30px; cursor: pointer; transition: 0.4s; }
         .card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); }
-        
-        /* 模态框 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 200; justify-content: center; align-items: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: #111; border: 1px solid #333; padding: 40px; border-radius: 20px; width: 80%; max-width: 500px; position: relative; }
     </style>
 </head>
 <body>
@@ -51,14 +44,13 @@
 
         <div id="works" class="page">
             <div class="grid">
-                <div class="card" onclick="alert('Project A Details')"><h3>Electric Motorcycle</h3></div>
-                <div class="card" onclick="alert('Project B Details')"><h3>Modular Storage</h3></div>
+                <div class="card" onclick="alert('Project A: Aerodynamic Analysis')"><h3>Electric Motorcycle</h3></div>
+                <div class="card" onclick="alert('Project B: Modular System')"><h3>Modular Storage</h3></div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 网页交互逻辑 ---
         function switchPage(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
@@ -66,7 +58,6 @@
             document.getElementById('btn-'+p).classList.add('active');
         }
 
-        // --- 动效核心逻辑 ---
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         const topCanvas = document.getElementById('top-canvas');
@@ -97,12 +88,12 @@
                 let dy = mouse.y - this.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 
-                // --- 修改这里调整引力场 ---
-                const gravityRadius = 180; // <--- 这里改小了，互动更精准
+                const gravityRadius = 180;
                 if (dist < gravityRadius) {
                     let force = (gravityRadius - dist) / gravityRadius;
-                    this.x += dx * force * 0.2;
-                    this.y += dy * force * 0.2;
+                    // --- 这里的 0.08 是控制吸引速度的核心参数，越小越慢 ---
+                    this.x += dx * force * 0.08; 
+                    this.y += dy * force * 0.08;
                 }
 
                 if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
