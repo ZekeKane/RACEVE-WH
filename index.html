@@ -8,116 +8,52 @@
         :root {
             --accent-color: #0055ff; 
             --text-color: #111115; 
-            /* 卡片高通透毛玻璃，完美折射底层超新星爆发的光芒 */
             --card-bg: rgba(255, 255, 255, 0.45); 
         }
-        
         body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            overflow-x: hidden;
-            background-color: #f8fafc; /* 极致纯净的极客白底色 */
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow-x: hidden; background-color: #f8fafc;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
-
-        /* 🪐 1. 全屏幕极光增强型毛玻璃纹理防护罩 */
+        /* 🪐 全屏幕极光增强型毛玻璃纹理防护罩 */
         .glass-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; pointer-events: none; /* 让鼠标和手指完美穿透 */
-            background: rgba(255, 255, 255, 0.15); /* 极高透明度，让色彩完全释放 */
-            backdrop-filter: blur(30px) saturate(200%); /* 200%色彩饱和度折射，画面极其惊艳 */
+            z-index: 1; pointer-events: none;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(30px) saturate(200%);
             -webkit-backdrop-filter: blur(30px) saturate(200%);
         }
-
-        /* 📡 2. 全屏幕画布 */
-        #gemini-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0;
-        }
-
-        /* 📡 Navigation Bar (毛玻璃质感) */
+        #gemini-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         nav {
-            position: fixed; top: 0; width: 100%;
-            display: flex; justify-content: center;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            z-index: 100; padding: 20px 0; 
-            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+            position: fixed; top: 0; width: 100%; display: flex; justify-content: center;
+            background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 100; padding: 20px 0; border-bottom: 1px solid rgba(229, 231, 235, 0.4);
         }
         nav button {
-            background: none; border: none; color: #4b5563;
-            font-size: 15px; margin: 0 25px; cursor: pointer; transition: 0.3s;
-            letter-spacing: 1px; font-weight: 600;
+            background: none; border: none; color: #4b5563; font-size: 15px; margin: 0 25px;
+            cursor: pointer; transition: 0.3s; letter-spacing: 1px; font-weight: 600;
         }
-        nav button.active, nav button:hover {
-            color: var(--accent-color); text-shadow: 0 0 8px rgba(0,119,255,0.2);
-        }
-
-        /* 📑 Page Containers */
+        nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 8px rgba(0,119,255,0.2); }
         .page {
-            display: none; min-height: 100vh; padding-top: 120px;
-            box-sizing: border-box; animation: fadeIn 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            position: relative; z-index: 10;
+            display: none; min-height: 100vh; padding-top: 120px; box-sizing: border-box;
+            animation: fadeIn 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); position: relative; z-index: 10;
         }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* 🌌 Hero Section */
-        .hero {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            height: 75vh; text-align: center; padding: 0 20px;
-        }
-        .hero h1 {
-            font-size: 3.5rem; letter-spacing: 3px; font-weight: 800; margin: 0;
-            background: linear-gradient(135deg, #111115 0%, #475569 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            color: #1e293b; font-size: 1.15rem; max-width: 600px; line-height: 1.7; 
-            font-weight: 500; margin-top: 15px;
-        }
-
-        /* 📦 Works Grid & Cards */
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px; padding: 40px; max-width: 1200px; margin: 0 auto;
-        }
-        .card {
-            background: var(--card-bg); border: 1px solid rgba(229, 231, 235, 0.3); border-radius: 24px;
-            padding: 35px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); cursor: pointer;
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.01);
-        }
-        .card:hover {
-            transform: translateY(-8px); border-color: rgba(0, 85, 255, 0.6);
-            background: rgba(255, 255, 255, 0.85);
-            box-shadow: 0 20px 40px rgba(0, 85, 255, 0.12);
-        }
+        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 75vh; text-align: center; padding: 0 20px; }
+        .hero h1 { font-size: 3.5rem; letter-spacing: 3px; font-weight: 800; margin: 0; background: linear-gradient(135deg, #111115 0%, #475569 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: #1e293b; font-size: 1.15rem; max-width: 600px; line-height: 1.7; font-weight: 500; margin-top: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 40px; max-width: 1200px; margin: 0 auto; }
+        .card { background: var(--card-bg); border: 1px solid rgba(229, 231, 235, 0.3); border-radius: 24px; padding: 35px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); cursor: pointer; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.01); }
+        .card:hover { transform: translateY(-8px); border-color: rgba(0, 85, 255, 0.6); background: rgba(255, 255, 255, 0.85); box-shadow: 0 20px 40px rgba(0, 85, 255, 0.12); }
         .card h3 { margin-top: 0; color: var(--text-color); font-size: 21px; font-weight: 700; }
         .card p { color: #4b5563; font-size: 14.5px; line-height: 1.6; }
-
-        /* 🛠️ Modern Project Modal */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            z-index: 1000; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.4s ease;
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.4s ease; }
         .modal.active { display: flex; opacity: 1; }
-        .modal-content {
-            background: rgba(255, 255, 255, 0.9); border: 1px solid #e5e7eb; border-radius: 28px;
-            padding: 40px; max-width: 600px; width: 90%; position: relative;
-            transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.05); color: var(--text-color);
-        }
+        .modal-content { background: rgba(255, 255, 255, 0.9); border: 1px solid #e5e7eb; border-radius: 28px; padding: 40px; max-width: 600px; width: 90%; position: relative; transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 30px 60px rgba(0,0,0,0.05); color: var(--text-color); }
         .modal.active .modal-content { transform: scale(1); }
-        .close-btn {
-            position: absolute; top: 20px; right: 20px; background: none; border: none;
-            color: #71717a; font-size: 24px; cursor: pointer;
-        }
+        .close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #71717a; font-size: 24px; cursor: pointer; }
         .close-btn:hover { color: #000; }
-
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 13px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
         th { color: var(--accent-color); font-weight: 600; }
@@ -127,7 +63,6 @@
 <body>
 
     <canvas id="gemini-canvas"></canvas>
-
     <div class="glass-background"></div>
 
     <nav>
@@ -145,7 +80,6 @@
     <div id="works" class="page">
         <h2 style="text-align: center; font-size: 2rem; letter-spacing: 1px; margin-bottom: 5px;">DESIGN PORTFOLIO</h2>
         <p style="text-align: center; color: #4b5563; margin-bottom: 40px; font-weight: 500;">Click any project card to discover advanced specifications.</p>
-        
         <div class="grid">
             <div class="card" onclick="openModal('motorcycle')">
                 <h3>🏍️ 1:5 Scale Electric Motorcycle</h3>
@@ -184,21 +118,9 @@
         }
 
         const projectData = {
-            motorcycle: {
-                title: "1:5 Scale Electric Motorcycle",
-                desc: "This design introduces an optimized aerodynamic silhouette paired with a robust self-locking mechanism. Engineered to withstand high-velocity stress while maintaining an ultra-sleek, futurist aesthetic prototype.",
-                specs: [["Scale Ratio", "1:5 Prototype"], ["Frame Tech", "Self-Locking Configuration"], ["Optimization", "Aerodynamic Drag Reduction"]]
-            },
-            suitcase: {
-                title: "Modular Suitcase Prototype",
-                desc: "A re-engineered luggage system addressing high-frequency transit vulnerabilities. The custom-designed linkage mechanism allows wheels to fold seamlessly into the chassis, preventing external impact damage.",
-                specs: [["Mechanism", "Collapsible Articulation"], ["Durability", "High-Impact Absorption"], ["Target Use", "Long-Transit Reliability"]]
-            },
-            storage: {
-                title: "Geometric Modular Storage System",
-                desc: "An adaptive stacking ecosystem defined by strict geometric parameters. Each independent module seamlessly locks together, balancing high volumetric spatial efficiency with a minimal visual footprint.",
-                specs: [["Form Factor", "Isometric Geometric Blocks"], ["Modularity", "Universal Interlocking Interface"], ["Efficiency", "+35% Volume Utilization"]]
-            }
+            motorcycle: { title: "1:5 Scale Electric Motorcycle", desc: "This design introduces an optimized aerodynamic silhouette paired with a robust self-locking mechanism. Engineered to withstand high-velocity stress while maintaining an ultra-sleek, futurist aesthetic prototype.", specs: [["Scale Ratio", "1:5 Prototype"], ["Frame Tech", "Self-Locking Configuration"], ["Optimization", "Aerodynamic Drag Reduction"]] },
+            suitcase: { title: "Modular Suitcase Prototype", desc: "A re-engineered luggage system addressing high-frequency transit vulnerabilities. The custom-designed linkage mechanism allows wheels to fold seamlessly into the chassis, preventing external impact damage.", specs: [["Mechanism", "Collapsible Articulation"], ["Durability", "High-Impact Absorption"], ["Target Use", "Long-Transit Reliability"]] },
+            storage: { title: "Geometric Modular Storage System", desc: "An adaptive stacking ecosystem defined by strict geometric parameters. Each independent module seamlessly locks together, balancing high volumetric spatial efficiency with a minimal visual footprint.", specs: [["Form Factor", "Isometric Geometric Blocks"], ["Modularity", "Universal Interlocking Interface"], ["Efficiency", "+35% Volume Utilization"]] }
         };
 
         function openModal(projectId) {
@@ -212,10 +134,9 @@
         }
         function closeModal() { document.getElementById('projectModal').classList.remove('active'); }
 
-        // 🎨 6.0 皇家渲染矩阵开始
+        // 🌌 极光渲染矩阵逻辑
         const canvas = document.getElementById('gemini-canvas');
         const ctx = canvas.getContext('2d');
-
         let width = canvas.width = window.innerWidth;
         let height = canvas.height = window.innerHeight;
 
@@ -225,12 +146,10 @@
         });
 
         const particles = [];
-        const sparks = []; // 📡 专门存放超新星爆发璀璨粒子流的数组
-        const particleCount = 180; // 降低基础数量，因为加入了华丽的拖尾缎带，整体色彩反而更饱满
-        
+        const sparks = [];
+        const particleCount = 140; 
         let mouse = { x: width / 2, y: height / 2, active: false, targetX: width / 2, targetY: height / 2 };
 
-        // 💥 六大奢华绚丽色卡（霓虹粉、荧光青、深邃紫、极光橙、荧光绿、皇家蓝）
         const colors = [
             'rgba(255, 0, 128, ',   // Neon Pink
             'rgba(0, 245, 255, ',   // Cyber Cyan
@@ -240,187 +159,82 @@
             'rgba(0, 85, 255, '     // Electric Blue
         ];
 
-        // 🌊 A. 基础长拖尾极光粒子类
         class Particle {
-            constructor() {
-                this.init();
-            }
+            constructor() { this.init(); }
             init() {
-                this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                this.radius = Math.random() * 5 + 3; // 稍大颗粒，在毛玻璃下渲染成巨型光晕
+                this.x = Math.random() * width; this.y = Math.random() * height;
+                this.radius = Math.random() * 5 + 3;
                 this.baseColor = colors[Math.floor(Math.random() * colors.length)];
                 this.alpha = Math.random() * 0.4 + 0.3;
-                
                 this.angle = Math.random() * Math.PI * 2;
-                this.speed = Math.random() * 1.2 + 0.4; // 速度梯级化，产生层次感
-                this.vx = Math.cos(this.angle) * this.speed;
-                this.vy = Math.sin(this.angle) * this.speed;
-
-                // 记录历史轨迹，用来绘制丝滑的“极光流光缎带”
-                this.history = [];
-                this.maxHistory = Math.floor(Math.random() * 12 + 8); // 拖尾长度
+                this.speed = Math.random() * 1.2 + 0.4;
+                this.vx = Math.cos(this.angle) * this.speed; this.vy = Math.sin(this.angle) * this.speed;
+                this.history = []; this.maxHistory = Math.floor(Math.random() * 10 + 6);
             }
             update() {
-                // 存入当前位置到历史记录
                 this.history.push({ x: this.x, y: this.y });
-                if (this.history.length > this.maxHistory) {
-                    this.history.shift();
-                }
-
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // 强引力波捕获
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
+                if (this.history.length > this.maxHistory) this.history.shift();
+                this.x += this.vx; this.y += this.vy;
+                let dx = mouse.x - this.x, dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < 380) {
-                    let force = (380 - distance) / 380;
-                    // 流体漩涡公式
-                    this.x += (dx / distance) * force * 2.5 + Math.cos(this.angle) * force * 0.8;
-                    this.y += (dy / distance) * force * 2.5 + Math.sin(this.angle) * force * 0.8;
+                if (distance < 350) {
+                    let force = (350 - distance) / 350;
+                    this.x += (dx / distance) * force * 2.5; this.y += (dy / distance) * force * 2.5;
                 }
-
                 if (this.x < 0 || this.x > width) this.vx *= -1;
                 if (this.y < 0 || this.y > height) this.vy *= -1;
             }
             draw() {
-                // 🛠️ 核心动效升级：绘制渐变极光流光缎带
                 if (this.history.length > 1) {
-                    ctx.beginPath();
-                    ctx.moveTo(this.history[0].x, this.history[0].y);
-                    for (let i = 1; i < this.history.length; i++) {
-                        ctx.lineTo(this.history[i].x, this.history[i].y);
-                    }
-                    ctx.strokeStyle = this.baseColor + (this.alpha * 0.4) + ')';
-                    ctx.lineWidth = this.radius * 1.5; // 缎带宽度
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(this.history[0].x, this.history[0].y);
+                    for (let i = 1; i < this.history.length; i++) ctx.lineTo(this.history[i].x, this.history[i].y);
+                    ctx.strokeStyle = this.baseColor + (this.alpha * 0.3) + ')';
+                    ctx.lineWidth = this.radius * 1.4; ctx.lineCap = 'round'; ctx.stroke();
                 }
-
-                // 绘制核心光晕核心
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.baseColor + this.alpha + ')';
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.baseColor + this.alpha + ')'; ctx.fill();
             }
         }
 
-        // ✨ B. 超新星触控爆发：璀璨高亮星芒粒子类
         class Spark {
             constructor(x, y, color) {
-                this.x = x;
-                this.y = y;
-                this.radius = Math.random() * 2.5 + 1; // 极小的纳米高亮粒子
-                this.color = color;
-                
-                // 呈完美的爆炸圆周向外散射
-                const angle = Math.random() * Math.PI * 2;
-                const speed = Math.random() * 4 + 2; // 爆发初速度极快
-                this.vx = Math.cos(angle) * speed;
-                this.vy = Math.sin(angle) * speed;
-                
-                this.alpha = 1.0; // 初始全亮
-                this.decay = Math.random() * 0.03 + 0.015; // 快速衰减衰退
+                this.x = x; this.y = y; this.radius = Math.random() * 2 + 1; this.color = color;
+                const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 4 + 2;
+                this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
+                this.alpha = 1.0; this.decay = Math.random() * 0.04 + 0.02;
             }
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                // 添加一点点空气阻力，让烟花慢慢减速
-                this.vx *= 0.95;
-                this.vy *= 0.95;
-                this.alpha -= this.decay;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.color + this.alpha + ')';
-                ctx.fill();
-            }
+            update() { this.x += this.vx; this.y += this.vy; this.vx *= 0.94; this.vy *= 0.94; this.alpha -= this.decay; }
+            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = this.color + this.alpha + ')'; ctx.fill(); }
         }
 
-        // 初始化基础极光星群
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
+        for (let i = 0; i < particleCount; i++) particles.push(new Particle());
 
-        // 丝滑阻尼坐标跟踪
-        function smoothMouse() {
-            mouse.x += (mouse.targetX - mouse.x) * 0.08;
-            mouse.y += (mouse.targetY - mouse.y) * 0.08;
-        }
-
-        // 核心触发器：只要指针滑动，立刻疯狂喷射璀璨高亮粒子
+        function smoothMouse() { mouse.x += (mouse.targetX - mouse.x) * 0.08; mouse.y += (mouse.targetY - mouse.y) * 0.08; }
         function triggerSupernova(ex, ey) {
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            // 每次轻微移动都产生3颗高亮纳米粒子
-            for (let i = 0; i < 3; i++) {
-                sparks.push(new Spark(ex, ey, randomColor));
-            }
+            for (let i = 0; i < 3; i++) sparks.push(new Spark(ex, ey, randomColor));
         }
 
-        // 监听 Windows 11 鼠标移动
-        window.addEventListener('mousemove', (e) => {
-            mouse.targetX = e.clientX;
-            mouse.targetY = e.clientY;
-            mouse.active = true;
-            triggerSupernova(e.clientX, e.clientY);
-        });
-
-        // 监听 iPad 手指滑动
-        window.addEventListener('touchmove', (e) => {
-            const touch = e.touches[0];
-            mouse.targetX = touch.clientX;
-            mouse.targetY = touch.clientY;
-            mouse.active = true;
-            triggerSupernova(touch.clientX, touch.clientY);
-        });
-
+        window.addEventListener('mousemove', (e) => { mouse.targetX = e.clientX; mouse.targetY = e.clientY; mouse.active = true; triggerSupernova(e.clientX, e.clientY); });
+        window.addEventListener('touchmove', (e) => { const touch = e.touches[0]; mouse.targetX = touch.clientX; mouse.targetY = touch.clientY; mouse.active = true; triggerSupernova(touch.clientX, touch.clientY); });
         window.addEventListener('mouseleave', () => mouse.active = false);
         window.addEventListener('touchend', () => mouse.active = false);
 
-        // 主演播渲染循环
         function animate() {
-            // 背景刷新残留，营造极其奢华的液态流动感
-            ctx.fillStyle = 'rgba(248, 250, 252, 0.12)';
-            ctx.fillRect(0, 0, width, height);
-
+            ctx.fillStyle = 'rgba(248, 250, 252, 0.12)'; ctx.fillRect(0, 0, width, height);
             if (!mouse.active) {
-                // 自动巡航状态：模拟双引力星体在全屏做“∞”字形唯美华尔兹慢速巡航
                 const time = Date.now() * 0.0006;
-                mouse.targetX = width / 2 + Math.cos(time) * (width * 0.28);
-                mouse.targetY = height / 2 + Math.sin(time * 2) * (height * 0.2);
-                
-                // 自动巡航时也会在核心周围悄悄释放少量纳米粒子，保持全屏生命力
-                if (Math.random() > 0.6) {
-                    triggerSupernova(mouse.x, mouse.y);
-                }
+                mouse.targetX = width / 2 + Math.cos(time) * (width * 0.25); mouse.targetY = height / 2 + Math.sin(time * 1.8) * (height * 0.18);
+                if (Math.random() > 0.6) triggerSupernova(mouse.x, mouse.y);
             }
-
             smoothMouse();
-
-            // 1. 更新并绘制基础极光长尾粒子
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-
-            // 2. 更新并绘制超新星触控高亮爆炸粒子
+            particles.forEach(p => { p.update(); p.draw(); });
             for (let i = sparks.length - 1; i >= 0; i--) {
-                sparks[i].update();
-                sparks[i].draw();
-                // 自动清理燃尽的粒子，保证全屏流畅度
-                if (sparks[i].alpha <= 0) {
-                    sparks.splice(i, 1);
-                }
+                sparks[i].update(); sparks[i].draw();
+                if (sparks[i].alpha <= 0) sparks.splice(i, 1);
             }
-
             requestAnimationFrame(animate);
         }
-
         animate();
     </script>
 </body>
