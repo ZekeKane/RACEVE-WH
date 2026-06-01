@@ -6,7 +6,7 @@
     <title>Zeke's Design Studio</title>
     <style>
         :root { --accent-color: #00F2FF; --text-color: #ffffff; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; /* 🚀 关键修复：允许页面在Y轴滚动，这是iPad能动的基础 */ overflow-x: hidden; overflow-y: auto; background-color: #050508; color: white; font-family: -apple-system, sans-serif; -webkit-overflow-scrolling: touch; /* iPad 丝滑滚动核心 */ }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; background-color: #050508; color: white; font-family: -apple-system, sans-serif; -webkit-overflow-scrolling: touch; }
         
         #bg-canvas, #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         #bg-canvas { z-index: 0; }
@@ -17,13 +17,12 @@
         nav button { background: none; border: none; color: #aaa; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
         nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
         
-        .page { display: none; padding-top: 150px; text-align: center; width: 100%; padding-bottom: 50px; }
+        .page { display: none; padding-top: 150px; text-align: center; width: 100%; }
         .page.active { display: block; animation: fadeIn 0.8s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; padding: 40px; max-width: 1000px; margin: 0 auto; box-sizing: border-box; }
-        /* 🚀 关键修复：在iPad上，只有卡片区域才吸收触控事件，空白区域允许滚动 */
-        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 30px; cursor: pointer; transition: 0.4s; touch-action: auto; /* 允许在卡片上进行默认触控操作，防卡死 */ }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; padding: 40px; max-width: 1000px; margin: 0 auto; }
+        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 30px; cursor: pointer; transition: 0.4s; touch-action: auto; }
         .card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); }
     </style>
 </head>
@@ -45,24 +44,21 @@
 
         <div id="works" class="page">
             <div class="grid">
-                <div class="card" onclick="alert('Project A: Aerodynamic Analysis')"><h3>Electric Motorcycle A</h3></div>
-                <div class="card" onclick="alert('Project B: Modular System')"><h3>Modular Storage B</h3></div>
-                <div class="card" onclick="alert('Project C: details')"><h3>Aerodynamics C</h3></div>
-                <div class="card" onclick="alert('Project D: details')"><h3>Structure D</h3></div>
-                <div class="card" onclick="alert('Project E: details')"><h3>Futurist E</h3></div>
+                <div class="card" onclick="alert('Electric Motorcycle Analysis')"><h3>Electric Motorcycle</h3></div>
+                <div class="card" onclick="alert('Modular Storage System')"><h3>Modular Storage</h3></div>
             </div>
         </div>
     </div>
 
     <script>
-        function switchPage(p) {
+        // 确保全局作用域内定义函数
+        window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
             document.getElementById(p).classList.add('active');
             document.getElementById('btn-'+p).classList.add('active');
-            // 切换页面时，把光标移出屏幕，防止新页面有残留聚集
-            mouse.x = -1000; mouse.y = -1000;
-        }
+            mouse.x = -2000; mouse.y = -2000;
+        };
 
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
@@ -72,12 +68,8 @@
         let w = bgCanvas.width = topCanvas.width = window.innerWidth;
         let h = bgCanvas.height = topCanvas.height = window.innerHeight;
 
-        window.addEventListener('resize', () => {
-            w = bgCanvas.width = topCanvas.width = window.innerWidth;
-            h = bgCanvas.height = topCanvas.height = window.innerHeight;
-        });
-
         const particles = [];
+        const sparks = [];
         const totalParticles = 6000;
         const colors = ['#FF007F', '#00F2FF', '#8A2BE2', '#FFD700', '#7FFF00'];
 
@@ -85,13 +77,15 @@
             constructor() { this.reset(); }
             reset() {
                 this.x = Math.random() * w; this.y = Math.random() * h;
-                this.size = Math.random() * 1.5 + 0.5;
+                this.width = Math.random() * 4 + 2; // 矩形长度
+                this.height = Math.random() * 1 + 0.5; // 矩形宽度
                 this.angle = Math.random() * Math.PI * 2;
                 this.velocity = Math.random() * 0.5 + 0.2;
                 this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.rotation = Math.random() * Math.PI * 2; // 自转
             }
             update(mouse) {
-                this.angle += 0.01;
+                this.rotation += 0.02;
                 this.x += Math.cos(this.angle) * this.velocity;
                 this.y += Math.sin(this.angle) * this.velocity;
 
@@ -99,62 +93,37 @@
                 let dy = mouse.y - this.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 
-                const gravityRadius = 180;
-                if (dist < gravityRadius) {
-                    let force = (gravityRadius - dist) / gravityRadius;
-                    // --- 🚀 完美参数：这里继续保留你最满意的 0.03 ---
+                if (dist < 180) {
+                    let force = (180 - dist) / 180;
                     this.x += dx * force * 0.03; 
                     this.y += dy * force * 0.03;
                 }
-
                 if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
             }
             draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation); // 旋转以形成光带效果
                 ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                ctx.restore();
             }
         }
 
+        // 初始化
         for (let i = 0; i < totalParticles; i++) particles.push(new Particle());
 
-        // 🚀 核心修复：初始光标位置要在屏幕外
-        let mouse = { x: -2000, y: -2000, active: false };
-
-        // 💻 处理电脑鼠标
-        window.addEventListener('mousemove', e => { 
-            mouse.x = e.clientX; 
-            mouse.y = e.clientY; 
-            mouse.active = true;
-        });
-        window.addEventListener('mouseleave', () => { mouse.active = false; mouse.x = -2000; mouse.y = -2000; });
-
-        // 📱 处理 iPad 触控（核心兼容性代码）
-        function updateTouch(e) {
-            // 🚀 关键修复：在空白区域滑动时（target是body或html），不拦截，允许浏览器滚动
-            if (e.target.tagName === 'BODY' || e.target.tagName === 'HTML' || e.target.classList.contains('content-layer')) {
-                // 如果你想在空白区域也吸附但能滚动，这里不return，但CSS必须加overflow-y: auto
-                // 这里的逻辑是：只在空白区域允许光标跟随，但css保证了能滚动。
-            }
-            
-            // iPad 上可能有多个手指，只取第一个
-            const touch = e.touches[0];
-            mouse.x = touch.clientX;
-            mouse.y = touch.clientY;
-            mouse.active = true;
-        }
-
-        // 监听 iPad 的触控开始和移动
-        window.addEventListener('touchstart', updateTouch, { passive: true }); // passive: true 允许滚动更丝滑
-        window.addEventListener('touchmove', updateTouch, { passive: true });
-
-        // 手指离开屏幕时，彻底清除吸引点，防止残留
-        window.addEventListener('touchend', () => { 
-            mouse.active = false; 
-            mouse.x = -2000; 
-            mouse.y = -2000; 
-        });
+        let mouse = { x: -2000, y: -2000 };
+        
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('touchstart', e => { 
+            const t = e.touches[0]; 
+            mouse.x = t.clientX; mouse.y = t.clientY; 
+        }, { passive: true });
+        window.addEventListener('touchmove', e => { 
+            const t = e.touches[0]; 
+            mouse.x = t.clientX; mouse.y = t.clientY; 
+        }, { passive: true });
 
         function animate() {
             bgCtx.fillStyle = 'rgba(5, 5, 8, 0.2)';
