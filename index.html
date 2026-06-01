@@ -15,7 +15,7 @@
             overflow-x: hidden; background-color: #f8fafc;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
-        /* 📡 完美的双 Canvas 夹层架构 */
+        /* 🪐 完美的双 Canvas 夹层架构 */
         #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         .glass-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; 
@@ -140,7 +140,7 @@
         }
         function closeModal() { document.getElementById('projectModal').classList.remove('active'); }
 
-        // 🎨 8.0 马卡龙量子缓流引擎初始化
+        // 🎨 8.1 马卡龙量子缓流引擎（已修复 ctx 作用域错误）
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         const topCanvas = document.getElementById('top-canvas');
@@ -158,19 +158,19 @@
         const topParticles = []; 
         const sparks = [];       
         
-        // 📈 基础数量直接暴增 1000%：总计 1800 个粒子在全屏起舞！
+        // 📈 1800 颗庞大马卡龙粒子矩阵
         const bgCount = 600;   
         const topCount = 1200; 
 
         let mouse = { x: width / 2, y: height / 2, active: false, targetX: width / 2, targetY: height / 2 };
 
-        // 🍨 绝美马卡龙高级色系（每组包含：浅色到深色的无缝渐变 RGBA）
+        // 🍨 绝美马卡龙高级色系（浅色与深色对）
         const macaronPalettes = [
-            { light: 'rgba(255, 182, 193, ', dark: 'rgba(255, 105, 180, ' },  // 樱花柔粉 Sakura
-            { light: 'rgba(168, 230, 207, ', dark: 'rgba(54, 174, 124, ' },  // 薄荷淡绿 Mint
-            { light: 'rgba(214, 201, 255, ', dark: 'rgba(108, 92, 231, ' },  // 薰衣草紫 Lavender
-            { light: 'rgba(178, 222, 255, ', dark: 'rgba(0, 119, 255, ' },   // 棉花粉蓝 Blue
-            { light: 'rgba(255, 211, 182, ', dark: 'rgba(255, 130, 67, ' }   // 蜜桃淡橙 Peach
+            { light: 'rgba(255, 182, 193, ', dark: 'rgba(255, 105, 180, ' },  // 樱花柔粉
+            { light: 'rgba(168, 230, 207, ', dark: 'rgba(54, 174, 124, ' },  // 薄荷淡绿
+            { light: 'rgba(214, 201, 255, ', dark: 'rgba(108, 92, 231, ' },  // 薰衣草紫
+            { light: 'rgba(178, 222, 255, ', dark: 'rgba(0, 119, 255, ' },   // 棉花粉蓝
+            { light: 'rgba(255, 211, 182, ', dark: 'rgba(255, 130, 67, ' }   // 蜜桃淡橙
         ];
 
         class FluidParticle {
@@ -182,17 +182,14 @@
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
                 this.radius = this.isTop ? (Math.random() * 2.0 + 1.0) : (Math.random() * 6.0 + 4.0);
-                
-                // 绑定马卡龙专属渐变色对
                 this.palette = macaronPalettes[Math.floor(Math.random() * macaronPalettes.length)];
                 
-                // 核心改动：物理流速直接砍掉 50%，进入极度静谧温柔的慢流速模式
+                // 🐌 慢速缓流物理常数（减速一半）
                 this.angle = Math.random() * Math.PI * 2;
                 this.speed = Math.random() * 0.4 + 0.15; 
                 this.vx = Math.cos(this.angle) * this.speed;
                 this.vy = Math.sin(this.angle) * this.speed;
                 
-                // 动态色彩深浅渐变因子 (0 到 1 循环)
                 this.colorFactor = Math.random();
                 this.colorDir = Math.random() > 0.5 ? 0.005 : -0.005;
                 
@@ -203,11 +200,9 @@
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // 驱动色彩渐变摆动
                 this.colorFactor += this.colorDir;
                 if (this.colorFactor > 1 || this.colorFactor < 0) this.colorDir *= -1;
 
-                // 🛰️ 核心力场改造：环形阻尼力场与核心消隐逻辑
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
@@ -215,13 +210,12 @@
                 this.currentAlpha = this.baseAlpha;
 
                 if (distance < 280) {
-                    // 1. 渐隐逻辑：越靠近鼠标单点（小于 70px），透明度迅速衰减至完全消隐
+                    // 🪐 环形渐隐力场：在 80px 的绝对核心圈内优雅淡出
                     if (distance < 80) {
                         this.currentAlpha = this.baseAlpha * (distance / 80) * 0.1;
                     } else {
-                        // 2. 环形聚集逻辑：粒子会温柔地围绕在光标周围，产生环形环绕力
+                        // 环绕聚集而不聚集在单个死点
                         let force = (280 - distance) / 280;
-                        // 施加切线绕行速度，防止粒子凝聚在一个点上
                         this.x += (dx / distance) * force * 0.4 + Math.sin(this.angle) * force * 0.3;
                         this.y += (dy / distance) * force * 0.4 + Math.cos(this.angle) * force * 0.3;
                     }
@@ -233,21 +227,18 @@
             draw(cCtx) {
                 cCtx.beginPath();
                 cCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                
-                // 计算当前时刻由浅入深的渐变色彩值
                 let r = this.colorFactor;
                 cCtx.fillStyle = r > 0.5 ? (this.palette.dark + this.currentAlpha + ')') : (this.palette.light + this.currentAlpha + ')');
                 cCtx.fill();
             }
         }
 
-        // 表面马卡龙纳米火花（慢速淡出版）
         class Spark {
             constructor(x, y, palette) {
                 this.x = x; this.y = y; this.radius = Math.random() * 1.8 + 0.8;
                 this.color = palette.light;
                 const angle = Math.random() * Math.PI * 2; 
-                const speed = Math.random() * 1.5 + 0.5; // 连烟花喷射都减慢，保持极度优雅
+                const speed = Math.random() * 1.5 + 0.5; 
                 this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
                 this.alpha = 0.9; this.decay = Math.random() * 0.02 + 0.01;
             }
@@ -255,13 +246,16 @@
                 this.x += this.vx; this.y += this.vy; this.vx *= 0.95; this.vy *= 0.95; 
                 let dx = mouse.x - this.x, dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
-                // 喷射粒子如果太靠近光标核心同样慢慢消隐
                 this.alpha -= (distance < 50) ? (this.decay * 2) : this.decay;
             }
-            draw(cCtx) { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = this.color + this.alpha + ')'; ctx.fill(); }
+            draw(cCtx) { 
+                cCtx.beginPath(); 
+                cCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); 
+                cCtx.fillStyle = this.color + this.alpha + ')'; 
+                cCtx.fill(); 
+            }
         }
 
-        // 铺设庞大的 1800 颗粒子宇宙
         for (let i = 0; i < bgCount; i++) bgParticles.push(new FluidParticle(false)); 
         for (let i = 0; i < topCount; i++) topParticles.push(new FluidParticle(true)); 
 
@@ -278,13 +272,12 @@
         window.addEventListener('touchend', () => mouse.active = false);
 
         function animate() {
-            // 背景刷新残留
             bgCtx.fillStyle = 'rgba(248, 250, 252, 0.1)';
             bgCtx.fillRect(0, 0, width, height);
             topCtx.clearRect(0, 0, width, height);
 
             if (!mouse.active) {
-                const time = Date.now() * 0.0003; // 自动巡航同步减速
+                const time = Date.now() * 0.0003; 
                 mouse.targetX = width / 2 + Math.cos(time) * (width * 0.22); mouse.targetY = height / 2 + Math.sin(time * 1.5) * (height * 0.15);
                 if (Math.random() > 0.6) triggerSupernova(mouse.x, mouse.y);
             }
@@ -294,6 +287,7 @@
             bgParticles.forEach(p => { p.update(); p.draw(bgCtx); });
             topParticles.forEach(p => { p.update(); p.draw(topCtx); });
 
+            // 🛠️ 修复核心：这里已正确使用 topCtx 作用域，完美绘制上层星芒
             for (let i = sparks.length - 1; i >= 0; i--) {
                 sparks[i].update(); sparks[i].draw(topCtx);
                 if (sparks[i].alpha <= 0) sparks.splice(i, 1);
