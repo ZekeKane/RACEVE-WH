@@ -4,16 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zeke's Design Studio</title>
-    <!-- 🌐 引入 3D 魔法引擎 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
-            --accent-color: #0055ff; /* 科技蓝色点缀 */
-            --text-color: #111115; /* 深色高级文字 */
-            --card-bg: rgba(255, 255, 255, 0.85); /* 让作品卡片带上高雅的毛玻璃感 */
+            --accent-color: #0055ff; 
+            --text-color: #111115; 
+            --card-bg: rgba(255, 255, 255, 0.85); 
         }
         body {
-            /* 🌄 引入高清蓝天白云地面风景图，并完美居中裁剪 */
+            /* 🌄 保持你最爱的蓝天白云风景线 */
             background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
             background-size: cover;
             color: var(--text-color);
@@ -46,19 +44,22 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 🌌 Hero Section with 3D Canvas */
+        /* 🌌 Gemini Stage Container */
         .hero {
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             height: 85vh; text-align: center; position: relative;
         }
-        #canvas-container {
-            width: 320px; height: 320px; position: relative; cursor: grab;
+        /* 📡 Gemini 动态粒子画布容器 */
+        #gemini-container {
+            width: 100%; height: 380px; position: relative; display: flex; justify-content: center; align-items: center;
         }
-        #canvas-container:active { cursor: grabbing; }
+        canvas {
+            position: absolute; cursor: pointer;
+        }
 
-        /* 给首页文字加一层淡淡的白色防护罩，防止背景太花看不清字 */
         .hero h1, .hero p {
             text-shadow: 0 2px 12px rgba(255, 255, 255, 0.9);
+            z-index: 10; margin: 5px 0;
         }
 
         /* 📦 Works Grid & Cards */
@@ -108,23 +109,19 @@
 </head>
 <body>
 
-    <!-- 📡 Navigation -->
     <nav>
         <button onclick="switchPage('home')" id="btn-home" class="active">INDEX</button>
         <button onclick="switchPage('works')" id="btn-works">PROJECTS</button>
     </nav>
 
-    <!-- 🧭 Page 1: Home -->
     <div id="home" class="page active">
         <div class="hero">
-            <!-- 🪐 3D Apple 玻璃立方体舞台 -->
-            <div id="canvas-container"></div>
-            <h1 style="font-size: 3rem; margin-top: 10px; letter-spacing: 2px; font-weight: 700;">ZEKE'S STUDIO</h1>
+            <div id="gemini-container"></div>
+            <h1 style="font-size: 3.2rem; letter-spacing: 2px; font-weight: 800;">ZEKE'S STUDIO</h1>
             <p style="color: #27272a; font-size: 1.1rem; max-width: 500px; line-height: 1.6; font-weight: 500;">Exploring the Dynamic Intersection of Product, Structure & Aerodynamics</p>
         </div>
     </div>
 
-    <!-- 🧭 Page 2: Projects -->
     <div id="works" class="page">
         <h2 style="text-align: center; font-size: 2rem; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(255,255,255,0.8);">DESIGN PORTFOLIO</h2>
         <p style="text-align: center; color: #27272a; margin-bottom: 40px; font-weight: 500; text-shadow: 0 2px 10px rgba(255,255,255,0.8);">Click any project card to discover advanced specifications.</p>
@@ -145,7 +142,6 @@
         </div>
     </div>
 
-    <!-- 🛠️ Dynamic Interactive Modal -->
     <div id="projectModal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeModal()">×</button>
@@ -159,9 +155,8 @@
         </div>
     </div>
 
-    <!-- 🕹️ Three.js Engine & Controls -->
     <script>
-        // 1. 页面切换
+        // 1. 页面切换逻辑
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
@@ -169,7 +164,7 @@
             document.getElementById('btn-' + pageId).classList.add('active');
         }
 
-        // 2. 弹窗数据
+        // 2. 作品详情弹窗数据库
         const projectData = {
             motorcycle: {
                 title: "1:5 Scale Electric Motorcycle",
@@ -195,112 +190,130 @@
             let tableHTML = "";
             data.specs.forEach(spec => { tableHTML += `<tr><td>${spec[0]}</td><td>${spec[1]}</td></tr>`; });
             document.getElementById('modalTableBody').innerHTML = tableHTML;
+            document.getElementById('projectModal').classList.add('add');
             document.getElementById('projectModal').classList.add('active');
         }
         function closeModal() { document.getElementById('projectModal').classList.remove('active'); }
 
-        // 🪐 3. Three.js 核心：打造实体高质感物理玻璃立方体
-        const container = document.getElementById('canvas-container');
-        const scene = new THREE.Scene();
+        // 🌌 3. Gemini 满血版双曲率流体粒子引擎 (HTML5 Canvas 高性能极光)
+        const container = document.getElementById('gemini-container');
+        const canvas = document.createElement('canvas');
+        container.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = 400;
+        let height = canvas.height = 400;
+
+        const particleCount = 450; // 极其密集的绚丽星群
+        const particles = [];
         
-        // 相机设置
-        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-        camera.position.z = 4;
+        // 捕捉交互坐标
+        let mouse = { x: width / 2, y: height / 2, active: false, targetX: width / 2, targetY: height / 2 };
 
-        // 渲染器
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(320, 320);
-        container.appendChild(renderer.domElement);
+        // 调配 Gemini 官方情绪色卡（深蓝、青绿、梦幻紫蓝）
+        const colors = [
+            'rgba(0, 85, 255, ',   // Deep Electric Blue
+            'rgba(0, 225, 255, ',  // Cyan Glow
+            'rgba(110, 0, 255, ',  // Gemini Purple
+            'rgba(0, 170, 255, '   // Sky Indigo
+        ];
 
-        // 💡 物理灯光系统（折射与高光的灵魂）
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-        scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-        directionalLight.position.set(5, 10, 7);
-        scene.add(directionalLight);
-
-        // 创建几何体
-        const geometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
-        
-        // 💎 Apple 物理玻璃材质魔法 (MeshPhysicalMaterial)
-        const glassMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0xffffff,          // 纯白透明底色
-            transparent: true,
-            opacity: 0.4,             // 极其真挚的透明度
-            roughness: 0.1,           // 表面极其光滑
-            metalness: 0.1,           // 淡淡的金属折射
-            transmission: 0.9,        // 光线穿透率
-            ior: 1.5,                 // 真实玻璃折射率
-            thickness: 0.5,           // 玻璃的厚度感
-            specularIntensity: 1,     // 高光强度
-            clearcoat: 1.0,           // 表面高级清漆反光层
-            clearcoatRoughness: 0.1
-        });
-        const cube = new THREE.Mesh(geometry, glassMaterial);
-        scene.add(cube);
-
-        // 为方块加上精致的亮银色精细线框（突显工业结构感）
-        const edges = new THREE.EdgesGeometry(geometry);
-        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ 
-            color: 0xffffff, 
-            transparent: true, 
-            opacity: 0.5 
-        }));
-        cube.add(line);
-
-        // 内部悬浮微缩的科技蓝核心，穿透玻璃极具空间扭曲感
-        const innerGeo = new THREE.BoxGeometry(0.35, 0.35, 0.35);
-        const innerMat = new THREE.MeshStandardMaterial({ 
-            color: 0x0055ff, 
-            roughness: 0.2,
-            metalness: 0.8 
-        });
-        const innerCube = new THREE.Mesh(innerGeo, innerMat);
-        cube.add(innerCube);
-
-        // 互动控制：监听鼠标和手指触摸拖动
-        let isDragging = false;
-        let previousMousePosition = { x: 0, y: 0 };
-
-        // 电脑鼠标事件
-        container.addEventListener('mousedown', () => isDragging = true);
-        window.addEventListener('mouseup', () => isDragging = false);
-        container.addEventListener('mousemove', (e) => {
-            const deltaMove = { x: e.offsetX - previousMousePosition.x, y: e.offsetY - previousMousePosition.y };
-            if (isDragging) {
-                cube.rotation.y += deltaMove.x * 0.01;
-                cube.rotation.x += deltaMove.y * 0.01;
+        class Particle {
+            constructor() {
+                this.reset();
             }
-            previousMousePosition = { x: e.offsetX, y: e.offsetY };
-        });
-
-        // iPad 手指触摸事件
-        container.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            const touch = e.touches[0];
-            previousMousePosition = { x: touch.clientX, y: touch.clientY };
-        });
-        window.addEventListener('touchend', () => isDragging = false);
-        container.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const touch = e.touches[0];
-            const deltaMove = { x: touch.clientX - previousMousePosition.x, y: touch.clientY - previousMousePosition.y };
-            cube.rotation.y += deltaMove.x * 0.01;
-            cube.rotation.x += deltaMove.y * 0.01;
-            previousMousePosition = { x: touch.clientX, y: touch.clientY };
-        });
-
-        // 自动基础旋转动画（无人触摸时自转）
-        function animate() {
-            requestAnimationFrame(animate);
-            if (!isDragging) {
-                cube.rotation.y += 0.003;
-                cube.rotation.x += 0.001;
-                innerCube.rotation.y -= 0.006;
+            reset() {
+                this.x = width / 2 + (Math.random() - 0.5) * 40;
+                this.y = height / 2 + (Math.random() - 0.5) * 40;
+                this.radius = Math.random() * 2.5 + 0.5;
+                this.baseColor = colors[Math.floor(Math.random() * colors.length)];
+                this.alpha = Math.random() * 0.6 + 0.2;
+                
+                // 轨道力学参数：让粒子形成双螺旋轨道盘旋
+                this.angle = Math.random() * Math.PI * 2;
+                this.velocity = Math.random() * 0.03 + 0.005;
+                this.distance = Math.random() * 110 + 20;
+                this.bumpiness = Math.random() * 15;
             }
-            renderer.render(scene, camera);
+            update() {
+                this.angle += this.velocity;
+                
+                // 计算基础旋转圆轨道
+                let targetX = mouse.x + Math.cos(this.angle) * (this.distance + Math.sin(this.angle * 2) * this.bumpiness);
+                let targetY = mouse.y + Math.sin(this.angle) * (this.distance + Math.cos(this.angle * 2) * this.bumpiness);
+                
+                // 营造向中心或手指吸附的丝滑阻尼感
+                this.x += (targetX - this.x) * 0.06;
+                this.y += (targetY - this.y) * 0.06;
+
+                // 边缘淡出呼吸效应
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.baseColor + this.alpha + ')';
+                // 开启硬件融合高亮，渲染出真正有穿透感的发光极光叠加效果
+                ctx.globalCompositeOperation = 'multiply'; 
+                ctx.fill();
+            }
         }
-        animate();
+
+        // 初始化星群
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        // 鼠标和手指缓动跟踪器
+        function updateMousePosition() {
+            mouse.x += (mouse.targetX - mouse.x) * 0.1;
+            mouse.y += (mouse.targetY - mouse.y) * 0.1;
+        }
+
+        // 监听电脑鼠标晃动
+        container.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.targetX = e.clientX - rect.left;
+            mouse.targetY = e.clientY - rect.top;
+            mouse.active = true;
+        });
+
+        // 监听 iPad 手指触摸滑动
+        container.addEventListener('touchmove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            mouse.targetX = touch.clientX - rect.left;
+            mouse.targetY = touch.clientY - rect.top;
+            mouse.active = true;
+        });
+
+        container.addEventListener('mouseleave', () => mouse.active = false);
+        container.addEventListener('touchend', () => mouse.active = false);
+
+        // 核心动力循环渲染
+        function renderLoop() {
+            ctx.clearRect(0, 0, width, height);
+            
+            if (!mouse.active) {
+                // 当没人碰它时，让引力核心自己在中央像呼吸一样做唯美的八字慢速环绕
+                const time = Date.now() * 0.0015;
+                mouse.targetX = width / 2 + Math.cos(time) * 35;
+                mouse.targetY = height / 2 + Math.sin(time * 2) * 15;
+            }
+
+            updateMousePosition();
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(renderLoop);
+        }
+
+        renderLoop();
     </script>
 </body>
 </html>
