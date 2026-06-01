@@ -8,34 +8,34 @@
         :root {
             --accent-color: #0055ff; 
             --text-color: #111115; 
-            /* 卡片采用呼吸感更强的半透明毛玻璃底色 */
-            --card-bg: rgba(255, 255, 255, 0.65); 
+            /* 让卡片的毛玻璃更加通透，隐约透出底下的绚烂极光 */
+            --card-bg: rgba(255, 255, 255, 0.55); 
         }
         
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
             overflow-x: hidden;
-            background-color: #f3f4f6; /* 极其利落的极客白基底 */
+            background-color: #f6f8fa; /* 极干净的极客白基底 */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        /* 🪐 1. 全屏幕毛玻璃纹理防护罩 */
+        /* 🪐 1. 全屏幕高透毛玻璃纹理防护罩 */
         .glass-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; pointer-events: none; /* 让鼠标穿透它，好让用户能和底层粒子互动 */
-            background: rgba(255, 255, 255, 0.4); 
-            backdrop-filter: blur(40px) saturate(160%); /* 超高密度的毛玻璃花纹 */
-            -webkit-backdrop-filter: blur(40px) saturate(160%);
+            z-index: 1; pointer-events: none; /* 让鼠标和手指完美穿透 */
+            background: rgba(255, 255, 255, 0.25); /* 降低白度，让色彩更浓郁 */
+            backdrop-filter: blur(35px) saturate(180%); /* 增强饱和度折射 */
+            -webkit-backdrop-filter: blur(35px) saturate(180%);
         }
 
-        /* 📡 2. 全屏幕粒子画布 */
+        /* 📡 2. 全屏幕高性能画布 */
         #gemini-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; /* 躺在最底层肆意飞舞 */
+            z-index: 0;
         }
 
-        /* 📡 Navigation Bar (带有毛玻璃质感) */
+        /* 📡 Navigation Bar (毛玻璃质感) */
         nav {
             position: fixed; top: 0; width: 100%;
             display: flex; justify-content: center;
@@ -57,7 +57,7 @@
         .page {
             display: none; min-height: 100vh; padding-top: 120px;
             box-sizing: border-box; animation: fadeIn 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            position: relative; z-index: 10; /* 确保文字在毛玻璃防护罩上方 */
+            position: relative; z-index: 10;
         }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -69,11 +69,11 @@
         }
         .hero h1 {
             font-size: 3.5rem; letter-spacing: 3px; font-weight: 800; margin: 0;
-            background: linear-gradient(135deg, #111115 0%, #4b5563 100%);
+            background: linear-gradient(135deg, #111115 0%, #3f3f46 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .hero p {
-            color: #3f3f46; font-size: 1.15rem; max-width: 600px; line-height: 1.7; 
+            color: #27272a; font-size: 1.15rem; max-width: 600px; line-height: 1.7; 
             font-weight: 500; margin-top: 15px;
         }
 
@@ -83,15 +83,15 @@
             gap: 30px; padding: 40px; max-width: 1200px; margin: 0 auto;
         }
         .card {
-            background: var(--card-bg); border: 1px solid rgba(229, 231, 235, 0.5); border-radius: 24px;
+            background: var(--card-bg); border: 1px solid rgba(229, 231, 235, 0.4); border-radius: 24px;
             padding: 35px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); cursor: pointer;
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
         }
         .card:hover {
-            transform: translateY(-8px); border-color: rgba(0, 85, 255, 0.4);
+            transform: translateY(-8px); border-color: rgba(0, 85, 255, 0.5);
             background: rgba(255, 255, 255, 0.85);
-            box-shadow: 0 20px 40px rgba(0, 85, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 85, 255, 0.1);
         }
         .card h3 { margin-top: 0; color: var(--text-color); font-size: 21px; font-weight: 700; }
         .card p { color: #4b5563; font-size: 14.5px; line-height: 1.6; }
@@ -99,7 +99,7 @@
         /* 🛠️ Modern Project Modal */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(30px);
+            background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             z-index: 1000; justify-content: center; align-items: center;
             opacity: 0; transition: opacity 0.4s ease;
@@ -176,7 +176,6 @@
     </div>
 
     <script>
-        // 页面切换逻辑
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
@@ -184,7 +183,6 @@
             document.getElementById('btn-' + pageId).classList.add('active');
         }
 
-        // 弹窗数据
         const projectData = {
             motorcycle: {
                 title: "1:5 Scale Electric Motorcycle",
@@ -214,29 +212,30 @@
         }
         function closeModal() { document.getElementById('projectModal').classList.remove('active'); }
 
-        // 🌌 Gemini 全屏大矩阵流体渲染核心
+        // 🎨 绚烂全屏粒子矩阵开始
         const canvas = document.getElementById('gemini-canvas');
         const ctx = canvas.getContext('2d');
 
         let width = canvas.width = window.innerWidth;
         let height = canvas.height = window.innerHeight;
 
-        // 完美适配屏幕缩放
         window.addEventListener('resize', () => {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
         });
 
-        const particleCount = 280; // 全屏平铺的最佳空气感密度
+        const particleCount = 320; // 稍微增加密度，让色彩交织更浓郁
         const particles = [];
         let mouse = { x: width / 2, y: height / 2, active: false, targetX: width / 2, targetY: height / 2 };
 
-        // 调制高端全景浅色调粒子（深蓝、柔和翠绿、轻柔靛紫、天蓝）
+        // 💥 六高饱和度炫烂色卡（霓虹蓝、极光绿、魅惑紫、芭比粉、耀眼橙、赛博青）
         const colors = [
-            'rgba(0, 102, 255, ',  
-            'rgba(0, 204, 153, ',  
-            'rgba(126, 34, 206, ', 
-            'rgba(14, 165, 233, '  
+            'rgba(0, 102, 255, ',   // Electric Blue
+            'rgba(0, 230, 118, ',   // Neon Green
+            'rgba(170, 0, 255, ',   // Vivid Purple
+            'rgba(255, 0, 127, ',   // Hot Pink
+            'rgba(255, 102, 0, ',   // Aurora Orange
+            'rgba(0, 229, 255, '    // Cyber Cyan
         ];
 
         class Particle {
@@ -244,37 +243,33 @@
                 this.init();
             }
             init() {
-                // 粒子随机散落在屏幕各处
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
-                this.radius = Math.random() * 4 + 1.5; // 轻微放大，加强毛玻璃透光折射感
+                this.radius = Math.random() * 6 + 2; // 粒子体积稍微调大，让色彩重叠时发光面积更震撼
                 this.baseColor = colors[Math.floor(Math.random() * colors.length)];
-                this.alpha = Math.random() * 0.35 + 0.15; // 保持柔和透明度，防止白色背景太刺眼
+                this.alpha = Math.random() * 0.55 + 0.25; // 提高整体不透明度，让色彩更丰满
                 
-                // 漂移物理参数
                 this.angle = Math.random() * Math.PI * 2;
-                this.speed = Math.random() * 0.6 + 0.2;
+                this.speed = Math.random() * 0.8 + 0.3; // 速度微微加快，增强流体跃动感
                 this.vx = Math.cos(this.angle) * this.speed;
                 this.vy = Math.sin(this.angle) * this.speed;
             }
             update() {
-                // 1. 自然惯性漂移
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // 2. 捕捉鼠标/触控引力场
+                // 捕捉强大的引力漩涡
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance < 300) {
-                    // 当指针靠近时，粒子会被引力涡流悄悄牵引
-                    let force = (300 - distance) / 300;
-                    this.x += (dx / distance) * force * 1.8;
-                    this.y += (dy / distance) * force * 1.8;
+                if (distance < 350) {
+                    let force = (350 - distance) / 350;
+                    // 给引力加一点旋转切线方向的力，形成风暴漩涡效果
+                    this.x += (dx / distance) * force * 2.2 + Math.sin(this.angle) * force * 0.5;
+                    this.y += (dy / distance) * force * 2.2 + Math.cos(this.angle) * force * 0.5;
                 }
 
-                // 3. 边界反弹
                 if (this.x < 0 || this.x > width) this.vx *= -1;
                 if (this.y < 0 || this.y > height) this.vy *= -1;
             }
@@ -286,25 +281,21 @@
             }
         }
 
-        // 初始化星群
         for (let i = 0; i < particleCount; i++) {
             particles.push(new Particle());
         }
 
-        // 丝滑阻尼坐标跟踪
         function smoothMouse() {
             mouse.x += (mouse.targetX - mouse.x) * 0.08;
             mouse.y += (mouse.targetY - mouse.y) * 0.08;
         }
 
-        // 侦测 Win11 鼠标晃动
         window.addEventListener('mousemove', (e) => {
             mouse.targetX = e.clientX;
             mouse.targetY = e.clientY;
             mouse.active = true;
         });
 
-        // 侦测 iPad 手指滑动
         window.addEventListener('touchmove', (e) => {
             const touch = e.touches[0];
             mouse.targetX = touch.clientX;
@@ -315,17 +306,20 @@
         window.addEventListener('mouseleave', () => mouse.active = false);
         window.addEventListener('touchend', () => mouse.active = false);
 
-        // 主演播渲染循环
         function animate() {
-            // 轻微的色彩残留，创造柔和的尾迹美感
-            ctx.fillStyle = 'rgba(243, 244, 246, 0.08)';
+            // 背景刷新（带有一点点亮色残留，产生极光拖尾效果）
+            ctx.fillStyle = 'rgba(246, 248, 250, 0.12)';
             ctx.fillRect(0, 0, width, height);
 
+            // 🌟 核心魔法：开启“色彩提亮叠加”模式
+            // 当不同颜色的粒子相撞时，它们会融合成更亮、更华丽的全新极光色！
+            ctx.globalCompositeOperation = 'source-over'; 
+
             if (!mouse.active) {
-                // 没人碰时，引力波在全屏中央做轻柔的太极慢速环绕
-                const time = Date.now() * 0.0008;
-                mouse.targetX = width / 2 + Math.cos(time) * (width * 0.2);
-                mouse.targetY = height / 2 + Math.sin(time * 1.5) * (height * 0.15);
+                // 无人触碰时，引力中心以更大的蝴蝶形轨迹在全屏起舞
+                const time = Date.now() * 0.001;
+                mouse.targetX = width / 2 + Math.cos(time * 0.8) * (width * 0.25);
+                mouse.targetY = height / 2 + Math.sin(time * 1.2) * (height * 0.2);
             }
 
             smoothMouse();
