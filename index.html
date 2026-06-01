@@ -4,34 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zeke's Design Studio</title>
+    <!-- 🌐 引入 3D 魔法引擎 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
-            --bg-color: #f8f9fa; /* 纯净白色背景 */
-            --accent-color: #0077ff; /* 科技蓝色点缀 */
+            --accent-color: #0055ff; /* 科技蓝色点缀 */
             --text-color: #111115; /* 深色高级文字 */
-            --card-bg: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.85); /* 让作品卡片带上高雅的毛玻璃感 */
         }
         body {
-            background-color: var(--bg-color);
+            /* 🌄 引入高清蓝天白云地面风景图，并完美居中裁剪 */
+            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0; padding: 0; overflow-x: hidden;
-            transition: background 0.5s ease;
         }
 
         /* 📡 Navigation Bar */
         nav {
             position: fixed; top: 0; width: 100%;
             display: flex; justify-content: center;
-            background: rgba(248, 249, 250, 0.8);
-            backdrop-filter: blur(10px); z-index: 100;
-            padding: 20px 0; border-bottom: 1px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px); z-index: 100;
+            padding: 20px 0; border-bottom: 1px solid rgba(229, 231, 235, 0.5);
         }
         nav button {
-            background: none; border: none; color: #71717a;
+            background: none; border: none; color: #4b5563;
             font-size: 15px; margin: 0 25px; cursor: pointer; transition: 0.3s;
-            letter-spacing: 1px; font-weight: 500;
+            letter-spacing: 1px; font-weight: 600;
         }
         nav button.active, nav button:hover {
             color: var(--accent-color); text-shadow: 0 0 8px rgba(0,119,255,0.2);
@@ -51,9 +52,14 @@
             height: 85vh; text-align: center; position: relative;
         }
         #canvas-container {
-            width: 300px; height: 300px; position: relative; cursor: grab;
+            width: 320px; height: 320px; position: relative; cursor: grab;
         }
         #canvas-container:active { cursor: grabbing; }
+
+        /* 给首页文字加一层淡淡的白色防护罩，防止背景太花看不清字 */
+        .hero h1, .hero p {
+            text-shadow: 0 2px 12px rgba(255, 255, 255, 0.9);
+        }
 
         /* 📦 Works Grid & Cards */
         .grid {
@@ -61,21 +67,22 @@
             gap: 30px; padding: 40px; max-width: 1200px; margin: 0 auto;
         }
         .card {
-            background: var(--card-bg); border: 1px solid #e5e7eb; border-radius: 20px;
+            background: var(--card-bg); border: 1px solid rgba(229, 231, 235, 0.6); border-radius: 20px;
             padding: 30px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); cursor: pointer;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
         }
         .card:hover {
             transform: translateY(-8px); border-color: var(--accent-color);
-            box-shadow: 0 20px 40px rgba(0, 119, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 85, 255, 0.12);
         }
         .card h3 { margin-top: 0; color: var(--text-color); font-size: 20px; }
-        .card p { color: #71717a; font-size: 14px; line-height: 1.6; }
+        .card p { color: #4b5563; font-size: 14px; line-height: 1.6; }
 
         /* 🛠️ Modern Project Modal */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(20px);
             z-index: 1000; justify-content: center; align-items: center;
             opacity: 0; transition: opacity 0.4s ease;
         }
@@ -84,7 +91,7 @@
             background: #ffffff; border: 1px solid #e5e7eb; border-radius: 24px;
             padding: 40px; max-width: 600px; width: 90%; position: relative;
             transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.08); color: var(--text-color);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.06); color: var(--text-color);
         }
         .modal.active .modal-content { transform: scale(1); }
         .close-btn {
@@ -101,22 +108,26 @@
 </head>
 <body>
 
+    <!-- 📡 Navigation -->
     <nav>
         <button onclick="switchPage('home')" id="btn-home" class="active">INDEX</button>
         <button onclick="switchPage('works')" id="btn-works">PROJECTS</button>
     </nav>
 
+    <!-- 🧭 Page 1: Home -->
     <div id="home" class="page active">
         <div class="hero">
+            <!-- 🪐 3D Apple 玻璃立方体舞台 -->
             <div id="canvas-container"></div>
             <h1 style="font-size: 3rem; margin-top: 10px; letter-spacing: 2px; font-weight: 700;">ZEKE'S STUDIO</h1>
-            <p style="color: #71717a; font-size: 1.1rem; max-width: 500px; line-height: 1.6;">Exploring the Dynamic Intersection of Product, Structure & Aerodynamics</p>
+            <p style="color: #27272a; font-size: 1.1rem; max-width: 500px; line-height: 1.6; font-weight: 500;">Exploring the Dynamic Intersection of Product, Structure & Aerodynamics</p>
         </div>
     </div>
 
+    <!-- 🧭 Page 2: Projects -->
     <div id="works" class="page">
-        <h2 style="text-align: center; font-size: 2rem; letter-spacing: 1px;">DESIGN PORTFOLIO</h2>
-        <p style="text-align: center; color: #71717a; margin-bottom: 40px;">Click any project card to discover advanced specifications.</p>
+        <h2 style="text-align: center; font-size: 2rem; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(255,255,255,0.8);">DESIGN PORTFOLIO</h2>
+        <p style="text-align: center; color: #27272a; margin-bottom: 40px; font-weight: 500; text-shadow: 0 2px 10px rgba(255,255,255,0.8);">Click any project card to discover advanced specifications.</p>
         
         <div class="grid">
             <div class="card" onclick="openModal('motorcycle')">
@@ -134,6 +145,7 @@
         </div>
     </div>
 
+    <!-- 🛠️ Dynamic Interactive Modal -->
     <div id="projectModal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeModal()">×</button>
@@ -147,6 +159,7 @@
         </div>
     </div>
 
+    <!-- 🕹️ Three.js Engine & Controls -->
     <script>
         // 1. 页面切换
         function switchPage(pageId) {
@@ -186,7 +199,7 @@
         }
         function closeModal() { document.getElementById('projectModal').classList.remove('active'); }
 
-        // 🪐 3. Three.js 核心：打造手指可触控旋转的透明3D立方体
+        // 🪐 3. Three.js 核心：打造实体高质感物理玻璃立方体
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         
@@ -196,30 +209,52 @@
 
         // 渲染器
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(300, 300);
+        renderer.setSize(320, 320);
         container.appendChild(renderer.domElement);
 
-        // 创建透明线框立方体（极其硬核的工业几何感）
-        const geometry = new THREE.BoxGeometry(1.3, 1.3, 1.3);
+        // 💡 物理灯光系统（折射与高光的灵魂）
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(5, 10, 7);
+        scene.add(directionalLight);
+
+        // 创建几何体
+        const geometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
         
-        // 外层半透明材质
-        const material = new THREE.MeshBasicMaterial({
-            color: 0x0077ff,
+        // 💎 Apple 物理玻璃材质魔法 (MeshPhysicalMaterial)
+        const glassMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,          // 纯白透明底色
             transparent: true,
-            opacity: 0.08,
-            side: THREE.DoubleSide
+            opacity: 0.4,             // 极其真挚的透明度
+            roughness: 0.1,           // 表面极其光滑
+            metalness: 0.1,           // 淡淡的金属折射
+            transmission: 0.9,        // 光线穿透率
+            ior: 1.5,                 // 真实玻璃折射率
+            thickness: 0.5,           // 玻璃的厚度感
+            specularIntensity: 1,     // 高光强度
+            clearcoat: 1.0,           // 表面高级清漆反光层
+            clearcoatRoughness: 0.1
         });
-        const cube = new THREE.Mesh(geometry, material);
+        const cube = new THREE.Mesh(geometry, glassMaterial);
         scene.add(cube);
 
-        // 给立方体加上亮眼的外线框
+        // 为方块加上精致的亮银色精细线框（突显工业结构感）
         const edges = new THREE.EdgesGeometry(geometry);
-        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x0077ff, linewidth: 2 }));
+        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ 
+            color: 0xffffff, 
+            transparent: true, 
+            opacity: 0.5 
+        }));
         cube.add(line);
 
-        // 添加一个内层小核心方块，增加层次感
-        const innerGeo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
-        const innerMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.3 });
+        // 内部悬浮微缩的科技蓝核心，穿透玻璃极具空间扭曲感
+        const innerGeo = new THREE.BoxGeometry(0.35, 0.35, 0.35);
+        const innerMat = new THREE.MeshStandardMaterial({ 
+            color: 0x0055ff, 
+            roughness: 0.2,
+            metalness: 0.8 
+        });
         const innerCube = new THREE.Mesh(innerGeo, innerMat);
         cube.add(innerCube);
 
@@ -255,7 +290,7 @@
             previousMousePosition = { x: touch.clientX, y: touch.clientY };
         });
 
-        // 自动基础旋转动画（没人碰时自己轻轻晃动）
+        // 自动基础旋转动画（无人触摸时自转）
         function animate() {
             requestAnimationFrame(animate);
             if (!isDragging) {
