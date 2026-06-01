@@ -15,17 +15,17 @@
             overflow-x: hidden; background-color: #f8fafc;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
-        /* 🪐 1. 底层画布：负责梦幻极光背景 */
+        /* 🪐 1. 底层画布：梦幻星云底色 */
         #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         
-        /* 🪐 2. 中间毛玻璃防护罩 */
+        /* 🪐 2. 中间高级毛玻璃 */
         .glass-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; 
-            pointer-events: none; background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%);
+            pointer-events: none; background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(35px) saturate(150%); -webkit-backdrop-filter: blur(35px) saturate(150%);
         }
         
-        /* 🪐 3. 顶层画布：负责在文字和卡片表面闪烁的高清灿烂粒子（穿透模式） */
+        /* 🪐 3. 顶层画布：表面高清漫游的灿烂纳米星群（穿透模式） */
         #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none; }
 
         /* 📡 网页内容层 */
@@ -144,7 +144,7 @@
         }
         function closeModal() { document.getElementById('projectModal').classList.remove('active'); }
 
-        // 🎨 7.0 双引擎初始化
+        // 🎨 7.5 单色高性能粒子矩阵
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         const topCanvas = document.getElementById('top-canvas');
@@ -158,25 +158,26 @@
             height = bgCanvas.height = topCanvas.height = window.innerHeight;
         });
 
-        const bgParticles = [];  // 底层梦幻粒子群
-        const topParticles = []; // 表层灿烂粒子群
-        const sparks = [];       // 表面超新星爆裂粒子群
+        const bgParticles = [];  
+        const topParticles = []; 
+        const sparks = [];       
         
-        const bgCount = 80;   // 减少底层数量，形成大块色彩斑斓效果
-        const topCount = 100; // 表面灿烂高精粒子的数量
+        // 💥 暴增 500% 后的星云粒子总数
+        const bgCount = 420;   // 底层密集渐变色块
+        const topCount = 550;  // 表层高清闪烁的高精细粒子
 
         let mouse = { x: width / 2, y: height / 2, active: false, targetX: width / 2, targetY: height / 2 };
 
-        const colors = [
-            'rgba(255, 0, 128, ',   // Neon Pink
-            'rgba(0, 245, 255, ',   // Cyber Cyan
-            'rgba(142, 68, 173, ',  // Royal Purple
-            'rgba(255, 102, 0, ',   // Aurora Orange
-            'rgba(0, 230, 118, ',   // Lime Spark
-            'rgba(0, 85, 255, '     // Electric Blue
+        // 🐳 统一重构：从浅到深的单色经典蓝（Electric Blue）奢华渐变色卡
+        const blueGradients = [
+            'rgba(219, 234, 254, ',  // 极浅冰蓝 (Ice Blue)
+            'rgba(147, 197, 253, ',  // 浅天蓝 (Light Blue)
+            'rgba(59, 130, 246, ',   // 秩序纯蓝 (Standard Blue)
+            'rgba(29, 78, 216, ',    // 深皇家蓝 (Royal Blue)
+            'rgba(30, 58, 138, ',    // 深邃夜空蓝 (Deep Navy)
+            'rgba(0, 85, 255, '      // 标志性高亮蓝 (Signature Accent)
         ];
 
-        // 🌊 基础流体粒子类
         class FluidParticle {
             constructor(isTop) {
                 this.isTop = isTop;
@@ -185,18 +186,19 @@
             init() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
-                // 核心控制：表面的粒子要小而闪烁（灿烂），底层的粒子要大而蓬松（极光底色）
-                this.radius = this.isTop ? (Math.random() * 2.5 + 1.5) : (Math.random() * 8 + 6);
-                this.baseColor = colors[Math.floor(Math.random() * colors.length)];
-                this.alpha = this.isTop ? (Math.random() * 0.5 + 0.4) : (Math.random() * 0.3 + 0.2);
+                // 优化颗粒大小分布，让大数量下层次更丰富
+                this.radius = this.isTop ? (Math.random() * 2.0 + 1.0) : (Math.random() * 7 + 4);
+                this.baseColor = blueGradients[Math.floor(Math.random() * blueGradients.length)];
+                this.alpha = this.isTop ? (Math.random() * 0.45 + 0.35) : (Math.random() * 0.22 + 0.12);
                 
                 this.angle = Math.random() * Math.PI * 2;
-                this.speed = Math.random() * 1.0 + 0.3;
+                // 🛠️ 速度减缓一半：完美削减至原来的 50%，制造绸缎流动效果
+                this.speed = Math.random() * 0.45 + 0.15;
                 this.vx = Math.cos(this.angle) * this.speed;
                 this.vy = Math.sin(this.angle) * this.speed;
                 
                 this.history = [];
-                this.maxHistory = this.isTop ? 4 : 12; // 表面粒子带一点短流光，底层带超长渲染极光带
+                this.maxHistory = this.isTop ? 3 : 10; 
             }
             update() {
                 this.history.push({ x: this.x, y: this.y });
@@ -209,10 +211,10 @@
                 let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance < 360) {
-                    let force = (360 - distance) / 360;
-                    // 表层粒子受到更敏锐的引力波，动作更灿烂灵动
-                    let multiplier = this.isTop ? 3.2 : 2.0;
+                if (distance < 380) {
+                    let force = (380 - distance) / 380;
+                    // 🛠️ 引力感应速度同样优雅减缓，形成丝滑吸附感
+                    let multiplier = this.isTop ? 1.4 : 0.9;
                     this.x += (dx / distance) * force * multiplier;
                     this.y += (dy / distance) * force * multiplier;
                 }
@@ -221,44 +223,41 @@
                 if (this.y < 0 || this.y > height) this.vy *= -1;
             }
             draw(cCtx) {
-                // 绘制极光流光
                 if (this.history.length > 1) {
                     cCtx.beginPath();
                     cCtx.moveTo(this.history[0].x, this.history[0].y);
                     for (let i = 1; i < this.history.length; i++) cCtx.lineTo(this.history[i].x, this.history[i].y);
-                    cCtx.strokeStyle = this.baseColor + (this.alpha * 0.25) + ')';
-                    cCtx.lineWidth = this.radius * 1.3; cCtx.lineCap = 'round';
+                    cCtx.strokeStyle = this.baseColor + (this.alpha * 0.2) + ')';
+                    cCtx.lineWidth = this.radius * 1.2; cCtx.lineCap = 'round';
                     cCtx.stroke();
                 }
-                // 绘制核核心
-                cCtx.beginPath();
-                cCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                cCtx.fillStyle = this.baseColor + this.alpha + ')';
-                cCtx.fill();
+                cCtx.beginPath(); cCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                cCtx.fillStyle = this.baseColor + this.alpha + ')'; cCtx.fill();
             }
         }
 
-        // ✨ 表面爆发的纳米星芒（直接绽放在文字正上方）
+        // 单色超新星爆发粒子（完美融入蓝色艺术群）
         class Spark {
             constructor(x, y, color) {
-                this.x = x; this.y = y; this.radius = Math.random() * 2 + 1; this.color = color;
-                const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 4.5 + 2;
+                this.x = x; this.y = y; this.radius = Math.random() * 1.8 + 0.8; this.color = color;
+                const angle = Math.random() * Math.PI * 2; 
+                // 烟花爆发初速度同样进行柔和克制，使其更温润、不刺眼
+                const speed = Math.random() * 2.2 + 1.0;
                 this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
-                this.alpha = 1.0; this.decay = Math.random() * 0.04 + 0.025;
+                this.alpha = 1.0; this.decay = Math.random() * 0.03 + 0.018;
             }
-            update() { this.x += this.vx; this.y += this.vy; this.vx *= 0.93; this.vy *= 0.93; this.alpha -= this.decay; }
+            update() { this.x += this.vx; this.y += this.vy; this.vx *= 0.94; this.vy *= 0.94; this.alpha -= this.decay; }
             draw(cCtx) { cCtx.beginPath(); cCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); cCtx.fillStyle = this.color + this.alpha + ')'; cCtx.fill(); }
         }
 
-        // 分配两大阵营的粒子
-        for (let i = 0; i < bgCount; i++) bgParticles.push(new FluidParticle(false)); // 底层
-        for (let i = 0; i < topCount; i++) topParticles.push(new FluidParticle(true)); // 表层
+        for (let i = 0; i < bgCount; i++) bgParticles.push(new FluidParticle(false)); 
+        for (let i = 0; i < topCount; i++) topParticles.push(new FluidParticle(true)); 
 
         function smoothMouse() { mouse.x += (mouse.targetX - mouse.x) * 0.08; mouse.y += (mouse.targetY - mouse.y) * 0.08; }
         
         function triggerSupernova(ex, ey) {
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            // 每次触碰在表面炸出璀璨纳米微粒
+            // 爆发现场统一抽取高级蓝色卡，完美呼应渐变秩序
+            const randomColor = blueGradients[Math.floor(Math.random() * blueGradients.length)];
             for (let i = 0; i < 3; i++) sparks.push(new Spark(ex, ey, randomColor));
         }
 
@@ -267,30 +266,24 @@
         window.addEventListener('mouseleave', () => mouse.active = false);
         window.addEventListener('touchend', () => mouse.active = false);
 
-        // 双核心联合渲染大循环
         function animate() {
-            // 📡 1. 底层极光画布刷新（带有一点拖尾）
-            bgCtx.fillStyle = 'rgba(248, 250, 252, 0.12)';
+            // 极为温和的背景残留，使大数量深浅蓝粒子的轨迹像烟雾般化开
+            bgCtx.fillStyle = 'rgba(248, 250, 252, 0.15)';
             bgCtx.fillRect(0, 0, width, height);
 
-            // 📡 2. 顶层高清画布刷新（使用完全透明的清除模式，保证粒子极其锐利、不模糊）
             topCtx.clearRect(0, 0, width, height);
 
             if (!mouse.active) {
-                const time = Date.now() * 0.0006;
+                const time = Date.now() * 0.0003; // 巡航速度减缓，极其深邃
                 mouse.targetX = width / 2 + Math.cos(time) * (width * 0.25); mouse.targetY = height / 2 + Math.sin(time * 1.8) * (height * 0.18);
-                if (Math.random() > 0.5) triggerSupernova(mouse.x, mouse.y);
+                if (Math.random() > 0.4) triggerSupernova(mouse.x, mouse.y);
             }
 
             smoothMouse();
 
-            // 渲染底层朦胧极光
             bgParticles.forEach(p => { p.update(); p.draw(bgCtx); });
-
-            // 渲染表层高清灿烂粒子
             topParticles.forEach(p => { p.update(); p.draw(topCtx); });
 
-            // 渲染在文字最上方爆发的璀璨超新星星芒
             for (let i = sparks.length - 1; i >= 0; i--) {
                 sparks[i].update(); sparks[i].draw(topCtx);
                 if (sparks[i].alpha <= 0) sparks.splice(i, 1);
