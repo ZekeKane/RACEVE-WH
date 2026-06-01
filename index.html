@@ -395,4 +395,33 @@
                 mouse.targetY = height / 2 + Math.sin(time * 2) * (height * 0.2);
                 
                 // 自动巡航时也会在核心周围悄悄释放少量纳米粒子，保持全屏生命力
-                if (Math.random() >
+                if (Math.random() > 0.6) {
+                    triggerSupernova(mouse.x, mouse.y);
+                }
+            }
+
+            smoothMouse();
+
+            // 1. 更新并绘制基础极光长尾粒子
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // 2. 更新并绘制超新星触控高亮爆炸粒子
+            for (let i = sparks.length - 1; i >= 0; i--) {
+                sparks[i].update();
+                sparks[i].draw();
+                // 自动清理燃尽的粒子，保证全屏流畅度
+                if (sparks[i].alpha <= 0) {
+                    sparks.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
