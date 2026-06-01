@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeke's Design Studio</title>
+    <style>
+        :root {
+            --bg-color: #08080c;
+            --accent-color: #00ffcc;
+            --text-color: #ffffff;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+
+        /* 📡 顶部导航栏 */
+        nav {
+            position: fixed; top: 0; width: 100%;
+            display: flex; justify-content: center;
+            background: rgba(8, 8, 12, 0.8);
+            backdrop-filter: blur(10px); z-index: 100;
+            padding: 15px 0; border-bottom: 1px solid #1a1a24;
+        }
+        nav button {
+            background: none; border: none; color: #8a8a93;
+            font-size: 16px; margin: 0 20px; cursor: pointer; transition: 0.3s;
+        }
+        nav button.active, nav button:hover {
+            color: var(--accent-color); text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* 📑 页面容器 */
+        .page {
+            display: none; min-height: 100vh; padding-top: 100px;
+            box-sizing: border-box; animation: fadeIn 0.5s ease;
+        }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 🌌 首页 Vision 级动态流体 */
+        .hero {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center;
+        }
+        .interactive-shape {
+            width: 150px; height: 150px;
+            background: linear-gradient(45deg, #00ffcc, #0099ff);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: morph 8s ease-in-out infinite, rotate 20s linear infinite;
+            filter: blur(5px); box-shadow: 0 0 40px rgba(0,255,204,0.3);
+        }
+        @keyframes morph {
+            0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+            50% { border-radius: 50% 50% 20% 80% / 25% 80% 20% 75%; }
+        }
+        @keyframes rotate { to { transform: rotate(360deg); } }
+
+        /* 📦 作品展示页：高级悬浮卡片 */
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px; padding: 40px; max-width: 1200px; margin: 0 auto;
+        }
+        .card {
+            background: #12121a; border: 1px solid #222230; border-radius: 16px;
+            padding: 25px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .card:hover {
+            transform: translateY(-8px); border-color: var(--accent-color);
+            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.1);
+        }
+        .card h3 { margin-top: 0; color: var(--accent-color); }
+        .card p { color: #a1a1aa; font-size: 14px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav>
+        <button onclick="switchPage('home')" id="btn-home" class="active">🚀 首页</button>
+        <button onclick="switchPage('works')" id="btn-works">📦 作品栏</button>
+    </nav>
+
+    <!-- 🧭 页面 1：首页 -->
+    <div id="home" class="page active">
+        <div class="hero">
+            <div class="interactive-shape"></div>
+            <h1 style="font-size: 3rem; margin-top: 30px; letter-spacing: 2px;">Zeke's Studio</h1>
+            <p style="color: #8a8a93;">探索工业设计、结构美学与动态交互的边界</p>
+        </div>
+    </div>
+
+    <!-- 🧭 页面 2：作品展示页 -->
+    <div id="works" class="page">
+        <h2 style="text-align: center; margin-bottom: 10px;">设计项目集</h2>
+        <p style="text-align: center; color: #8a8a93; margin-bottom: 40px;">点击卡片可查看后续的交互方案</p>
+        <div class="grid">
+            <div class="card">
+                <h3>🏍️ 1:5 智能电摩原型</h3>
+                <p>自锁式车架结构设计，结合流线型空气动力学优化。展示高效的工程可靠性与未来感形态。</p>
+            </div>
+            <div class="card">
+                <h3>🧳 创新折叠轮行李箱</h3>
+                <p>专为高频出行研发的连杆折叠机构。轮体可平滑收纳至箱体内部，大幅降低运输中的撞击损耗。</p>
+            </div>
+            <div class="card">
+                <h3>📦 几何模块化收纳盒</h3>
+                <p>基于严格尺寸推演的堆叠系统。支持多场景自由组合，兼顾空间利用率与极简视觉。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + pageId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
