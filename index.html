@@ -15,15 +15,20 @@
             overflow-x: hidden; background-color: #f8fafc;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
-        /* 🪐 全屏幕极光增强型毛玻璃纹理防护罩 */
+        /* 🪐 1. 底层画布：负责梦幻极光背景 */
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        
+        /* 🪐 2. 中间毛玻璃防护罩 */
         .glass-background {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; pointer-events: none;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(30px) saturate(200%);
-            -webkit-backdrop-filter: blur(30px) saturate(200%);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; 
+            pointer-events: none; background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%);
         }
-        #gemini-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        
+        /* 🪐 3. 顶层画布：负责在文字和卡片表面闪烁的高清灿烂粒子（穿透模式） */
+        #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none; }
+
+        /* 📡 网页内容层 */
         nav {
             position: fixed; top: 0; width: 100%; display: flex; justify-content: center;
             background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -34,20 +39,24 @@
             cursor: pointer; transition: 0.3s; letter-spacing: 1px; font-weight: 600;
         }
         nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 8px rgba(0,119,255,0.2); }
+        
         .page {
             display: none; min-height: 100vh; padding-top: 120px; box-sizing: border-box;
             animation: fadeIn 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); position: relative; z-index: 10;
         }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 75vh; text-align: center; padding: 0 20px; }
         .hero h1 { font-size: 3.5rem; letter-spacing: 3px; font-weight: 800; margin: 0; background: linear-gradient(135deg, #111115 0%, #475569 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero p { color: #1e293b; font-size: 1.15rem; max-width: 600px; line-height: 1.7; font-weight: 500; margin-top: 15px; }
+        
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 40px; max-width: 1200px; margin: 0 auto; }
         .card { background: var(--card-bg); border: 1px solid rgba(229, 231, 235, 0.3); border-radius: 24px; padding: 35px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); cursor: pointer; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.01); }
         .card:hover { transform: translateY(-8px); border-color: rgba(0, 85, 255, 0.6); background: rgba(255, 255, 255, 0.85); box-shadow: 0 20px 40px rgba(0, 85, 255, 0.12); }
         .card h3 { margin-top: 0; color: var(--text-color); font-size: 21px; font-weight: 700; }
         .card p { color: #4b5563; font-size: 14.5px; line-height: 1.6; }
+        
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.4s ease; }
         .modal.active { display: flex; opacity: 1; }
         .modal-content { background: rgba(255, 255, 255, 0.9); border: 1px solid #e5e7eb; border-radius: 28px; padding: 40px; max-width: 600px; width: 90%; position: relative; transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 30px 60px rgba(0,0,0,0.05); color: var(--text-color); }
@@ -62,8 +71,9 @@
 </head>
 <body>
 
-    <canvas id="gemini-canvas"></canvas>
+    <canvas id="bg-canvas"></canvas>
     <div class="glass-background"></div>
+    <canvas id="top-canvas"></canvas>
 
     <nav>
         <button onclick="switchPage('home')" id="btn-home" class="active">INDEX</button>
@@ -134,20 +144,27 @@
         }
         function closeModal() { document.getElementById('projectModal').classList.remove('active'); }
 
-        // 🌌 极光渲染矩阵逻辑
-        const canvas = document.getElementById('gemini-canvas');
-        const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+        // 🎨 7.0 双引擎初始化
+        const bgCanvas = document.getElementById('bg-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        const topCanvas = document.getElementById('top-canvas');
+        const topCtx = topCanvas.getContext('2d');
+
+        let width = bgCanvas.width = topCanvas.width = window.innerWidth;
+        let height = bgCanvas.height = topCanvas.height = window.innerHeight;
 
         window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
+            width = bgCanvas.width = topCanvas.width = window.innerWidth;
+            height = bgCanvas.height = topCanvas.height = window.innerHeight;
         });
 
-        const particles = [];
-        const sparks = [];
-        const particleCount = 140; 
+        const bgParticles = [];  // 底层梦幻粒子群
+        const topParticles = []; // 表层灿烂粒子群
+        const sparks = [];       // 表面超新星爆裂粒子群
+        
+        const bgCount = 80;   // 减少底层数量，形成大块色彩斑斓效果
+        const topCount = 100; // 表面灿烂高精粒子的数量
+
         let mouse = { x: width / 2, y: height / 2, active: false, targetX: width / 2, targetY: height / 2 };
 
         const colors = [
@@ -159,59 +176,89 @@
             'rgba(0, 85, 255, '     // Electric Blue
         ];
 
-        class Particle {
-            constructor() { this.init(); }
+        // 🌊 基础流体粒子类
+        class FluidParticle {
+            constructor(isTop) {
+                this.isTop = isTop;
+                this.init();
+            }
             init() {
-                this.x = Math.random() * width; this.y = Math.random() * height;
-                this.radius = Math.random() * 5 + 3;
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                // 核心控制：表面的粒子要小而闪烁（灿烂），底层的粒子要大而蓬松（极光底色）
+                this.radius = this.isTop ? (Math.random() * 2.5 + 1.5) : (Math.random() * 8 + 6);
                 this.baseColor = colors[Math.floor(Math.random() * colors.length)];
-                this.alpha = Math.random() * 0.4 + 0.3;
+                this.alpha = this.isTop ? (Math.random() * 0.5 + 0.4) : (Math.random() * 0.3 + 0.2);
+                
                 this.angle = Math.random() * Math.PI * 2;
-                this.speed = Math.random() * 1.2 + 0.4;
-                this.vx = Math.cos(this.angle) * this.speed; this.vy = Math.sin(this.angle) * this.speed;
-                this.history = []; this.maxHistory = Math.floor(Math.random() * 10 + 6);
+                this.speed = Math.random() * 1.0 + 0.3;
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                
+                this.history = [];
+                this.maxHistory = this.isTop ? 4 : 12; // 表面粒子带一点短流光，底层带超长渲染极光带
             }
             update() {
                 this.history.push({ x: this.x, y: this.y });
                 if (this.history.length > this.maxHistory) this.history.shift();
-                this.x += this.vx; this.y += this.vy;
-                let dx = mouse.x - this.x, dy = mouse.y - this.y;
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 350) {
-                    let force = (350 - distance) / 350;
-                    this.x += (dx / distance) * force * 2.5; this.y += (dy / distance) * force * 2.5;
+
+                if (distance < 360) {
+                    let force = (360 - distance) / 360;
+                    // 表层粒子受到更敏锐的引力波，动作更灿烂灵动
+                    let multiplier = this.isTop ? 3.2 : 2.0;
+                    this.x += (dx / distance) * force * multiplier;
+                    this.y += (dy / distance) * force * multiplier;
                 }
+
                 if (this.x < 0 || this.x > width) this.vx *= -1;
                 if (this.y < 0 || this.y > height) this.vy *= -1;
             }
-            draw() {
+            draw(cCtx) {
+                // 绘制极光流光
                 if (this.history.length > 1) {
-                    ctx.beginPath(); ctx.moveTo(this.history[0].x, this.history[0].y);
-                    for (let i = 1; i < this.history.length; i++) ctx.lineTo(this.history[i].x, this.history[i].y);
-                    ctx.strokeStyle = this.baseColor + (this.alpha * 0.3) + ')';
-                    ctx.lineWidth = this.radius * 1.4; ctx.lineCap = 'round'; ctx.stroke();
+                    cCtx.beginPath();
+                    cCtx.moveTo(this.history[0].x, this.history[0].y);
+                    for (let i = 1; i < this.history.length; i++) cCtx.lineTo(this.history[i].x, this.history[i].y);
+                    cCtx.strokeStyle = this.baseColor + (this.alpha * 0.25) + ')';
+                    cCtx.lineWidth = this.radius * 1.3; cCtx.lineCap = 'round';
+                    cCtx.stroke();
                 }
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.baseColor + this.alpha + ')'; ctx.fill();
+                // 绘制核核心
+                cCtx.beginPath();
+                cCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                cCtx.fillStyle = this.baseColor + this.alpha + ')';
+                cCtx.fill();
             }
         }
 
+        // ✨ 表面爆发的纳米星芒（直接绽放在文字正上方）
         class Spark {
             constructor(x, y, color) {
                 this.x = x; this.y = y; this.radius = Math.random() * 2 + 1; this.color = color;
-                const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 4 + 2;
+                const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 4.5 + 2;
                 this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
-                this.alpha = 1.0; this.decay = Math.random() * 0.04 + 0.02;
+                this.alpha = 1.0; this.decay = Math.random() * 0.04 + 0.025;
             }
-            update() { this.x += this.vx; this.y += this.vy; this.vx *= 0.94; this.vy *= 0.94; this.alpha -= this.decay; }
-            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = this.color + this.alpha + ')'; ctx.fill(); }
+            update() { this.x += this.vx; this.y += this.vy; this.vx *= 0.93; this.vy *= 0.93; this.alpha -= this.decay; }
+            draw(cCtx) { cCtx.beginPath(); cCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); cCtx.fillStyle = this.color + this.alpha + ')'; cCtx.fill(); }
         }
 
-        for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+        // 分配两大阵营的粒子
+        for (let i = 0; i < bgCount; i++) bgParticles.push(new FluidParticle(false)); // 底层
+        for (let i = 0; i < topCount; i++) topParticles.push(new FluidParticle(true)); // 表层
 
         function smoothMouse() { mouse.x += (mouse.targetX - mouse.x) * 0.08; mouse.y += (mouse.targetY - mouse.y) * 0.08; }
+        
         function triggerSupernova(ex, ey) {
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            // 每次触碰在表面炸出璀璨纳米微粒
             for (let i = 0; i < 3; i++) sparks.push(new Spark(ex, ey, randomColor));
         }
 
@@ -220,19 +267,35 @@
         window.addEventListener('mouseleave', () => mouse.active = false);
         window.addEventListener('touchend', () => mouse.active = false);
 
+        // 双核心联合渲染大循环
         function animate() {
-            ctx.fillStyle = 'rgba(248, 250, 252, 0.12)'; ctx.fillRect(0, 0, width, height);
+            // 📡 1. 底层极光画布刷新（带有一点拖尾）
+            bgCtx.fillStyle = 'rgba(248, 250, 252, 0.12)';
+            bgCtx.fillRect(0, 0, width, height);
+
+            // 📡 2. 顶层高清画布刷新（使用完全透明的清除模式，保证粒子极其锐利、不模糊）
+            topCtx.clearRect(0, 0, width, height);
+
             if (!mouse.active) {
                 const time = Date.now() * 0.0006;
                 mouse.targetX = width / 2 + Math.cos(time) * (width * 0.25); mouse.targetY = height / 2 + Math.sin(time * 1.8) * (height * 0.18);
-                if (Math.random() > 0.6) triggerSupernova(mouse.x, mouse.y);
+                if (Math.random() > 0.5) triggerSupernova(mouse.x, mouse.y);
             }
+
             smoothMouse();
-            particles.forEach(p => { p.update(); p.draw(); });
+
+            // 渲染底层朦胧极光
+            bgParticles.forEach(p => { p.update(); p.draw(bgCtx); });
+
+            // 渲染表层高清灿烂粒子
+            topParticles.forEach(p => { p.update(); p.draw(topCtx); });
+
+            // 渲染在文字最上方爆发的璀璨超新星星芒
             for (let i = sparks.length - 1; i >= 0; i--) {
-                sparks[i].update(); sparks[i].draw();
+                sparks[i].update(); sparks[i].draw(topCtx);
                 if (sparks[i].alpha <= 0) sparks.splice(i, 1);
             }
+
             requestAnimationFrame(animate);
         }
         animate();
