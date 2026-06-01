@@ -92,8 +92,8 @@
                 if (dist < gravityRadius) {
                     let force = (gravityRadius - dist) / gravityRadius;
                     // --- 这里的 0.08 是控制吸引速度的核心参数，越小越慢 ---
-                    this.x += dx * force * 0.08; 
-                    this.y += dy * force * 0.08;
+                    this.x += dx * force * 0.03; 
+                    this.y += dy * force * 0.03;
                 }
 
                 if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
