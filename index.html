@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Zeke's Design Studio</title>
     <style>
-        :root { --glass-color: rgba(255, 255, 255, 0.1); --text-color: #ffffff; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #050508; color: white; font-family: 'Inter', system-ui, sans-serif; }
         
-        /* 背景水波光影层 */
-        #canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; filter: blur(40px); }
+        /* 🎨 背景：添加 pointer-events: none 确保不阻挡鼠标点击，但依然能响应逻辑 */
+        #canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         
-        /* 玻璃磨砂质感卡片 */
-        .content-layer { position: relative; z-index: 60; width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; }
+        .content-layer { position: relative; z-index: 60; width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         
         nav { position: fixed; top: 40px; display: flex; gap: 20px; pointer-events: auto; }
         nav button { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 12px 30px; cursor: pointer; border-radius: 50px; backdrop-filter: blur(10px); transition: 0.4s; }
-        nav button:hover, nav button.active { background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.3); }
+        nav button:hover, nav button.active { background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.3); transform: scale(1.05); }
 
         .glass-card { 
             background: rgba(255, 255, 255, 0.03); 
@@ -24,14 +22,16 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1); 
             border-radius: 30px; 
-            padding: 50px;
+            padding: 60px;
             text-align: center;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             pointer-events: auto;
+            transition: 0.5s;
         }
+        .glass-card:hover { transform: translateY(-5px); border-color: rgba(255, 255, 255, 0.2); }
 
-        h1 { font-size: 4rem; letter-spacing: 5px; margin-bottom: 10px; font-weight: 300; }
-        p { color: rgba(255,255,255,0.6); letter-spacing: 3px; text-transform: uppercase; }
+        h1 { font-size: 5rem; letter-spacing: 10px; margin-bottom: 10px; font-weight: 200; }
+        p { color: rgba(255,255,255,0.6); letter-spacing: 5px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -46,7 +46,7 @@
 
         <div id="home" class="glass-card">
             <h1>ZEKE'S</h1>
-            <p>Fluidity & Transparency</p>
+            <p>FLUID & GLASS</p>
         </div>
     </div>
 
@@ -56,8 +56,8 @@
         let w = canvas.width = window.innerWidth;
         let h = canvas.height = window.innerHeight;
 
-        // 模拟水底焦散的光斑
-        const blobs = [];
+        let mouse = { x: -1000, y: -1000 };
+
         class Blob {
             constructor() { this.init(); }
             init() {
@@ -65,14 +65,27 @@
                 this.y = Math.random() * h;
                 this.vx = (Math.random() - 0.5) * 0.5;
                 this.vy = (Math.random() - 0.5) * 0.5;
-                this.size = Math.random() * 200 + 100;
-                // 使用极其清透的蓝/白光色
-                const colors = ['rgba(100, 200, 255, 0.3)', 'rgba(200, 230, 255, 0.2)', 'rgba(255, 255, 255, 0.1)'];
+                this.size = Math.random() * 250 + 150;
+                // 使用更具光感的渐变色
+                const colors = ['rgba(100, 200, 255, 0.2)', 'rgba(200, 230, 255, 0.15)', 'rgba(255, 255, 255, 0.08)'];
                 this.color = colors[Math.floor(Math.random() * colors.length)];
             }
             update() {
+                // 鼠标交互：让光斑缓慢追随鼠标，像水中的影子
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if (dist < 400) {
+                    this.vx += (dx / dist) * 0.02;
+                    this.vy += (dy / dist) * 0.02;
+                }
+
                 this.x += this.vx;
                 this.y += this.vy;
+                this.vx *= 0.99;
+                this.vy *= 0.99;
+
                 if (this.x < -200 || this.x > w + 200) this.vx *= -1;
                 if (this.y < -200 || this.y > h + 200) this.vy *= -1;
             }
@@ -84,14 +97,18 @@
             }
         }
 
-        for (let i = 0; i < 8; i++) blobs.push(new Blob());
+        const blobs = [];
+        for (let i = 0; i < 6; i++) blobs.push(new Blob());
+
+        // 监听全局鼠标，不再受限于 Canvas 的层级
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 
         function animate() {
-            ctx.fillStyle = '#050508'; // 深海背景色
+            ctx.fillStyle = '#050508';
             ctx.fillRect(0, 0, w, h);
             
-            // 混合模式：这里使用 lighten 让光斑叠加产生“水底明亮”感
-            ctx.globalCompositeOperation = 'screen';
+            // 使用 lighter 让光斑重叠处产生“透亮”感
+            ctx.globalCompositeOperation = 'lighter';
             
             blobs.forEach(b => {
                 b.update();
