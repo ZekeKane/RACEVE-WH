@@ -5,22 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Zeke's Design Studio</title>
     <style>
-        :root { --accent-color: #00F2FF; --bg-color: #020205; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: var(--bg-color); color: white; font-family: 'Inter', system-ui, sans-serif; }
+        :root { --glass-color: rgba(255, 255, 255, 0.1); --text-color: #ffffff; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #050508; color: white; font-family: 'Inter', system-ui, sans-serif; }
         
-        #canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        /* 背景水波光影层 */
+        #canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; filter: blur(40px); }
         
-        .content-layer { position: relative; z-index: 60; width: 100%; height: 100vh; pointer-events: none; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        /* 玻璃磨砂质感卡片 */
+        .content-layer { position: relative; z-index: 60; width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; }
         
-        nav { position: fixed; top: 0; width: 100%; padding: 40px; display: flex; justify-content: center; pointer-events: auto; }
-        nav button { background: none; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 25px; cursor: pointer; font-weight: 500; letter-spacing: 2px; transition: 0.4s; border-radius: 30px; margin: 0 10px; }
-        nav button:hover, nav button.active { border-color: var(--accent-color); background: rgba(0,242,255,0.1); box-shadow: 0 0 20px rgba(0,242,255,0.2); }
-        
-        .page { display: none; text-align: center; }
-        .page.active { display: block; animation: appear 1s ease-out; }
-        @keyframes appear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        h1 { font-size: 5rem; letter-spacing: 15px; margin: 0; text-transform: uppercase; background: linear-gradient(to right, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        nav { position: fixed; top: 40px; display: flex; gap: 20px; pointer-events: auto; }
+        nav button { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 12px 30px; cursor: pointer; border-radius: 50px; backdrop-filter: blur(10px); transition: 0.4s; }
+        nav button:hover, nav button.active { background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.3); }
+
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 30px; 
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            pointer-events: auto;
+        }
+
+        h1 { font-size: 4rem; letter-spacing: 5px; margin-bottom: 10px; font-weight: 300; }
+        p { color: rgba(255,255,255,0.6); letter-spacing: 3px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -30,62 +41,40 @@
     <div class="content-layer">
         <nav>
             <button onclick="window.switchPage('home')" id="btn-home" class="active">STUDIO</button>
-            <button onclick="window.switchPage('works')" id="btn-works">WORKS</button>
+            <button onclick="window.switchPage('works')">WORKS</button>
         </nav>
 
-        <div id="home" class="page active">
+        <div id="home" class="glass-card">
             <h1>ZEKE'S</h1>
-            <p style="color: #666; letter-spacing: 5px;">AERODYNAMICS & STRUCTURE</p>
+            <p>Fluidity & Transparency</p>
         </div>
     </div>
 
     <script>
-        window.switchPage = (p) => {
-            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
-            document.getElementById(p).classList.add('active');
-            document.getElementById('btn-'+p).classList.add('active');
-        };
-
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         let w = canvas.width = window.innerWidth;
         let h = canvas.height = window.innerHeight;
 
-        const particles = [];
-        const mouse = { x: -1000, y: -1000, active: false };
-
-        class Particle {
+        // 模拟水底焦散的光斑
+        const blobs = [];
+        class Blob {
             constructor() { this.init(); }
             init() {
                 this.x = Math.random() * w;
                 this.y = Math.random() * h;
-                this.vx = (Math.random() - 0.5) * 2;
-                this.vy = (Math.random() - 0.5) * 2;
-                this.color = Math.random() > 0.5 ? '#00F2FF' : '#7000FF';
-                this.size = Math.random() * 1.5 + 0.5;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 200 + 100;
+                // 使用极其清透的蓝/白光色
+                const colors = ['rgba(100, 200, 255, 0.3)', 'rgba(200, 230, 255, 0.2)', 'rgba(255, 255, 255, 0.1)'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
             }
             update() {
-                // 物理核心：黑洞引力算法
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let dist = Math.sqrt(dx*dx + dy*dy);
-                
-                if (dist < 300) { // 吸引半径
-                    let angle = Math.atan2(dy, dx);
-                    let force = (300 - dist) / 300;
-                    this.vx += Math.cos(angle) * force * 0.5;
-                    this.vy += Math.sin(angle) * force * 0.5;
-                }
-
-                // 阻尼与流动性
-                this.vx *= 0.98;
-                this.vy *= 0.98;
                 this.x += this.vx;
                 this.y += this.vy;
-
-                // 边界重置
-                if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.init();
+                if (this.x < -200 || this.x > w + 200) this.vx *= -1;
+                if (this.y < -200 || this.y > h + 200) this.vy *= -1;
             }
             draw() {
                 ctx.fillStyle = this.color;
@@ -95,19 +84,18 @@
             }
         }
 
-        for (let i = 0; i < 800; i++) particles.push(new Particle());
+        for (let i = 0; i < 8; i++) blobs.push(new Blob());
 
-        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-        
         function animate() {
-            // 设置长拖尾效果，模拟流体的残影
-            ctx.fillStyle = 'rgba(2, 2, 5, 0.15)';
+            ctx.fillStyle = '#050508'; // 深海背景色
             ctx.fillRect(0, 0, w, h);
             
+            // 混合模式：这里使用 lighten 让光斑叠加产生“水底明亮”感
             ctx.globalCompositeOperation = 'screen';
-            particles.forEach(p => {
-                p.update();
-                p.draw();
+            
+            blobs.forEach(b => {
+                b.update();
+                b.draw();
             });
             requestAnimationFrame(animate);
         }
