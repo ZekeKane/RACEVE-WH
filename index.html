@@ -91,7 +91,7 @@
             update(mouse, time) {
                 // 🌫️ 新增：渐隐过渡逻辑（如果透明度没满，就逐渐增加）
                 if (this.alpha < 1) {
-                    this.alpha += 0.005; // 这个数值越小，浮现得越慢
+                    this.alpha += 0.002; // 这个数值越小，浮现得越慢
                 }
 
                 this.angle = Math.sin(time * 0.001 + this.x * 0.002) * Math.PI;
