@@ -5,175 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Zeke's Design Studio</title>
     <style>
-        :root { --accent-color: #00F2FF; --text-color: #ffffff; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; background-color: #030508; color: white; font-family: -apple-system, sans-serif; -webkit-overflow-scrolling: touch; }
+        :root { --accent-color: #00F2FF; --bg-color: #020205; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: var(--bg-color); color: white; font-family: 'Inter', system-ui, sans-serif; }
         
-        #bg-canvas, #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        #bg-canvas { z-index: 0; }
-        #top-canvas { z-index: 50; }
+        #canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
         
-        /* 文字图层依然保持在最顶层 60，清晰锐利 */
-        .content-layer { position: relative; z-index: 60; width: 100%; min-height: 100vh; pointer-events: none; }
-        nav, .page { pointer-events: auto; }
+        .content-layer { position: relative; z-index: 60; width: 100%; height: 100vh; pointer-events: none; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         
-        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(3,5,8,1), rgba(3,5,8,0)); }
-        nav button { background: none; border: none; color: #8892b0; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; letter-spacing: 1px; transition: 0.3s; }
-        nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 12px rgba(0,242,255,0.6); }
+        nav { position: fixed; top: 0; width: 100%; padding: 40px; display: flex; justify-content: center; pointer-events: auto; }
+        nav button { background: none; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 25px; cursor: pointer; font-weight: 500; letter-spacing: 2px; transition: 0.4s; border-radius: 30px; margin: 0 10px; }
+        nav button:hover, nav button.active { border-color: var(--accent-color); background: rgba(0,242,255,0.1); box-shadow: 0 0 20px rgba(0,242,255,0.2); }
         
-        .page { display: none; padding-top: 150px; text-align: center; width: 100%; }
-        .page.active { display: block; animation: fadeIn 0.8s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page { display: none; text-align: center; }
+        .page.active { display: block; animation: appear 1s ease-out; }
+        @keyframes appear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; padding: 40px; max-width: 1000px; margin: 0 auto; }
-        .card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.1); border-radius: 16px; padding: 30px; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); touch-action: auto; backdrop-filter: blur(5px); }
-        .card:hover { border-color: var(--accent-color); background: rgba(0, 242, 255, 0.05); transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0, 242, 255, 0.1); }
+        h1 { font-size: 5rem; letter-spacing: 15px; margin: 0; text-transform: uppercase; background: linear-gradient(to right, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body>
 
-    <canvas id="bg-canvas"></canvas>
-    <canvas id="top-canvas"></canvas>
+    <canvas id="canvas"></canvas>
 
     <div class="content-layer">
         <nav>
-            <button onclick="window.switchPage('home')" id="btn-home" class="active">INDEX</button>
-            <button onclick="window.switchPage('works')" id="btn-works">PROJECTS</button>
+            <button onclick="window.switchPage('home')" id="btn-home" class="active">STUDIO</button>
+            <button onclick="window.switchPage('works')" id="btn-works">WORKS</button>
         </nav>
 
         <div id="home" class="page active">
-            <h1 style="font-size: 4.5rem; letter-spacing: 12px; margin: 0; font-weight: 800; text-transform: uppercase; color: #f8fafc;">ZEKE'S STUDIO</h1>
-            <p style="color: #00F2FF; margin-top: 15px; font-size: 1.1rem; letter-spacing: 2px;">Aerodynamics & Structure Design</p>
-        </div>
-
-        <div id="works" class="page">
-            <div class="grid">
-                <div class="card" onclick="alert('Initiating Wind Tunnel Analysis for Motorcycle...')"><h3 style="margin:0; color:#f8fafc; font-size: 1.2rem;">Electric Motorcycle</h3><p style="color:#8892b0; font-size:0.9rem; margin-top:10px;">Aerodynamic Fairing Prototype</p></div>
-                <div class="card" onclick="alert('Loading Structural Matrix...')"><h3 style="margin:0; color:#f8fafc; font-size: 1.2rem;">Modular Storage</h3><p style="color:#8892b0; font-size:0.9rem; margin-top:10px;">Kinetic Structure System</p></div>
-            </div>
+            <h1>ZEKE'S</h1>
+            <p style="color: #666; letter-spacing: 5px;">AERODYNAMICS & STRUCTURE</p>
         </div>
     </div>
 
     <script>
-        window.switchPage = function(p) {
+        window.switchPage = (p) => {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
             document.getElementById(p).classList.add('active');
             document.getElementById('btn-'+p).classList.add('active');
         };
 
-        const bgCanvas = document.getElementById('bg-canvas');
-        const bgCtx = bgCanvas.getContext('2d');
-        const topCanvas = document.getElementById('top-canvas');
-        const topCtx = topCanvas.getContext('2d');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
 
-        let w = bgCanvas.width = topCanvas.width = window.innerWidth;
-        let h = bgCanvas.height = topCanvas.height = window.innerHeight;
+        const particles = [];
+        const mouse = { x: -1000, y: -1000, active: false };
 
-        window.addEventListener('resize', () => {
-            w = bgCanvas.width = topCanvas.width = window.innerWidth;
-            h = bgCanvas.height = topCanvas.height = window.innerHeight;
-        });
-
-        // 💨 极速气动配色：电离蓝、深空蓝、白炽色、钛灰色
-        const colors = ['#00F2FF', '#0055FF', '#FFFFFF', 'rgba(255,255,255,0.2)'];
-        const streamCount = 450; 
-        const streams = [];
-
-        // 🌪️ 风洞流线类
-        class WindStream {
-            constructor() { this.reset(true); }
-            
-            reset(randomX = false) {
-                this.x = randomX ? Math.random() * w : -150;
-                this.baseY = Math.random() * h;
-                this.y = this.baseY;
-                this.speed = Math.random() * 12 + 6; // 极速横向风
-                this.history = [];
-                this.maxLength = Math.floor(Math.random() * 25 + 10); // 拖尾长度
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.alpha = Math.random() * 0.7 + 0.1;
-                this.thickness = Math.random() * 1.5 + 0.5;
+        class Particle {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.color = Math.random() > 0.5 ? '#00F2FF' : '#7000FF';
+                this.size = Math.random() * 1.5 + 0.5;
             }
-
-            update(mouse) {
-                // 基础速度推进
-                this.x += this.speed;
-
-                // 核心计算：空气动力学避让力场
-                let dx = this.x - mouse.x;
-                let dy = this.y - mouse.y;
+            update() {
+                // 物理核心：黑洞引力算法
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
-                let obstacleRadius = 260; // 虚拟风洞障碍物的半径
-
-                if (dist < obstacleRadius && mouse.active) {
-                    // 当靠近光标时，模拟气流遇到固体表面的强力偏转
-                    let force = Math.pow((obstacleRadius - dist) / obstacleRadius, 2);
-                    this.y += (dy / dist) * force * 25; // 垂直方向被推开
-                    this.x -= force * 5; // 迎风面会产生微小的空气阻力（减速）
-                } else {
-                    // 气流越过障碍物后，通过流体弹性恢复平流层
-                    this.y += (this.baseY - this.y) * 0.08;
+                
+                if (dist < 300) { // 吸引半径
+                    let angle = Math.atan2(dy, dx);
+                    let force = (300 - dist) / 300;
+                    this.vx += Math.cos(angle) * force * 0.5;
+                    this.vy += Math.sin(angle) * force * 0.5;
                 }
 
-                // 添加极其微小的流体力学自然扰动波纹
-                this.y += Math.sin(this.x * 0.01 + this.baseY) * 0.4;
+                // 阻尼与流动性
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+                this.x += this.vx;
+                this.y += this.vy;
 
-                // 记录历史轨迹点以绘制拖尾
-                this.history.push({x: this.x, y: this.y});
-                if (this.history.length > this.maxLength) {
-                    this.history.shift();
-                }
-
-                // 飞出屏幕右侧后，从左侧重生
-                if (this.x > w + 100) {
-                    this.reset();
-                }
+                // 边界重置
+                if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.init();
             }
-
-            draw(ctx) {
-                if (this.history.length < 2) return;
+            draw() {
+                ctx.fillStyle = this.color;
                 ctx.beginPath();
-                ctx.moveTo(this.history[0].x, this.history[0].y);
-                for (let i = 1; i < this.history.length; i++) {
-                    ctx.lineTo(this.history[i].x, this.history[i].y);
-                }
-                ctx.strokeStyle = this.color;
-                ctx.globalAlpha = this.alpha;
-                ctx.lineWidth = this.thickness;
-                ctx.lineCap = 'round';
-                ctx.stroke();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
 
-        for (let i = 0; i < streamCount; i++) streams.push(new WindStream());
+        for (let i = 0; i < 800; i++) particles.push(new Particle());
 
-        let mouse = { x: -2000, y: -2000, active: false };
-
-        window.addEventListener('mousemove', e => { 
-            mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; 
-        });
-        window.addEventListener('mouseleave', () => { mouse.active = false; });
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
         
-        window.addEventListener('touchstart', e => { 
-            const t = e.touches[0]; mouse.x = t.clientX; mouse.y = t.clientY; mouse.active = true; 
-        }, { passive: true });
-        window.addEventListener('touchend', () => { mouse.active = false; });
-        window.addEventListener('touchmove', e => { 
-            const t = e.touches[0]; mouse.x = t.clientX; mouse.y = t.clientY; 
-        }, { passive: true });
-
         function animate() {
-            // 背景使用更深的颜色，配合风洞的高对比度
-            bgCtx.fillStyle = 'rgba(3, 5, 8, 0.3)';
-            bgCtx.fillRect(0, 0, w, h);
+            // 设置长拖尾效果，模拟流体的残影
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.15)';
+            ctx.fillRect(0, 0, w, h);
             
-            // 开启屏幕滤色模式，让交叉的气流产生高亮电离效果
-            topCtx.globalCompositeOperation = 'screen';
-            topCtx.clearRect(0, 0, w, h);
-
-            streams.forEach(s => {
-                s.update(mouse);
-                s.draw(topCtx);
+            ctx.globalCompositeOperation = 'screen';
+            particles.forEach(p => {
+                p.update();
+                p.draw();
             });
             requestAnimationFrame(animate);
         }
