@@ -10,9 +10,14 @@
         
         #bg-canvas, #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         #bg-canvas { z-index: 0; }
-        #top-canvas { z-index: 50; }
+        #top-canvas { z-index: 50; } /* 彩带图层在 z-index: 50 */
         
-        .content-layer { position: relative; z-index: 10; width: 100%; min-height: 100vh; }
+        /* 👑 核心修复：将内容图层的 z-index 提升到 60，彻底压在彩带之上 */
+        .content-layer { position: relative; z-index: 60; width: 100%; min-height: 100vh; pointer-events: none; }
+        
+        /* 确保导航和卡片等交互元素可以被正常点击 */
+        nav, .page { pointer-events: auto; }
+        
         nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(5,5,8,1), rgba(5,5,8,0)); }
         nav button { background: none; border: none; color: #aaa; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
         nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
@@ -84,14 +89,11 @@
                 
                 this.ix = 0;
                 this.iy = 0;
-                
-                // 🌫️ 新增：每次刷新时，将透明度归零，准备缓慢浮现
                 this.alpha = 0; 
             }
             update(mouse, time) {
-                // 🌫️ 新增：渐隐过渡逻辑（如果透明度没满，就逐渐增加）
                 if (this.alpha < 1) {
-                    this.alpha += 0.003; // 这个数值越小，浮现得越慢
+                    this.alpha += 0.003; // 保持你最爱的超温和超慢浮现速度
                 }
 
                 this.angle = Math.sin(time * 0.001 + this.x * 0.002) * Math.PI;
@@ -121,9 +123,7 @@
             }
             draw(ctx) {
                 ctx.save();
-                // 🌫️ 新增：将计算好的渐变透明度应用到画布渲染上
                 ctx.globalAlpha = this.alpha;
-                
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation);
                 ctx.fillStyle = this.color;
