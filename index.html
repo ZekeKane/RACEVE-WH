@@ -51,7 +51,6 @@
     </div>
 
     <script>
-        // 1. 全局作用域修复：将函数绑定到 window
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
@@ -75,19 +74,27 @@
         class Particle {
             constructor() { this.reset(); }
             reset() {
-                this.x = Math.random() * w; this.y = Math.random() * h;
+                this.x = Math.random() * w; 
+                this.y = Math.random() * h;
                 this.width = Math.random() * 4 + 2;
                 this.height = Math.random() * 1 + 0.5;
                 this.velocity = Math.random() * 0.5 + 0.2;
                 this.color = colors[Math.floor(Math.random() * colors.length)];
                 this.rotation = Math.random() * Math.PI * 2;
                 this.angle = Math.random() * Math.PI * 2;
+
+                // 🚀 新增物理属性：动量与空气阻尼
+                this.vx = 0; // X轴受力动量
+                this.vy = 0; // Y轴受力动量
+                this.friction = 0.94; // 阻尼系数（越大滑行越远，0.94 是极其丝滑的流体手感）
             }
             update(mouse, time) {
+                // 1. 基础环境流场（安静时的丝绸运动）
                 this.angle = Math.sin(time * 0.001 + this.x * 0.002) * Math.PI;
-                this.x += Math.cos(this.angle) * this.velocity;
-                this.y += Math.sin(this.angle) * this.velocity;
+                let baseVx = Math.cos(this.angle) * this.velocity;
+                let baseVy = Math.sin(this.angle) * this.velocity;
 
+                // 2. 呼吸引力场
                 let breathingRadius = 150 + Math.sin(time * 0.002) * 100;
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
@@ -95,13 +102,24 @@
                 
                 if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    this.x += dx * force * 0.03; 
-                    this.y += dy * force * 0.03;
+                    // 🚀 核心改变：拉力转化为加速度，累加到动量 (vx, vy) 上，而不是直接瞬间改变坐标
+                    this.vx += dx * force * 0.003; 
+                    this.vy += dy * force * 0.003;
                 }
+
+                // 3. 应用空气阻尼（摩擦力），使其缓慢减速而不是瞬间停止
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+
+                // 4. 计算最终位置：基础流场速度 + 累积的惯性动量
+                this.x += baseVx + this.vx;
+                this.y += baseVy + this.vy;
+
                 if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
-                this.rotation += 0.02;
+                
+                // 5. 动态自转：被甩飞时翻滚得更快
+                this.rotation += 0.02 + (Math.abs(this.vx) + Math.abs(this.vy)) * 0.01;
             }
-            // 2. 显式传入 ctx 参数，确保不会报错
             draw(ctx) {
                 ctx.save();
                 ctx.translate(this.x, this.y);
@@ -128,7 +146,6 @@
             topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
 
-            // 3. 循环调用时将 topCtx 传给 draw 方法
             particles.forEach(p => {
                 p.update(mouse, globalTime);
                 p.draw(topCtx);
