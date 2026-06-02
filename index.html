@@ -6,29 +6,27 @@
     <title>Zeke's Design Studio</title>
     <style>
         :root { --accent-color: #00F2FF; --text-color: #ffffff; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; background-color: #050508; color: white; font-family: -apple-system, sans-serif; -webkit-overflow-scrolling: touch; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; background-color: #030508; color: white; font-family: -apple-system, sans-serif; -webkit-overflow-scrolling: touch; }
         
         #bg-canvas, #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         #bg-canvas { z-index: 0; }
-        #top-canvas { z-index: 50; } /* 彩带图层在 z-index: 50 */
+        #top-canvas { z-index: 50; }
         
-        /* 👑 核心修复：将内容图层的 z-index 提升到 60，彻底压在彩带之上 */
+        /* 文字图层依然保持在最顶层 60，清晰锐利 */
         .content-layer { position: relative; z-index: 60; width: 100%; min-height: 100vh; pointer-events: none; }
-        
-        /* 确保导航和卡片等交互元素可以被正常点击 */
         nav, .page { pointer-events: auto; }
         
-        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(5,5,8,1), rgba(5,5,8,0)); }
-        nav button { background: none; border: none; color: #aaa; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
-        nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
+        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(3,5,8,1), rgba(3,5,8,0)); }
+        nav button { background: none; border: none; color: #8892b0; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; letter-spacing: 1px; transition: 0.3s; }
+        nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 12px rgba(0,242,255,0.6); }
         
         .page { display: none; padding-top: 150px; text-align: center; width: 100%; }
         .page.active { display: block; animation: fadeIn 0.8s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; padding: 40px; max-width: 1000px; margin: 0 auto; }
-        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 30px; cursor: pointer; transition: 0.4s; touch-action: auto; }
-        .card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); }
+        .card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.1); border-radius: 16px; padding: 30px; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); touch-action: auto; backdrop-filter: blur(5px); }
+        .card:hover { border-color: var(--accent-color); background: rgba(0, 242, 255, 0.05); transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0, 242, 255, 0.1); }
     </style>
 </head>
 <body>
@@ -43,14 +41,14 @@
         </nav>
 
         <div id="home" class="page active">
-            <h1 style="font-size: 4rem; letter-spacing: 10px; margin: 0;">ZEKE'S STUDIO</h1>
-            <p style="color: #666; margin-top: 10px;">Aerodynamics & Structure Design</p>
+            <h1 style="font-size: 4.5rem; letter-spacing: 12px; margin: 0; font-weight: 800; text-transform: uppercase; color: #f8fafc;">ZEKE'S STUDIO</h1>
+            <p style="color: #00F2FF; margin-top: 15px; font-size: 1.1rem; letter-spacing: 2px;">Aerodynamics & Structure Design</p>
         </div>
 
         <div id="works" class="page">
             <div class="grid">
-                <div class="card" onclick="alert('Electric Motorcycle Analysis')"><h3>Electric Motorcycle</h3></div>
-                <div class="card" onclick="alert('Modular Storage System')"><h3>Modular Storage</h3></div>
+                <div class="card" onclick="alert('Initiating Wind Tunnel Analysis for Motorcycle...')"><h3 style="margin:0; color:#f8fafc; font-size: 1.2rem;">Electric Motorcycle</h3><p style="color:#8892b0; font-size:0.9rem; margin-top:10px;">Aerodynamic Fairing Prototype</p></div>
+                <div class="card" onclick="alert('Loading Structural Matrix...')"><h3 style="margin:0; color:#f8fafc; font-size: 1.2rem;">Modular Storage</h3><p style="color:#8892b0; font-size:0.9rem; margin-top:10px;">Kinetic Structure System</p></div>
             </div>
         </div>
     </div>
@@ -71,86 +69,111 @@
         let w = bgCanvas.width = topCanvas.width = window.innerWidth;
         let h = bgCanvas.height = topCanvas.height = window.innerHeight;
 
-        const particles = [];
-        const totalParticles = 6000;
-        const colors = ['#FF007F', '#00F2FF', '#8A2BE2', '#FFD700', '#7FFF00'];
-        let globalTime = 0;
+        window.addEventListener('resize', () => {
+            w = bgCanvas.width = topCanvas.width = window.innerWidth;
+            h = bgCanvas.height = topCanvas.height = window.innerHeight;
+        });
 
-        class Particle {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * w; this.y = Math.random() * h;
-                this.width = Math.random() * 4 + 2;
-                this.height = Math.random() * 1 + 0.5;
-                this.velocity = Math.random() * 0.5 + 0.2;
+        // 💨 极速气动配色：电离蓝、深空蓝、白炽色、钛灰色
+        const colors = ['#00F2FF', '#0055FF', '#FFFFFF', 'rgba(255,255,255,0.2)'];
+        const streamCount = 450; 
+        const streams = [];
+
+        // 🌪️ 风洞流线类
+        class WindStream {
+            constructor() { this.reset(true); }
+            
+            reset(randomX = false) {
+                this.x = randomX ? Math.random() * w : -150;
+                this.baseY = Math.random() * h;
+                this.y = this.baseY;
+                this.speed = Math.random() * 12 + 6; // 极速横向风
+                this.history = [];
+                this.maxLength = Math.floor(Math.random() * 25 + 10); // 拖尾长度
                 this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.rotation = Math.random() * Math.PI * 2;
-                this.angle = Math.random() * Math.PI * 2;
-                
-                this.ix = 0;
-                this.iy = 0;
-                this.alpha = 0; 
+                this.alpha = Math.random() * 0.7 + 0.1;
+                this.thickness = Math.random() * 1.5 + 0.5;
             }
-            update(mouse, time) {
-                if (this.alpha < 1) {
-                    this.alpha += 0.003; // 保持你最爱的超温和超慢浮现速度
-                }
 
-                this.angle = Math.sin(time * 0.001 + this.x * 0.002) * Math.PI;
-                let baseVx = Math.cos(this.angle) * this.velocity;
-                let baseVy = Math.sin(this.angle) * this.velocity;
+            update(mouse) {
+                // 基础速度推进
+                this.x += this.speed;
 
-                let breathingRadius = 150 + Math.sin(time * 0.002) * 100;
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
+                // 核心计算：空气动力学避让力场
+                let dx = this.x - mouse.x;
+                let dy = this.y - mouse.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
-                
-                if (dist < breathingRadius) {
-                    let force = (breathingRadius - dist) / breathingRadius;
-                    this.ix += dx * force * 0.003; 
-                    this.iy += dy * force * 0.003;
+                let obstacleRadius = 260; // 虚拟风洞障碍物的半径
+
+                if (dist < obstacleRadius && mouse.active) {
+                    // 当靠近光标时，模拟气流遇到固体表面的强力偏转
+                    let force = Math.pow((obstacleRadius - dist) / obstacleRadius, 2);
+                    this.y += (dy / dist) * force * 25; // 垂直方向被推开
+                    this.x -= force * 5; // 迎风面会产生微小的空气阻力（减速）
+                } else {
+                    // 气流越过障碍物后，通过流体弹性恢复平流层
+                    this.y += (this.baseY - this.y) * 0.08;
                 }
 
-                this.ix *= 0.95;
-                this.iy *= 0.95;
+                // 添加极其微小的流体力学自然扰动波纹
+                this.y += Math.sin(this.x * 0.01 + this.baseY) * 0.4;
 
-                this.x += baseVx + this.ix;
-                this.y += baseVy + this.iy;
+                // 记录历史轨迹点以绘制拖尾
+                this.history.push({x: this.x, y: this.y});
+                if (this.history.length > this.maxLength) {
+                    this.history.shift();
+                }
 
-                if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
-                
-                this.rotation += 0.02 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.005;
+                // 飞出屏幕右侧后，从左侧重生
+                if (this.x > w + 100) {
+                    this.reset();
+                }
             }
+
             draw(ctx) {
-                ctx.save();
+                if (this.history.length < 2) return;
+                ctx.beginPath();
+                ctx.moveTo(this.history[0].x, this.history[0].y);
+                for (let i = 1; i < this.history.length; i++) {
+                    ctx.lineTo(this.history[i].x, this.history[i].y);
+                }
+                ctx.strokeStyle = this.color;
                 ctx.globalAlpha = this.alpha;
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-                ctx.fillStyle = this.color;
-                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
-                ctx.restore();
+                ctx.lineWidth = this.thickness;
+                ctx.lineCap = 'round';
+                ctx.stroke();
             }
         }
 
-        for (let i = 0; i < totalParticles; i++) particles.push(new Particle());
+        for (let i = 0; i < streamCount; i++) streams.push(new WindStream());
 
-        let mouse = { x: -2000, y: -2000 };
-        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        let mouse = { x: -2000, y: -2000, active: false };
+
+        window.addEventListener('mousemove', e => { 
+            mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; 
+        });
+        window.addEventListener('mouseleave', () => { mouse.active = false; });
+        
+        window.addEventListener('touchstart', e => { 
+            const t = e.touches[0]; mouse.x = t.clientX; mouse.y = t.clientY; mouse.active = true; 
+        }, { passive: true });
+        window.addEventListener('touchend', () => { mouse.active = false; });
         window.addEventListener('touchmove', e => { 
             const t = e.touches[0]; mouse.x = t.clientX; mouse.y = t.clientY; 
         }, { passive: true });
 
         function animate() {
-            globalTime++;
-            bgCtx.fillStyle = 'rgba(5, 5, 8, 0.1)';
+            // 背景使用更深的颜色，配合风洞的高对比度
+            bgCtx.fillStyle = 'rgba(3, 5, 8, 0.3)';
             bgCtx.fillRect(0, 0, w, h);
             
-            topCtx.globalCompositeOperation = 'lighter';
+            // 开启屏幕滤色模式，让交叉的气流产生高亮电离效果
+            topCtx.globalCompositeOperation = 'screen';
             topCtx.clearRect(0, 0, w, h);
 
-            particles.forEach(p => {
-                p.update(mouse, globalTime);
-                p.draw(topCtx);
+            streams.forEach(s => {
+                s.update(mouse);
+                s.draw(topCtx);
             });
             requestAnimationFrame(animate);
         }
