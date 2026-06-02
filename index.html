@@ -5,42 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Zeke's Design Studio</title>
     <style>
-        :root { 
-            --accent-color: #00A6FF;   
-            --text-color: #111111;     
-            --nav-dim: #666666;        
-        }
-        
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow-x: hidden; 
-            overflow-y: auto; 
-            background-color: #ffffff; 
-            color: var(--text-color); 
-            font-family: -apple-system, sans-serif; 
-            -webkit-overflow-scrolling: touch; 
-        }
+        :root { --accent-color: #00F2FF; --text-color: #ffffff; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; background-color: #050508; color: white; font-family: -apple-system, sans-serif; -webkit-overflow-scrolling: touch; }
         
         #bg-canvas, #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         #bg-canvas { z-index: 0; }
         #top-canvas { z-index: 50; }
         
         .content-layer { position: relative; z-index: 10; width: 100%; min-height: 100vh; }
-        
-        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); }
-        nav button { background: none; border: none; color: var(--nav-dim); padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
-        nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 10px rgba(0,166,255,0.3); }
+        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(5,5,8,1), rgba(5,5,8,0)); }
+        nav button { background: none; border: none; color: #aaa; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; }
+        nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 10px rgba(0,242,255,0.5); }
         
         .page { display: none; padding-top: 150px; text-align: center; width: 100%; }
         .page.active { display: block; animation: fadeIn 0.8s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; padding: 40px; max-width: 1000px; margin: 0 auto; }
-        .card { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 20px; padding: 30px; cursor: pointer; transition: 0.4s; touch-action: auto; color: var(--text-color); }
-        .card:hover { border-color: var(--accent-color); background: rgba(0, 0, 0, 0.05); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,166,255,0.1); }
+        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 30px; cursor: pointer; transition: 0.4s; touch-action: auto; }
+        .card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); }
     </style>
 </head>
 <body>
@@ -56,7 +39,7 @@
 
         <div id="home" class="page active">
             <h1 style="font-size: 4rem; letter-spacing: 10px; margin: 0;">ZEKE'S STUDIO</h1>
-            <p style="color: #888; margin-top: 10px;">Exploring the Dynamic Intersection of Product, Structure & Aerodynamics</p>
+            <p style="color: #666; margin-top: 10px;">Aerodynamics & Structure Design</p>
         </div>
 
         <div id="works" class="page">
@@ -68,12 +51,12 @@
     </div>
 
     <script>
+        // 1. 全局作用域修复：将函数绑定到 window
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
             document.getElementById(p).classList.add('active');
             document.getElementById('btn-'+p).classList.add('active');
-            mouse.x = -2000; mouse.y = -2000; 
         };
 
         const bgCanvas = document.getElementById('bg-canvas');
@@ -84,63 +67,41 @@
         let w = bgCanvas.width = topCanvas.width = window.innerWidth;
         let h = bgCanvas.height = topCanvas.height = window.innerHeight;
 
-        window.addEventListener('resize', () => {
-            w = bgCanvas.width = topCanvas.width = window.innerWidth;
-            h = bgCanvas.height = topCanvas.height = window.innerHeight;
-        });
-
         const particles = [];
-        const totalParticles = 5000; 
-        const colors = ['#FF2A7A', '#00A6FF', '#7000FF', '#FFB300', '#00E575'];
+        const totalParticles = 6000;
+        const colors = ['#FF007F', '#00F2FF', '#8A2BE2', '#FFD700', '#7FFF00'];
         let globalTime = 0;
 
         class Particle {
             constructor() { this.reset(); }
             reset() {
                 this.x = Math.random() * w; this.y = Math.random() * h;
-                // 🚀 引入额外的物理速度变量来实现惯性
-                this.vx = 0;
-                this.vy = 0;
-                this.width = Math.random() * 5 + 3;    
-                this.height = Math.random() * 1.2 + 0.6; 
-                this.baseSpeed = Math.random() * 0.4 + 0.15; 
+                this.width = Math.random() * 4 + 2;
+                this.height = Math.random() * 1 + 0.5;
+                this.velocity = Math.random() * 0.5 + 0.2;
                 this.color = colors[Math.floor(Math.random() * colors.length)];
                 this.rotation = Math.random() * Math.PI * 2;
                 this.angle = Math.random() * Math.PI * 2;
             }
             update(mouse, time) {
-                // 1. 基础流场波形速度
                 this.angle = Math.sin(time * 0.001 + this.x * 0.002) * Math.PI;
-                let flowVx = Math.cos(this.angle) * this.baseSpeed;
-                let flowVy = Math.sin(this.angle) * this.baseSpeed;
+                this.x += Math.cos(this.angle) * this.velocity;
+                this.y += Math.sin(this.angle) * this.velocity;
 
-                // 2. 呼吸吸引力场（转换为速度增量，也就是加速度）
-                let breathingRadius = 160 + Math.sin(time * 0.002) * 90;
+                let breathingRadius = 150 + Math.sin(time * 0.002) * 100;
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 
                 if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    // 🚀 保留 0.03 的慢速粘滞感，但这次我们改变的是速度 vx/vy，而不是直接改坐标
-                    this.vx += dx * force * 0.03; 
-                    this.vy += dy * force * 0.03;
+                    this.x += dx * force * 0.03; 
+                    this.y += dy * force * 0.03;
                 }
-
-                // 🚀 3. 物理核心：摩擦力损耗（Damping）。离开引力场后，速度乘以 0.92 缓慢衰减
-                this.vx *= 0.92;
-                this.vy *= 0.92;
-
-                // 4. 最终坐标叠加 = 流场速度 + 累加的惯性物理速度
-                this.x += flowVx + this.vx;
-                this.y += flowVy + this.vy;
-
                 if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
-                
-                // 让彩带旋转速度和它的物理运动速度挂钩，速度越快转得越有动感
-                let speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-                this.rotation += 0.015 + speed * 0.02;
+                this.rotation += 0.02;
             }
+            // 2. 显式传入 ctx 参数，确保不会报错
             draw(ctx) {
                 ctx.save();
                 ctx.translate(this.x, this.y);
@@ -158,18 +119,16 @@
         window.addEventListener('touchmove', e => { 
             const t = e.touches[0]; mouse.x = t.clientX; mouse.y = t.clientY; 
         }, { passive: true });
-        window.addEventListener('touchend', () => { mouse.x = -2000; mouse.y = -2000; });
 
         function animate() {
             globalTime++;
-            
-            // 保持绝美的水彩拖尾效果
-            bgCtx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+            bgCtx.fillStyle = 'rgba(5, 5, 8, 0.1)';
             bgCtx.fillRect(0, 0, w, h);
             
-            topCtx.globalCompositeOperation = 'multiply';
+            topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
 
+            // 3. 循环调用时将 topCtx 传给 draw 方法
             particles.forEach(p => {
                 p.update(mouse, globalTime);
                 p.draw(topCtx);
