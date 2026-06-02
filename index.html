@@ -82,17 +82,22 @@
                 this.rotation = Math.random() * Math.PI * 2;
                 this.angle = Math.random() * Math.PI * 2;
                 
-                // 🌀 新增：独立的惯性动量向量
                 this.ix = 0;
                 this.iy = 0;
+                
+                // 🌫️ 新增：每次刷新时，将透明度归零，准备缓慢浮现
+                this.alpha = 0; 
             }
             update(mouse, time) {
-                // 1. 基础的丝绸流场运动
+                // 🌫️ 新增：渐隐过渡逻辑（如果透明度没满，就逐渐增加）
+                if (this.alpha < 1) {
+                    this.alpha += 0.015; // 这个数值越小，浮现得越慢
+                }
+
                 this.angle = Math.sin(time * 0.001 + this.x * 0.002) * Math.PI;
                 let baseVx = Math.cos(this.angle) * this.velocity;
                 let baseVy = Math.sin(this.angle) * this.velocity;
 
-                // 2. 计算动态呼吸引力场
                 let breathingRadius = 150 + Math.sin(time * 0.002) * 100;
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
@@ -100,27 +105,25 @@
                 
                 if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    // 🌀 降低吸引速度，并将其转化为“加速度”叠加到惯性向量上
                     this.ix += dx * force * 0.003; 
                     this.iy += dy * force * 0.003;
                 }
 
-                // 3. 施加流体阻力（摩擦系数 0.95）
-                // 让脱离光标的彩带缓慢减速，保留极其优雅的滑行惯性
                 this.ix *= 0.95;
                 this.iy *= 0.95;
 
-                // 4. 最终坐标 = 基础流场速度 + 鼠标拖拽产生的惯性速度
                 this.x += baseVx + this.ix;
                 this.y += baseVy + this.iy;
 
                 if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
                 
-                // 5. 让彩带的翻转速度受到受力强度的影响
                 this.rotation += 0.02 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.005;
             }
             draw(ctx) {
                 ctx.save();
+                // 🌫️ 新增：将计算好的渐变透明度应用到画布渲染上
+                ctx.globalAlpha = this.alpha;
+                
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation);
                 ctx.fillStyle = this.color;
