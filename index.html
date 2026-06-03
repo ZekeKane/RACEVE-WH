@@ -20,12 +20,28 @@
         nav button { background: none; border: none; color: #888; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; letter-spacing: 2px; }
         nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 15px rgba(230,199,148,0.6); }
         
+        /* ⚡ 优化：页面切入动画时间缩短，提升视觉响应速度 */
         .page { display: none; padding-top: 150px; text-align: center; width: 100%; }
-        .page.active { display: block; animation: fadeIn 0.8s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .page.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; padding: 40px; max-width: 1000px; margin: 0 auto; }
-        .card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 30px; cursor: pointer; transition: 0.4s; touch-action: auto; backdrop-filter: blur(10px); }
+        
+        /* 💎 核心修复：
+           1. 移除不必要的 transition 对 backdrop-filter 的干扰，让模糊瞬间呈现；
+           2. 仅把 transition 留给 hover 时的位移和边框颜色变化，确保交互依然丝滑。*/
+        .card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px); /* 兼容 iPad / iOS Safari 的关键 */
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 20px; 
+            padding: 30px; 
+            cursor: pointer; 
+            touch-action: auto; 
+            will-change: transform, border-color; /* 告诉浏览器提前做好硬件加速准备 */
+            transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.3s ease; 
+        }
         .card:hover { border-color: var(--accent-color); background: rgba(230, 199, 148, 0.08); transform: translateY(-5px); box-shadow: 0 0 20px rgba(230,199,148,0.1); }
     </style>
 </head>
@@ -47,8 +63,8 @@
 
         <div id="works" class="page">
             <div class="grid">
-                <div class="card" onclick="alert('Electric Motorcycle Analysis')"><h3 style="color: #E6C794;">Electric Motorcycle</h3></div>
-                <div class="card" onclick="alert('Modular Storage System')"><h3 style="color: #E6C794;">Modular Storage</h3></div>
+                <div class="card" onclick="alert('Electric Motorcycle Analysis')"><h3 style="color: #E6C794; font-weight: 400; letter-spacing: 1px;">Electric Motorcycle</h3></div>
+                <div class="card" onclick="alert('Modular Storage System')"><h3 style="color: #E6C794; font-weight: 400; letter-spacing: 1px;">Modular Storage</h3></div>
             </div>
         </div>
     </div>
@@ -70,9 +86,8 @@
         let h = bgCanvas.height = topCanvas.height = window.innerHeight;
 
         const particles = [];
-        const totalParticles = 6500; // 略微增加密度让星河更璀璨
+        const totalParticles = 6500; 
         
-        // 🌌 奢华深空配色矩阵：香槟金、古铜金、星空蓝、极光青、高光白
         const colors = [
             '#E6C794', '#C5A059', '#0066FF', '#00F2FF', '#FFFFFF', 
             'rgba(230, 199, 148, 0.8)', 'rgba(0, 242, 255, 0.8)'
@@ -85,16 +100,15 @@
                 this.x = Math.random() * w; 
                 this.y = Math.random() * h;
                 
-                // 让粒子有大小分层，大粒子像近处的星体，极小粒子像远处的星尘背景
                 const sizeRand = Math.random();
                 if (sizeRand > 0.85) {
-                    this.width = Math.random() * 4 + 2.5;  // 耀眼金/蓝流
+                    this.width = Math.random() * 4 + 2.5;  
                     this.height = Math.random() * 1 + 0.6;
                     this.velocity = Math.random() * 0.4 + 0.15;
                 } else {
-                    this.width = Math.random() * 2 + 1;    // 细腻微光星尘（Shiny 的关键）
+                    this.width = Math.random() * 2 + 1;    
                     this.height = Math.random() * 0.6 + 0.3;
-                    this.velocity = Math.random() * 0.6 + 0.3; // 小粒子流动稍快
+                    this.velocity = Math.random() * 0.6 + 0.3; 
                 }
                 
                 this.color = colors[Math.floor(Math.random() * colors.length)];
@@ -107,10 +121,9 @@
             }
             update(mouse, time) {
                 if (this.alpha < 1) {
-                    this.alpha += 0.004; // 优雅浮现
+                    this.alpha += 0.004; 
                 }
 
-                // 宇宙引力波场动：让波纹形态更加深邃宏大
                 this.angle = Math.sin(time * 0.0008 + this.x * 0.0015) * Math.PI;
                 let baseVx = Math.cos(this.angle) * this.velocity;
                 let baseVy = Math.sin(this.angle) * this.velocity;
@@ -126,7 +139,7 @@
                     this.iy += dy * force * 0.0025;
                 }
 
-                this.ix *= 0.94; // 阻尼感微调，让漂移更丝滑
+                this.ix *= 0.94; 
                 this.iy *= 0.94;
 
                 this.x += baseVx + this.ix;
@@ -142,8 +155,6 @@
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation);
                 ctx.fillStyle = this.color;
-                
-                // 炫光叠加强调
                 ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
                 ctx.restore();
             }
@@ -160,7 +171,6 @@
         function animate() {
             globalTime++;
             
-            // 降低残影底色透明度（0.1 -> 0.07），让粒子的亮线拉得更长更 Shiny，像流星划过
             bgCtx.fillStyle = 'rgba(3, 3, 7, 0.07)';
             bgCtx.fillRect(0, 0, w, h);
             
