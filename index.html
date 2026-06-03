@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Zeke's Design Studio</title>
     <style>
-        :root { --accent-color: #E6C794; --text-color: #ffffff; }
+        :root { --accent-color: #FFE3B3; --text-color: #ffffff; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; background-color: #030307; color: white; font-family: -apple-system, sans-serif; -webkit-overflow-scrolling: touch; }
         
         #bg-canvas, #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -18,9 +18,8 @@
         
         nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(3,3,7,1), rgba(3,3,7,0)); }
         nav button { background: none; border: none; color: #888; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; letter-spacing: 2px; }
-        nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 15px rgba(230,199,148,0.6); }
+        nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 15px rgba(255,227,179,0.6); }
         
-        /* 👑 终极核心修复：彻底丢弃 display: none，改用绝对定位常驻图层 👑 */
         .page { 
             position: absolute; 
             top: 0; 
@@ -30,13 +29,11 @@
             text-align: center; 
             opacity: 0; 
             pointer-events: none; 
-            /* 使用微缩放+平移，让转场极具大厂动效的呼吸感 */
             transform: scale(0.97) translateY(15px); 
             transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: opacity, transform; /* 强制 iPad GPU 开启硬件加速预热 */
+            will-change: opacity, transform; 
         }
         
-        /* 当页面被激活时，瞬间解除点击限制，恢复不透明度和原始大小 */
         .page.active { 
             opacity: 1; 
             pointer-events: auto; 
@@ -46,18 +43,18 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; padding: 40px; max-width: 1000px; margin: 0 auto; }
         
         .card { 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
+            background: rgba(255, 255, 255, 0.02); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.06); 
             border-radius: 20px; 
             padding: 30px; 
             cursor: pointer; 
             touch-action: auto; 
-            transform: translateZ(0); /* 锁定 GPU 独占渲染层 */
+            transform: translateZ(0); 
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background-color 0.3s ease; 
         }
-        .card:hover { border-color: var(--accent-color); background: rgba(230, 199, 148, 0.08); transform: translateY(-5px); box-shadow: 0 0 20px rgba(230,199,148,0.1); }
+        .card:hover { border-color: var(--accent-color); background: rgba(255, 227, 179, 0.06); transform: translateY(-5px); box-shadow: 0 0 25px rgba(255,227,179,0.15); }
     </style>
 </head>
 <body>
@@ -72,20 +69,19 @@
         </nav>
 
         <div id="home" class="page active">
-            <h1 style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #E6C794 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ZEKE'S STUDIO</h1>
+            <h1 style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ZEKE'S STUDIO</h1>
             <p style="color: #555; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Aerodynamics & Structure Design</p>
         </div>
 
         <div id="works" class="page">
             <div class="grid">
-                <div class="card" onclick="alert('Electric Motorcycle Analysis')"><h3 style="color: #E6C794; font-weight: 400; letter-spacing: 1px;">Electric Motorcycle</h3></div>
-                <div class="card" onclick="alert('Modular Storage System')"><h3 style="color: #E6C794; font-weight: 400; letter-spacing: 1px;">Modular Storage</h3></div>
+                <div class="card" onclick="alert('Electric Motorcycle Analysis')"><h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Electric Motorcycle</h3></div>
+                <div class="card" onclick="alert('Modular Storage System')"><h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Modular Storage</h3></div>
             </div>
         </div>
     </div>
 
     <script>
-        // 这一步保持极简，只负责切 class，剩下的丝滑物理和视觉效果全部交给上面的 CSS
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
@@ -98,15 +94,31 @@
         const topCanvas = document.getElementById('top-canvas');
         const topCtx = topCanvas.getContext('2d');
 
-        let w = bgCanvas.width = topCanvas.width = window.innerWidth;
-        let h = bgCanvas.height = topCanvas.height = window.innerHeight;
+        // ⚡ 视网膜（Retina）超清像素适配逻辑
+        const dpr = window.devicePixelRatio || 1;
+        let w = window.innerWidth;
+        let h = window.innerHeight;
+
+        function initCanvasSize() {
+            w = window.innerWidth;
+            h = window.innerHeight;
+            bgCanvas.width = topCanvas.width = w * dpr;
+            bgCanvas.height = topCanvas.height = h * dpr;
+            bgCanvas.style.width = topCanvas.style.width = w + 'px';
+            bgCanvas.style.height = topCanvas.style.height = h + 'px';
+            bgCtx.scale(dpr, dpr);
+            topCtx.scale(dpr, dpr);
+        }
+        initCanvasSize();
+        window.addEventListener('resize', initCanvasSize);
 
         const particles = [];
-        const totalParticles = 6500; 
+        const totalParticles = 6000; 
         
+        // 🌌 极高亮度色彩矩阵：高纯香槟金、荧光极光青、钻石白、超清星空蓝
         const colors = [
-            '#E6C794', '#C5A059', '#0066FF', '#00F2FF', '#FFFFFF', 
-            'rgba(230, 199, 148, 0.8)', 'rgba(0, 242, 255, 0.8)'
+            '#FFE3B3', '#FFC563', '#0099FF', '#00FFFF', '#FFFFFF', 
+            'rgba(255, 227, 179, 0.95)', 'rgba(0, 255, 255, 0.95)'
         ];
         let globalTime = 0;
 
@@ -117,14 +129,15 @@
                 this.y = Math.random() * h;
                 
                 const sizeRand = Math.random();
-                if (sizeRand > 0.85) {
-                    this.width = Math.random() * 4 + 2.5;  
-                    this.height = Math.random() * 1 + 0.6;
-                    this.velocity = Math.random() * 0.4 + 0.15;
+                if (sizeRand > 0.8) {
+                    // 稍微加粗加长光轨，使其凝聚，边缘更凌厉
+                    this.width = Math.random() * 6 + 4;  
+                    this.height = Math.random() * 1.5 + 0.8;
+                    this.velocity = Math.random() * 0.5 + 0.2;
                 } else {
-                    this.width = Math.random() * 2 + 1;    
-                    this.height = Math.random() * 0.6 + 0.3;
-                    this.velocity = Math.random() * 0.6 + 0.3; 
+                    this.width = Math.random() * 3 + 1.5;    
+                    this.height = Math.random() * 0.8 + 0.4;
+                    this.velocity = Math.random() * 0.7 + 0.4; 
                 }
                 
                 this.color = colors[Math.floor(Math.random() * colors.length)];
@@ -136,9 +149,7 @@
                 this.alpha = 0; 
             }
             update(mouse, time) {
-                if (this.alpha < 1) {
-                    this.alpha += 0.004; 
-                }
+                if (this.alpha < 1) this.alpha += 0.008; // 让星光出现得更爽快
 
                 this.angle = Math.sin(time * 0.0008 + this.x * 0.0015) * Math.PI;
                 let baseVx = Math.cos(this.angle) * this.velocity;
@@ -171,6 +182,7 @@
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation);
                 ctx.fillStyle = this.color;
+                // 完美绘制锐利矩形
                 ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
                 ctx.restore();
             }
@@ -187,7 +199,8 @@
         function animate() {
             globalTime++;
             
-            bgCtx.fillStyle = 'rgba(3, 3, 7, 0.07)';
+            // ⚡ 核心提亮与锐化：残影收缩加快（0.07 -> 0.12），消除了模糊感，让光纤边缘根根分明
+            bgCtx.fillStyle = 'rgba(3, 3, 7, 0.12)';
             bgCtx.fillRect(0, 0, w, h);
             
             topCtx.globalCompositeOperation = 'lighter';
