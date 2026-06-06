@@ -7,15 +7,14 @@
     <style>
         :root { --accent-color: #FFE3B3; --text-color: #ffffff; }
         
-        /* 🛑 核心修改：锁定 html 和 body，彻底根除橡皮筋黑边 */
         html, body { 
             margin: 0; 
             padding: 0; 
             width: 100%; 
             height: 100%; 
-            position: fixed; /* 强行锁定视口，使其表现得像原生 iPad App */
-            overflow: hidden; /* 禁止全局出现任何滚动条 */
-            overscroll-behavior: none; /* 彻底禁用全局上下拉回弹效果 */
+            position: fixed; 
+            overflow: hidden; 
+            overscroll-behavior: none; 
             background-color: #030307; 
             color: white; 
             font-family: -apple-system, sans-serif; 
@@ -54,7 +53,6 @@
             transform: scale(1) translateY(0); 
         }
         
-        /* 💎 智能局部滚动网格（完美兼顾炫技与未来作品增多的实用性） */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
@@ -62,12 +60,11 @@
             padding: 20px 40px 60px 40px; 
             max-width: 1000px; 
             margin: 0 auto; 
-            max-height: calc(100vh - 240px); /* 减去顶部导航和留白，精确计算剩余高度 */
-            overflow-y: auto; /* 如果以后卡片塞满了，允许在毛玻璃区域内精准内部滚动 */
-            overscroll-behavior: contain; /* 滚动到头时，绝对不把滚动惯性传递给背景层 */
+            max-height: calc(100vh - 240px); 
+            overflow-y: auto; 
+            overscroll-behavior: contain; 
             -webkit-overflow-scrolling: touch;
         }
-        /* 隐藏局部滚动时略显累赘的滚动条，让界面更纯净 */
         .grid::-webkit-scrollbar { display: none; }
         
         .card { 
@@ -146,7 +143,9 @@
             '#FFE3B3', '#FFC563', '#0099FF', '#00FFFF', '#FFFFFF', 
             'rgba(255, 227, 179, 0.95)', 'rgba(0, 255, 255, 0.95)'
         ];
+        
         let globalTime = 0;
+        let lastTime = performance.now(); // 用于精确捕获硬件刷新率时间戳
 
         class Particle {
             constructor() { this.reset(); }
@@ -173,8 +172,10 @@
                 this.iy = 0;
                 this.alpha = 0; 
             }
-            update(mouse, time) {
-                if (this.alpha < 1) this.alpha += 0.008; 
+            
+            // ⚡ 核心升级：传入 dt (Delta Time 步长修正系数)
+            update(mouse, time, dt) {
+                if (this.alpha < 1) this.alpha += 0.008 * dt; 
 
                 this.angle = Math.sin(time * 0.0008 + this.x * 0.0015) * Math.PI;
                 let baseVx = Math.cos(this.angle) * this.velocity;
@@ -187,19 +188,24 @@
                 
                 if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    this.ix += dx * force * 0.0025; 
-                    this.iy += dy * force * 0.0025;
+                    // 鼠标吸引速度乘上 dt，消除高刷屏的加倍拉扯感
+                    this.ix += dx * force * 0.0025 * dt; 
+                    this.iy += dy * force * 0.0025 * dt;
                 }
 
-                this.ix *= 0.94; 
-                this.iy *= 0.94;
+                // 💎 大幅提升惯性效果：基础摩擦力由 0.94 调至超流态的 0.968
+                // 并利用 Math.pow(系数, dt) 确保在任何高刷新率屏幕上滑行距离绝对一致！
+                let currentFriction = Math.pow(0.968, dt);
+                this.ix *= currentFriction; 
+                this.iy *= currentFriction;
 
-                this.x += baseVx + this.ix;
-                this.y += baseVy + this.iy;
+                // 位移步长乘以 dt
+                this.x += (baseVx + this.ix) * dt;
+                this.y += (baseVy + this.iy) * dt;
 
                 if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
                 
-                this.rotation += 0.015 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.004;
+                this.rotation += (0.015 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.004) * dt;
             }
             draw(ctx) {
                 ctx.save();
@@ -220,11 +226,19 @@
             const t = e.touches[0]; mouse.x = t.clientX; mouse.y = t.clientY; 
         }, { passive: true });
 
-        // 🛑 核心微调：在极其激烈的滑动拖拽下，利用系统的 touchend 事件兜底清除潜在的浏览器视口偏移
         window.addEventListener('touchend', () => { window.scrollTo(0, 0); });
 
-        function animate() {
-            globalTime++;
+        // ⚡ 物理引擎级渲染循环
+        function animate(currentTime) {
+            if (!currentTime) currentTime = performance.now();
+            
+            // 1. 计算当前屏幕刷新率对应的步长权重（以标准 60fps 即 16.66ms 为基准 1.0）
+            let dt = (currentTime - lastTime) / 16.666;
+            if (dt > 3.0) dt = 1.0; // 兜底保护：防止切后台回来后粒子发生巨大瞬移
+            lastTime = currentTime;
+
+            // 2. 随绝对时间均匀累加时间轴（彻底根除自运动在 PC 变快的问题）
+            globalTime += dt;
             
             bgCtx.fillStyle = 'rgba(3, 3, 7, 0.12)';
             bgCtx.fillRect(0, 0, w, h);
@@ -233,12 +247,12 @@
             topCtx.clearRect(0, 0, w, h);
 
             particles.forEach(p => {
-                p.update(mouse, globalTime);
+                p.update(mouse, globalTime, dt);
                 p.draw(topCtx);
             });
             requestAnimationFrame(animate);
         }
-        animate();
+        requestAnimationFrame(animate);
     </script>
 </body>
 </html>
