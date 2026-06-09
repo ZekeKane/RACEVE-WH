@@ -145,7 +145,7 @@
         ];
         
         let globalTime = 0;
-        let lastTime = performance.now();
+        let lastTime = performance.now(); // 统一采用高精度时间
 
         class Particle {
             constructor() { this.reset(); }
@@ -173,7 +173,6 @@
                 this.alpha = 0; 
             }
             
-            // ⚡ 性能优化：将每帧固定的 breathingRadius 和 currentFriction 直接传进来，避免循环内重复开销
             update(mouse, time, dt, breathingRadius, currentFriction) {
                 if (this.alpha < 1) this.alpha += 0.008 * dt; 
 
@@ -202,15 +201,15 @@
                 this.rotation += (0.015 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.004) * dt;
             }
             
-            // ⚡ 极客优化：使用 setTransform 替代 save/restore 栈操作，直接向硬件提交矩阵计算
-            draw(ctx, dpr) {
-                let cos = Math.cos(this.rotation);
-                let sin = Math.sin(this.rotation);
-                
-                ctx.setTransform(cos * dpr, sin * dpr, -sin * dpr, cos * dpr, this.x * dpr, this.y * dpr);
+            // 🛡️ 安全回滚：换回硬件极为熟悉且深度优化的标准渲染管线，彻底根除闪烁
+            draw(ctx) {
+                ctx.save();
                 ctx.globalAlpha = this.alpha;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
                 ctx.fillStyle = this.color;
                 ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                ctx.restore();
             }
         }
 
@@ -224,11 +223,13 @@
 
         window.addEventListener('touchend', () => { window.scrollTo(0, 0); });
 
-        function animate(currentTime) {
-            if (!currentTime) currentTime = performance.now();
-            
+        function animate() {
+            let currentTime = performance.now();
+            // 计算时间步长
             let dt = (currentTime - lastTime) / 16.666;
-            if (dt > 3.0) dt = 1.0; 
+            
+            // 🛡️ 核心限幅：锁死步长边界，防止任何时间差带来的突发粒子暴走或闪退感
+            if (dt > 2.0 || dt < 0.1 || isNaN(dt)) dt = 1.0; 
             lastTime = currentTime;
 
             globalTime += dt;
@@ -239,17 +240,14 @@
             topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
 
-            // ⚡ 核心提速：在外部计算一帧内完全固定不变的变量
+            // 完美保留高刷下不堆积开销的提取设计
             let breathingRadius = 160 + Math.sin(globalTime * 0.002) * 90;
             let currentFriction = Math.pow(0.968, dt);
 
             particles.forEach(p => {
                 p.update(mouse, globalTime, dt, breathingRadius, currentFriction);
-                p.draw(topCtx, dpr);
+                p.draw(topCtx);
             });
-
-            // 绘制完成后，单次重置画布全局转换矩阵即可
-            topCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
             requestAnimationFrame(animate);
         }
