@@ -145,7 +145,7 @@
         ];
         
         let globalTime = 0;
-        let lastTime = performance.now(); // 用于精确捕获硬件刷新率时间戳
+        let lastTime = performance.now();
 
         class Particle {
             constructor() { this.reset(); }
@@ -173,33 +173,27 @@
                 this.alpha = 0; 
             }
             
-            // ⚡ 核心升级：传入 dt (Delta Time 步长修正系数)
-            update(mouse, time, dt) {
+            // ⚡ 性能优化：将每帧固定的 breathingRadius 和 currentFriction 直接传进来，避免循环内重复开销
+            update(mouse, time, dt, breathingRadius, currentFriction) {
                 if (this.alpha < 1) this.alpha += 0.008 * dt; 
 
                 this.angle = Math.sin(time * 0.0008 + this.x * 0.0015) * Math.PI;
                 let baseVx = Math.cos(this.angle) * this.velocity;
                 let baseVy = Math.sin(this.angle) * this.velocity;
 
-                let breathingRadius = 160 + Math.sin(time * 0.002) * 90;
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 
                 if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    // 鼠标吸引速度乘上 dt，消除高刷屏的加倍拉扯感
                     this.ix += dx * force * 0.0025 * dt; 
                     this.iy += dy * force * 0.0025 * dt;
                 }
 
-                // 💎 大幅提升惯性效果：基础摩擦力由 0.94 调至超流态的 0.968
-                // 并利用 Math.pow(系数, dt) 确保在任何高刷新率屏幕上滑行距离绝对一致！
-                let currentFriction = Math.pow(0.968, dt);
                 this.ix *= currentFriction; 
                 this.iy *= currentFriction;
 
-                // 位移步长乘以 dt
                 this.x += (baseVx + this.ix) * dt;
                 this.y += (baseVy + this.iy) * dt;
 
@@ -207,14 +201,16 @@
                 
                 this.rotation += (0.015 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.004) * dt;
             }
-            draw(ctx) {
-                ctx.save();
+            
+            // ⚡ 极客优化：使用 setTransform 替代 save/restore 栈操作，直接向硬件提交矩阵计算
+            draw(ctx, dpr) {
+                let cos = Math.cos(this.rotation);
+                let sin = Math.sin(this.rotation);
+                
+                ctx.setTransform(cos * dpr, sin * dpr, -sin * dpr, cos * dpr, this.x * dpr, this.y * dpr);
                 ctx.globalAlpha = this.alpha;
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
                 ctx.fillStyle = this.color;
                 ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
-                ctx.restore();
             }
         }
 
@@ -228,16 +224,13 @@
 
         window.addEventListener('touchend', () => { window.scrollTo(0, 0); });
 
-        // ⚡ 物理引擎级渲染循环
         function animate(currentTime) {
             if (!currentTime) currentTime = performance.now();
             
-            // 1. 计算当前屏幕刷新率对应的步长权重（以标准 60fps 即 16.66ms 为基准 1.0）
             let dt = (currentTime - lastTime) / 16.666;
-            if (dt > 3.0) dt = 1.0; // 兜底保护：防止切后台回来后粒子发生巨大瞬移
+            if (dt > 3.0) dt = 1.0; 
             lastTime = currentTime;
 
-            // 2. 随绝对时间均匀累加时间轴（彻底根除自运动在 PC 变快的问题）
             globalTime += dt;
             
             bgCtx.fillStyle = 'rgba(3, 3, 7, 0.12)';
@@ -246,10 +239,18 @@
             topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
 
+            // ⚡ 核心提速：在外部计算一帧内完全固定不变的变量
+            let breathingRadius = 160 + Math.sin(globalTime * 0.002) * 90;
+            let currentFriction = Math.pow(0.968, dt);
+
             particles.forEach(p => {
-                p.update(mouse, globalTime, dt);
-                p.draw(topCtx);
+                p.update(mouse, globalTime, dt, breathingRadius, currentFriction);
+                p.draw(topCtx, dpr);
             });
+
+            // 绘制完成后，单次重置画布全局转换矩阵即可
+            topCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
             requestAnimationFrame(animate);
         }
         requestAnimationFrame(animate);
