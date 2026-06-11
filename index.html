@@ -344,8 +344,8 @@
                 
                 if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    this.ix += dx * force * 0.0025 * dt; 
-                    this.iy += dy * force * 0.0025 * dt;
+                    this.ix += dx * force * 0.0015 * dt; 
+                    this.iy += dy * force * 0.0015 * dt;
                 }
 
                 this.ix *= currentFriction; 
