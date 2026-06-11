@@ -91,40 +91,45 @@
             display: flex;
             flex-direction: column;
         }
-        
-    /* ==================== 强对比版展开背景 ==================== */
+/* ==================== 舒适协调版（Warm Obsidian 暖黑石） ==================== */
         .card.expandable.is-expanded {
             grid-column: 1 / -1; 
             
-            /* 🌟 1. 极致黑底：几乎 100% 的纯黑深空渐变，彻底吞没底部穿透的粒子 */
-            background: linear-gradient(180deg, rgba(12, 12, 15, 0.98) 0%, rgba(2, 2, 4, 1) 100%);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            /* 🌟 1. 温润的深色基底：带有极微弱的暖灰调，完美呼应金色的 Accent，告别死板的纯黑 */
+            background: linear-gradient(145deg, rgba(30, 28, 34, 0.85) 0%, rgba(15, 14, 18, 0.95) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             
-            /* 🌟 2. 锐利霓虹边框：大幅提高边框亮度和不透明度，死死框住视觉焦点 */
-            border: 1px solid rgba(255, 227, 179, 0.6);
+            /* 🌟 2. 优雅的描边：舍弃刺眼的霓虹发光，换成克制的微光 */
+            border: 1px solid rgba(255, 227, 179, 0.15);
             
-            /* 🌟 3. 发光切割阴影：
-               - 第一层 (rgba(0,0,0,1)): 纯黑实体阴影，彻底隔离背景
-               - 第二层 (0 0 50px): 主题色的强外发光光晕
-               - 第三层 (inset): 内部高亮切边 */
+            /* 🌟 3. 柔和的环境阴影：内敛的下坠阴影，外加顶部的微弱反光（玻璃倒角感） */
             box-shadow: 
-                0 40px 80px rgba(0, 0, 0, 1), 
-                0 0 50px rgba(255, 227, 179, 0.15),
-                inset 0 1px 2px rgba(255, 227, 179, 0.4);
+                0 24px 64px rgba(0, 0, 0, 0.6), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.08);
         }
 
-        /* ==================== 提亮正文，配合极致黑底 ==================== */
-        .card.expandable.is-expanded .project-section p {
-            /* 🌟 从原本偏暗的 #b0b0b5 提亮到 #d1d1d6，在纯黑底色上阅读更锐利刺眼 */
-            color: #d1d1d6; 
-            font-weight: 300;
-        }
-
+        /* 🌟 4. 正文与标题排版：降低对比度刺眼感，采用暖灰（Warm Gray）体系 */
         .card.expandable.is-expanded .project-section h4 {
-            /* 🌟 标题保持纯白，但增加极其微弱的文字阴影，让它像自发光一样凸显 */
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+            color: #F0EBE1; /* 柔和的羊皮纸白，去掉了发光，回归高级排版 */
+            font-weight: 400;
+        }
+
+        .card.expandable.is-expanded .project-section p {
+            color: #A8A39D; /* 舒适的暖灰色，长时间阅读不累眼 */
+            font-weight: 300;
+            line-height: 1.7; /* 稍微增加了行距，让文字呼吸感更强 */
+        }
+
+        /* 🌟 5. 专属数据引用框：渐变融合，极致协调 */
+        .card.expandable.is-expanded .project-section blockquote {
+            border-left: 3px solid rgba(255, 227, 179, 0.6);
+            /* 将底色改为向右逐渐消失的渐变，视觉上更轻盈透气 */
+            background: linear-gradient(90deg, rgba(255, 227, 179, 0.08) 0%, rgba(255, 227, 179, 0) 100%);
+            color: #D1CDCA;
+            padding: 14px 20px;
+            margin-top: 16px;
+            border-radius: 0; /* 去掉圆角，更显学术严谨 */
         }
         .card-header {
             display: flex;
