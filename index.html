@@ -92,13 +92,17 @@
             flex-direction: column;
         }
         
-        .card.expandable.is-expanded {
+    .card.expandable.is-expanded {
             grid-column: 1 / -1; 
-            background: rgba(255, 227, 179, 0.04);
+            /* 🌟 核心修改：加深背景色底色，提供阅读对比度 */
+            background: rgba(12, 12, 18, 0.75); 
+            /* 🌟 增强毛玻璃的模糊度和色彩饱和度 */
+            backdrop-filter: blur(24px) saturate(120%);
+            -webkit-backdrop-filter: blur(24px) saturate(120%);
             border-color: var(--accent-color);
-            box-shadow: 0 0 35px rgba(255,227,179,0.08);
+            /* 🌟 添加更立体的阴影，让卡片在粒子层上方悬浮得更稳 */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255,227,179,0.08);
         }
-        
         .card-header {
             display: flex;
             justify-content: space-between;
