@@ -334,7 +334,7 @@
             update(mouse, time, dt, breathingRadius, currentFriction) {
                 if (this.alpha < 1) this.alpha += 0.008 * dt; 
 
-                this.angle = Math.sin(time * 0.0008 + this.x * 0.0015) * Math.PI;
+                this.angle = Math.sin(time * 0.0012 + this.x * 0.0035) * Math.PI;
                 let baseVx = Math.cos(this.angle) * this.velocity;
                 let baseVy = Math.sin(this.angle) * this.velocity;
 
@@ -344,8 +344,8 @@
                 
                 if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    this.ix += dx * force * 0.0015 * dt; 
-                    this.iy += dy * force * 0.0015 * dt;
+                    this.ix += dx * force * 0.0035 * dt; 
+                    this.iy += dy * force * 0.0035 * dt;
                 }
 
                 this.ix *= currentFriction; 
