@@ -94,14 +94,25 @@
         
     .card.expandable.is-expanded {
             grid-column: 1 / -1; 
-            /* 🌟 核心修改：加深背景色底色，提供阅读对比度 */
-            background: rgba(12, 12, 18, 0.75); 
-            /* 🌟 增强毛玻璃的模糊度和色彩饱和度 */
-            backdrop-filter: blur(24px) saturate(120%);
-            -webkit-backdrop-filter: blur(24px) saturate(120%);
-            border-color: var(--accent-color);
-            /* 🌟 添加更立体的阴影，让卡片在粒子层上方悬浮得更稳 */
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255,227,179,0.08);
+            
+            /* 🌟 1. 空间渐变底色：从左上角的微亮过渡到右下角的深邃，打破单色的死板 */
+            background: linear-gradient(145deg, rgba(25, 25, 30, 0.85) 0%, rgba(10, 10, 12, 0.95) 100%);
+            
+            /* 🌟 2. 纯净毛玻璃：去掉了 saturate，防止底层的高亮粒子颜色溢出导致画面变脏 */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            
+            /* 🌟 3. 柔和边框：不再用纯色的高亮边框，而是降低透明度，让它看起来更顺滑 */
+            border: 1px solid rgba(255, 227, 179, 0.25);
+            
+            /* 🌟 4. 顶级复合阴影（重点！）：
+               - 第一层 (0 30px 60px)：超大范围的深黑环境阴影，把底部的亮光死死压住；
+               - 第二层 (0 0 40px)：外围的主题色微弱光晕；
+               - 第三层 (inset)：内侧顶部的高光白线，模拟真实玻璃被光线击中的物理切边！ */
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.8), 
+                0 0 40px rgba(255, 227, 179, 0.05),
+                inset 0 1px 1px rgba(255, 255, 255, 0.15);
         }
         .card-header {
             display: flex;
