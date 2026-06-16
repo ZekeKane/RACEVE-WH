@@ -193,21 +193,17 @@
                     let dirX = dx / dist;
                     let dirY = dy / dist;
                     
-                    // 🪄 1. 稍微放缓向心加速度（从 0.58 调至 0.48），使彩带边缘收拢更具流线性
-                    let pullStrength = force * 0.48; 
+                    // 🧲 提高向心加速度系数：从 0.42 提升至 0.58，汇聚更有力
+                    let pullStrength = force * 0.58; 
                     this.ix += dirX * pullStrength * dt;
                     this.iy += dirY * pullStrength * dt;
                     
-                    // 🌊 2. 放宽核心圈的粘滞系数限制（从 0.09 降至 0.05）：
-                    // 粒子进入中心后依然保留部分灵动惯性，自然甩出一条具有呼吸感的松弛尾迹
-                    let coreFriction = Math.pow(0.968 - (0.05 * force), dt);
+                    let coreFriction = Math.pow(0.968 - (0.09 * force), dt);
                     this.ix *= coreFriction;
                     this.iy *= coreFriction;
                     
-                    // 🍃 3. 适度允许外部混沌背景风干扰穿透（压制率从 0.85 降低至 0.65）：
-                    // 让一部分环境流速在核心生效，尾迹彩带因此变得微飘、更具空气感
-                    baseVx *= (1 - force * 0.65);
-                    baseVy *= (1 - force * 0.65);
+                    baseVx *= (1 - force * 0.85);
+                    baseVy *= (1 - force * 0.85);
                 } else {
                     this.ix *= currentFriction; 
                     this.iy *= currentFriction;
