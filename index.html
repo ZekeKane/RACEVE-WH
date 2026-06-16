@@ -145,7 +145,7 @@
         ];
         
         let globalTime = 0;
-        let lastTime = performance.now();
+        let lastTime = performance.now(); // 统一采用高精度时间
 
         class Particle {
             constructor() { this.reset(); }
@@ -155,91 +155,68 @@
                 
                 const sizeRand = Math.random();
                 if (sizeRand > 0.8) {
-                    this.width = Math.random() * 5 + 3;  
-                    this.height = Math.random() * 1.2 + 0.6;
-                    this.velocity = Math.random() * 0.4 + 0.2;
+                    this.width = Math.random() * 6 + 4;  
+                    this.height = Math.random() * 1.5 + 0.8;
+                    this.velocity = Math.random() * 0.5 + 0.2;
                 } else {
-                    this.width = Math.random() * 2.5 + 1.2;    
-                    this.height = Math.random() * 0.7 + 0.3;
-                    this.velocity = Math.random() * 0.6 + 0.3; 
+                    this.width = Math.random() * 3 + 1.5;    
+                    this.height = Math.random() * 0.8 + 0.4;
+                    this.velocity = Math.random() * 0.7 + 0.4; 
                 }
                 
                 this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.alpha = 0; 
-                
-                // 🎲 注入粒子独立种子，从根本上抹除任何方向的集体机械对齐
-                this.seedX = Math.random() * 100;
-                this.seedY = Math.random() * 100;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.angle = Math.random() * Math.PI * 2;
                 
                 this.ix = 0;
                 this.iy = 0;
-                this.vx = 0;
-                this.vy = 0;
-                this.rotation = 0;
+                this.alpha = 0; 
+
+                // ✨ 新增：为每个粒子注入专属的、各向同性的随机流动空间种子
+                this.seedX = Math.random() * 100;
+                this.seedY = Math.random() * 100;
             }
             
             update(mouse, time, dt, breathingRadius, currentFriction) {
-                if (this.alpha < 1) this.alpha += 0.01 * dt; 
+                if (this.alpha < 1) this.alpha += 0.008 * dt; 
 
-                // 🌌 纯有机全向自然流体算法：结合独立种子，360度各向同性任意发散开
-                let angleX = Math.sin(this.x * 0.002 + time * 0.0004 + this.seedX);
-                let angleY = Math.cos(this.y * 0.002 + time * 0.0003 + this.seedY);
-                let baseAngle = (angleX + angleY) * Math.PI;
+                // ✨ 优化：引入二维交叉流体场算法。结合独立种子，让粒子在未受干扰时，呈现出浑然一体且完全无定向的纯随机自由漫游
+                let freq1 = Math.sin(this.x * 0.0015 + time * 0.0005 + this.seedX);
+                let freq2 = Math.cos(this.y * 0.0015 + time * 0.0004 + this.seedY);
+                this.angle = (freq1 + freq2) * Math.PI;
 
-                let baseVx = Math.cos(baseAngle) * this.velocity;
-                let baseVy = Math.sin(baseAngle) * this.velocity;
+                let baseVx = Math.cos(this.angle) * this.velocity;
+                let baseVy = Math.sin(this.angle) * this.velocity;
 
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 
-                let frictionMod = currentFriction;
-
-                if (dist < breathingRadius && dist > 4) {
+                if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    
-                    // 🧲 引力倍增（直扑光标）
-                    let pull = force * 0.015 * dt; 
-                    this.ix += dx * pull;
-                    this.iy += dy * pull;
-
-                    // 🌀 引力弹弓切线力：制造高级的绕流缠绕，产生极致的拉扯惯性
-                    let swirl = force * 0.35 * dt;
-                    this.ix += (-dy / dist) * swirl;
-                    this.iy += (dx / dist) * swirl;
-
-                    // 🏎️ 动态摩擦力消减：越接近中心，保留的速度惯性越恐怖，甩尾更疯狂
-                    frictionMod = Math.pow(0.972 + force * 0.016, dt); 
+                    this.ix += dx * force * 0.0025 * dt; 
+                    this.iy += dy * force * 0.0025 * dt;
                 }
 
-                this.ix *= frictionMod;
-                this.iy *= frictionMod;
+                this.ix *= currentFriction; 
+                this.iy *= currentFriction;
 
-                // 综合速度向量
-                this.vx = baseVx + this.ix;
-                this.vy = baseVy + this.iy;
+                this.x += (baseVx + this.ix) * dt;
+                this.y += (baseVy + this.iy) * dt;
 
-                this.x += this.vx * dt;
-                this.y += this.vy * dt;
-
-                if(this.x < -50 || this.x > w + 50 || this.y < -50 || this.y > h + 50) this.reset();
+                if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+                
+                this.rotation += (0.015 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.004) * dt;
             }
             
+            // 🛡️ 安全回滚：换回硬件极为熟悉且深度优化的标准渲染管线，彻底根除闪烁
             draw(ctx) {
-                // 🧭 核心进化：让粒子角度完全咬合飞行航向，呈现顶级风洞流线感
-                this.rotation = Math.atan2(this.vy, this.vx);
-
                 ctx.save();
                 ctx.globalAlpha = this.alpha;
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation);
                 ctx.fillStyle = this.color;
-                
-                // 🚀 核心进化：根据实时速度，动态拉伸长度（极速拉丝，慢速回归星尘）
-                let currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-                let stretch = 1 + Math.min(currentSpeed * 0.2, 4.0); 
-
-                ctx.fillRect(-this.width * stretch / 2, -this.height / 2, this.width * stretch, this.height);
+                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
                 ctx.restore();
             }
         }
@@ -256,8 +233,10 @@
 
         function animate() {
             let currentTime = performance.now();
+            // 计算时间步长
             let dt = (currentTime - lastTime) / 16.666;
             
+            // 🛡️ 核心限幅：锁死步长边界，防止任何时间差带来的突发粒子暴走或闪退感
             if (dt > 2.0 || dt < 0.1 || isNaN(dt)) dt = 1.0; 
             lastTime = currentTime;
 
@@ -269,6 +248,7 @@
             topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
 
+            // 完美保留高刷下不堆积开销的提取设计
             let breathingRadius = 160 + Math.sin(globalTime * 0.002) * 90;
             let currentFriction = Math.pow(0.968, dt);
 
