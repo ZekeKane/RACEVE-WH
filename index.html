@@ -153,7 +153,6 @@
                 this.x = Math.random() * w; 
                 this.y = Math.random() * h;
                 
-                // 完美保留你原有的精细粒子分层设计
                 const sizeRand = Math.random();
                 if (sizeRand > 0.8) {
                     this.width = Math.random() * 6 + 4;  
@@ -167,7 +166,7 @@
                 
                 this.color = colors[Math.floor(Math.random() * colors.length)];
                 this.rotation = Math.random() * Math.PI * 2;
-                this.angle = Math.random() * Math.PI * 2;
+                this.angle = 0;
                 
                 this.ix = 0;
                 this.iy = 0;
@@ -177,10 +176,12 @@
             update(mouse, time, dt, breathingRadius, currentFriction) {
                 if (this.alpha < 1) this.alpha += 0.008 * dt; 
 
-                // 🌌 核心进化：全局多维混沌流场。让彩带保持“集体行动”的同时，大方向在360度里完全随机漂移变幻
-                let flowDirX = Math.sin(time * 0.0007) * 1.5;
-                let flowDirY = Math.cos(time * 0.0005 + 1.0) * 1.2;
-                this.angle = Math.sin(this.x * 0.0025 + flowDirX) + Math.cos(this.y * 0.0025 + flowDirY);
+                // 🌌 核心改动 1：全局彩带集体运动方向完全随机演变（打破固定向上）
+                // 使用大尺度的多重正弦余弦复合，使全屏幕的自然风向随时间做360度不可预测的缓慢流体转弯
+                let globalFlowAngle = Math.sin(time * 0.0015) * Math.cos(time * 0.0009) * Math.PI * 2;
+                
+                // 维持粒子在集体流动中的位置微调，保持彩带凝聚形态
+                this.angle = globalFlowAngle + Math.sin(this.x * 0.001 + this.y * 0.001) * 0.2;
 
                 let baseVx = Math.cos(this.angle) * this.velocity;
                 let baseVy = Math.sin(this.angle) * this.velocity;
@@ -191,9 +192,9 @@
                 
                 if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    // 🧲 精确增强吸附力：从 0.0025 提升至 0.0048，吸附反应更敏锐、凝聚感更强
-                    this.ix += dx * force * 0.0048 * dt; 
-                    this.iy += dy * force * 0.0048 * dt;
+                    // 🧲 核心改动 2：大幅强化光标对彩带的吸引力，从原来的 0.0025 暴增至 0.018！
+                    this.ix += dx * force * 0.018 * dt; 
+                    this.iy += dy * force * 0.018 * dt;
                 }
 
                 this.ix *= currentFriction; 
