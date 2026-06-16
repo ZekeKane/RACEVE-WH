@@ -176,7 +176,6 @@
             update(mouse, time, dt, breathingRadius, currentFriction) {
                 if (this.alpha < 1) this.alpha += 0.008 * dt; 
 
-                // 全局混沌流场保持运作
                 let flowDirX = Math.sin(time * 0.0007) * 1.5;
                 let flowDirY = Math.cos(time * 0.0005 + 1.0) * 1.2;
                 this.angle = Math.sin(this.x * 0.0025 + flowDirX) + Math.cos(this.y * 0.0025 + flowDirY);
@@ -188,31 +187,24 @@
                 let dy = mouse.y - this.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 
-                // 🛑 核心重构：高密度引力陷阱算法
                 if (dist < breathingRadius && dist > 1) {
-                    let force = (breathingRadius - dist) / breathingRadius; // 越靠近核心越接近 1
+                    let force = (breathingRadius - dist) / breathingRadius; 
                     
-                    // 🧲 1. 归一化向量：使近距离的拉力保持峰值，消除震荡
                     let dirX = dx / dist;
                     let dirY = dy / dist;
                     
-                    // 强力赋予向心加速度
-                    let pullStrength = force * 0.42; 
+                    // 🧲 提高向心加速度系数：从 0.42 提升至 0.58，汇聚更有力
+                    let pullStrength = force * 0.58; 
                     this.ix += dirX * pullStrength * dt;
                     this.iy += dirY * pullStrength * dt;
                     
-                    // 🌊 2. 核心粘滞阻尼（Fluid Trapping）：
-                    // 越接近中心，阻尼越重，强行吃掉粒子的动能，使其像落入糖浆一样紧密黏附在光标周围
                     let coreFriction = Math.pow(0.968 - (0.09 * force), dt);
                     this.ix *= coreFriction;
                     this.iy *= coreFriction;
                     
-                    // 🌀 3. 屏蔽全局混沌流场：
-                    // 越靠近中心，背景噪波的干扰权重降得越低（最高压制 85% 噪波），防止彩带被扯散
                     baseVx *= (1 - force * 0.85);
                     baseVy *= (1 - force * 0.85);
                 } else {
-                    // 控制区外恢复默认全局缓动
                     this.ix *= currentFriction; 
                     this.iy *= currentFriction;
                 }
