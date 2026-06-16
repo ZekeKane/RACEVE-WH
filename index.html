@@ -80,119 +80,6 @@
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background-color 0.3s ease; 
         }
         .card:hover { border-color: var(--accent-color); background: rgba(255, 227, 179, 0.06); transform: translateY(-5px); box-shadow: 0 0 25px rgba(255,227,179,0.15); }
-
-        /* ======================================================== */
-        /* AURA-T 交互扩展系统样式（新增） */
-        /* ======================================================== */
-        .card.expandable {
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
-            text-align: left;
-            display: flex;
-            flex-direction: column;
-        }
-/* ==================== 终极抗噪版（Anti-Motion Warm Obsidian） ==================== */
-        .card.expandable.is-expanded {
-            grid-column: 1 / -1; 
-            
-            /* 🌟 1. 微调遮光率：将底色不透明度从 0.85 稍微提至 0.92，压制粒子的刺眼强光 */
-            background: linear-gradient(145deg, rgba(28, 26, 31, 0.92) 0%, rgba(13, 12, 16, 0.97) 100%);
-            
-            /* 🌟 2. 暴击级高斯模糊（核心！）：从 24px 直接拉满到 45px！
-               这会把后面飞过的飞流粒子彻底液化、溶解。它不再是“一个个在动的小点”，
-               而是变成了像天边极光一样、没有任何形状和动态感的丝滑环境晕染，完全不干扰视线 */
-            backdrop-filter: blur(45px);
-            -webkit-backdrop-filter: blur(45px);
-            
-            /* 🌟 3. 极其克制的半透明温润边框 */
-            border: 1px solid rgba(255, 227, 179, 0.18);
-            
-            /* 🌟 4. 三维沉降阴影：给卡片垫一层厚重的黑影，把底部的粒子层视觉上“往下压” */
-            box-shadow: 
-                0 30px 70px rgba(0, 0, 0, 0.8), 
-                inset 0 1px 1px rgba(255, 255, 255, 0.08);
-        }
-
-        /* ==================== 文字排版微调 ==================== */
-        .card.expandable.is-expanded .project-section h4 {
-            color: #F5EFE6;
-            font-weight: 500; /* 稍微加粗一点点，在毛玻璃上更有骨架感 */
-            letter-spacing: 0.5px;
-        }
-
-        .card.expandable.is-expanded .project-section p {
-            color: #B2ADA5; /* 稍微提亮一点点暖灰，确保字字清晰 */
-            font-weight: 300;
-            line-height: 1.75;
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .card-arrow {
-            color: var(--accent-color);
-            font-size: 14px;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            opacity: 0.6;
-        }
-        
-        .card.expandable.is-expanded .card-arrow {
-            transform: rotate(180deg);
-            opacity: 1;
-        }
-        
-        .card-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-            opacity: 0;
-        }
-        
-        .card.expandable.is-expanded .card-content {
-            max-height: 2000px;
-            opacity: 1;
-            margin-top: 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 20px;
-        }
-        
-        .project-section {
-            margin-bottom: 28px;
-            transform: translateY(15px);
-            transition: transform 0.5s ease 0.1s;
-        }
-        
-        .card.expandable.is-expanded .project-section {
-            transform: translateY(0);
-        }
-        
-        .project-section h4 {
-            color: #ffffff;
-            font-size: 1.15rem;
-            margin: 0 0 10px 0;
-            letter-spacing: 1px;
-            font-weight: 400;
-        }
-        
-        .project-section p {
-            color: #b0b0b5;
-            font-size: 0.92rem;
-            line-height: 1.65;
-            margin: 0;
-        }
-        
-        .project-section blockquote {
-            border-left: 3px solid var(--accent-color);
-            background: rgba(255, 227, 179, 0.03);
-            padding: 12px 18px;
-            margin: 14px 0 0 0;
-            font-size: 0.88rem;
-            color: #e5e5ea;
-            border-radius: 0 12px 12px 0;
-            line-height: 1.5;
-        }
     </style>
 </head>
 <body>
@@ -213,44 +100,7 @@
 
         <div id="works" class="page">
             <div class="grid">
-                
-                <!-- 升级后的 AURA-T 交互系统卡片 -->
-                <div class="card expandable" id="project-aura" style="touch-action: auto;">
-                    <div class="card-header" onclick="window.toggleProject('project-aura')">
-                        <h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin: 0;">AURA-T : 车辆状态视觉透明化系统</h3>
-                        <span class="card-arrow">▼</span>
-                    </div>
-                    
-                    <div class="card-content">
-                        <p style="color: #666; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 24px 0;">Aerodynamics & Cognitive Interaction Design</p>
-                        
-                        <div class="project-section">
-                            <h4>🛠 一、 Problem Statement & Research Background</h4>
-                            <p>在通往全自动驾驶的混行过渡期内，道路呈现人机共驾交替的复杂状态。传统车辆的“信息盲盒”特质极易引发路怒和盲盒博弈，造成不必要的幽灵拥堵与城市通行效率受阻。AURA-T 旨在建立一种强制性、不可干预的车外认知交互媒介。</p>
-                            <blockquote>
-                                📊 <strong>Data Support //</strong> 行业数据表明，因路怒引发的情绪化激进行车占城市伤亡事故的 30%-35%。单车的非理性急刹在交通流中会引发向后扩散的“幽灵拥堵”，使城市通勤效率下降达 25%。
-                            </blockquote>
-                        </div>
-
-                        <div class="project-section">
-                            <h4>🧠 二、 System Architecture & Feasibility</h4>
-                            <p>系统采用无感感知的全加密三层闭环架构。输入端依赖车内现有的 DMS/OMS 红外摄像头进行多模态情绪算法监测，核心计算控制芯片采用车载硬件级加密安全芯片（HSM），彻底杜绝人为私自篡改或伪造行车信号协议的可能。</p>
-                            <blockquote>
-                                📊 <strong>Data Support //</strong> 2026年出厂智能车DMS装车率已超越 65%（受交规及五星碰撞标准驱动）。车辆底层总线（CAN-FD/车载乙太网）延迟控制在 100ms 以内，改造成本逼近于 0。
-                            </blockquote>
-                        </div>
-
-                        <div class="project-section">
-                            <h4>🎨 三、 Human Factors & Visual Guideline</h4>
-                            <p>外饰灯光语言基于人类直觉认知开发：青色（Cyan）符合 SAE 标准，指代 AI 平稳托管；呼吸感渐变橘光提示周围车辆该车驾驶员处于高焦虑或紧急状态，引发主动避让；高频暗红闪烁指代失控边缘。利用外部透明公示引发社会羞耻感，实现双向行为心理学干预。</p>
-                            <blockquote>
-                                📊 <strong>Data Support //</strong> 行为心理学实验证实，当个体的异常行为处于公众监督（Public Visibility）之下时，其个体的克制力与行为自我调适速度将大幅提升 60% 以上。
-                            </blockquote>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 保持原本的第二个模块完好无损 -->
+                <div class="card" onclick="alert('Electric Motorcycle Analysis')"><h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Electric Motorcycle</h3></div>
                 <div class="card" onclick="alert('Modular Storage System')"><h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Modular Storage</h3></div>
             </div>
         </div>
@@ -262,14 +112,6 @@
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
             document.getElementById(p).classList.add('active');
             document.getElementById('btn-'+p).classList.add('active');
-        };
-
-        // 新增的卡片折叠交互函数
-        window.toggleProject = function(id) {
-            const card = document.getElementById(id);
-            if (card) {
-                card.classList.toggle('is-expanded');
-            }
         };
 
         const bgCanvas = document.getElementById('bg-canvas');
@@ -303,7 +145,7 @@
         ];
         
         let globalTime = 0;
-        let lastTime = performance.now(); 
+        let lastTime = performance.now();
 
         class Particle {
             constructor() { this.reset(); }
@@ -334,7 +176,11 @@
             update(mouse, time, dt, breathingRadius, currentFriction) {
                 if (this.alpha < 1) this.alpha += 0.008 * dt; 
 
-                this.angle = Math.sin(time * 0.0012 + this.x * 0.0035) * Math.PI;
+                // 🌌 核心进化：二维斜向双重干扰流场，打破原有的线性格子网格运动，模拟有机的流体风向
+                let freq1 = Math.sin(this.x * 0.0025 + this.y * 0.0012 + time * 0.0006);
+                let freq2 = Math.cos(this.x * 0.0011 - this.y * 0.0028 + time * 0.0004);
+                this.angle = (freq1 + freq2) * Math.PI;
+
                 let baseVx = Math.cos(this.angle) * this.velocity;
                 let baseVy = Math.sin(this.angle) * this.velocity;
 
@@ -344,8 +190,9 @@
                 
                 if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    this.ix += dx * force * 0.0035 * dt; 
-                    this.iy += dy * force * 0.0035 * dt;
+                    // 🧲 磁性吸附力升级：从 0.0025 大幅拉高至 0.0065，使彩带能够更具向心凝聚力地紧跟光标
+                    this.ix += dx * force * 0.0065 * dt; 
+                    this.iy += dy * force * 0.0065 * dt;
                 }
 
                 this.ix *= currentFriction; 
