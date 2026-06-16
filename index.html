@@ -145,7 +145,7 @@
         ];
         
         let globalTime = 0;
-        let lastTime = performance.now(); // 统一采用高精度时间
+        let lastTime = performance.now();
 
         class Particle {
             constructor() { this.reset(); }
@@ -153,6 +153,7 @@
                 this.x = Math.random() * w; 
                 this.y = Math.random() * h;
                 
+                // 完美保留你原有的精细粒子分层设计
                 const sizeRand = Math.random();
                 if (sizeRand > 0.8) {
                     this.width = Math.random() * 6 + 4;  
@@ -171,19 +172,15 @@
                 this.ix = 0;
                 this.iy = 0;
                 this.alpha = 0; 
-
-                // ✨ 新增：为每个粒子注入专属的、各向同性的随机流动空间种子
-                this.seedX = Math.random() * 100;
-                this.seedY = Math.random() * 100;
             }
             
             update(mouse, time, dt, breathingRadius, currentFriction) {
                 if (this.alpha < 1) this.alpha += 0.008 * dt; 
 
-                // ✨ 优化：引入二维交叉流体场算法。结合独立种子，让粒子在未受干扰时，呈现出浑然一体且完全无定向的纯随机自由漫游
-                let freq1 = Math.sin(this.x * 0.0015 + time * 0.0005 + this.seedX);
-                let freq2 = Math.cos(this.y * 0.0015 + time * 0.0004 + this.seedY);
-                this.angle = (freq1 + freq2) * Math.PI;
+                // 🌌 核心进化：全局多维混沌流场。让彩带保持“集体行动”的同时，大方向在360度里完全随机漂移变幻
+                let flowDirX = Math.sin(time * 0.0007) * 1.5;
+                let flowDirY = Math.cos(time * 0.0005 + 1.0) * 1.2;
+                this.angle = Math.sin(this.x * 0.0025 + flowDirX) + Math.cos(this.y * 0.0025 + flowDirY);
 
                 let baseVx = Math.cos(this.angle) * this.velocity;
                 let baseVy = Math.sin(this.angle) * this.velocity;
@@ -194,8 +191,9 @@
                 
                 if (dist < breathingRadius) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    this.ix += dx * force * 0.0025 * dt; 
-                    this.iy += dy * force * 0.0025 * dt;
+                    // 🧲 精确增强吸附力：从 0.0025 提升至 0.0048，吸附反应更敏锐、凝聚感更强
+                    this.ix += dx * force * 0.0048 * dt; 
+                    this.iy += dy * force * 0.0048 * dt;
                 }
 
                 this.ix *= currentFriction; 
@@ -209,7 +207,6 @@
                 this.rotation += (0.015 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.004) * dt;
             }
             
-            // 🛡️ 安全回滚：换回硬件极为熟悉且深度优化的标准渲染管线，彻底根除闪烁
             draw(ctx) {
                 ctx.save();
                 ctx.globalAlpha = this.alpha;
@@ -233,10 +230,8 @@
 
         function animate() {
             let currentTime = performance.now();
-            // 计算时间步长
             let dt = (currentTime - lastTime) / 16.666;
             
-            // 🛡️ 核心限幅：锁死步长边界，防止任何时间差带来的突发粒子暴走或闪退感
             if (dt > 2.0 || dt < 0.1 || isNaN(dt)) dt = 1.0; 
             lastTime = currentTime;
 
@@ -248,7 +243,6 @@
             topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
 
-            // 完美保留高刷下不堆积开销的提取设计
             let breathingRadius = 160 + Math.sin(globalTime * 0.002) * 90;
             let currentFriction = Math.pow(0.968, dt);
 
