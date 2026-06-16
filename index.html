@@ -155,64 +155,91 @@
                 
                 const sizeRand = Math.random();
                 if (sizeRand > 0.8) {
-                    this.width = Math.random() * 6 + 4;  
-                    this.height = Math.random() * 1.5 + 0.8;
-                    this.velocity = Math.random() * 0.5 + 0.2;
+                    this.width = Math.random() * 5 + 3;  
+                    this.height = Math.random() * 1.2 + 0.6;
+                    this.velocity = Math.random() * 0.4 + 0.2;
                 } else {
-                    this.width = Math.random() * 3 + 1.5;    
-                    this.height = Math.random() * 0.8 + 0.4;
-                    this.velocity = Math.random() * 0.7 + 0.4; 
+                    this.width = Math.random() * 2.5 + 1.2;    
+                    this.height = Math.random() * 0.7 + 0.3;
+                    this.velocity = Math.random() * 0.6 + 0.3; 
                 }
                 
                 this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.rotation = Math.random() * Math.PI * 2;
-                this.angle = Math.random() * Math.PI * 2;
+                this.alpha = 0; 
+                
+                // 🎲 注入粒子独立种子，从根本上抹除任何方向的集体机械对齐
+                this.seedX = Math.random() * 100;
+                this.seedY = Math.random() * 100;
                 
                 this.ix = 0;
                 this.iy = 0;
-                this.alpha = 0; 
+                this.vx = 0;
+                this.vy = 0;
+                this.rotation = 0;
             }
             
             update(mouse, time, dt, breathingRadius, currentFriction) {
-                if (this.alpha < 1) this.alpha += 0.008 * dt; 
+                if (this.alpha < 1) this.alpha += 0.01 * dt; 
 
-                // 🌌 核心进化：二维斜向双重干扰流场，打破原有的线性格子网格运动，模拟有机的流体风向
-                let freq1 = Math.sin(this.x * 0.0025 + this.y * 0.0012 + time * 0.0006);
-                let freq2 = Math.cos(this.x * 0.0011 - this.y * 0.0028 + time * 0.0004);
-                this.angle = (freq1 + freq2) * Math.PI;
+                // 🌌 纯有机全向自然流体算法：结合独立种子，360度各向同性任意发散开
+                let angleX = Math.sin(this.x * 0.002 + time * 0.0004 + this.seedX);
+                let angleY = Math.cos(this.y * 0.002 + time * 0.0003 + this.seedY);
+                let baseAngle = (angleX + angleY) * Math.PI;
 
-                let baseVx = Math.cos(this.angle) * this.velocity;
-                let baseVy = Math.sin(this.angle) * this.velocity;
+                let baseVx = Math.cos(baseAngle) * this.velocity;
+                let baseVy = Math.sin(baseAngle) * this.velocity;
 
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 
-                if (dist < breathingRadius) {
+                let frictionMod = currentFriction;
+
+                if (dist < breathingRadius && dist > 4) {
                     let force = (breathingRadius - dist) / breathingRadius;
-                    // 🧲 磁性吸附力升级：从 0.0025 大幅拉高至 0.0065，使彩带能够更具向心凝聚力地紧跟光标
-                    this.ix += dx * force * 0.0065 * dt; 
-                    this.iy += dy * force * 0.0065 * dt;
+                    
+                    // 🧲 引力倍增（直扑光标）
+                    let pull = force * 0.015 * dt; 
+                    this.ix += dx * pull;
+                    this.iy += dy * pull;
+
+                    // 🌀 引力弹弓切线力：制造高级的绕流缠绕，产生极致的拉扯惯性
+                    let swirl = force * 0.35 * dt;
+                    this.ix += (-dy / dist) * swirl;
+                    this.iy += (dx / dist) * swirl;
+
+                    // 🏎️ 动态摩擦力消减：越接近中心，保留的速度惯性越恐怖，甩尾更疯狂
+                    frictionMod = Math.pow(0.972 + force * 0.016, dt); 
                 }
 
-                this.ix *= currentFriction; 
-                this.iy *= currentFriction;
+                this.ix *= frictionMod;
+                this.iy *= frictionMod;
 
-                this.x += (baseVx + this.ix) * dt;
-                this.y += (baseVy + this.iy) * dt;
+                // 综合速度向量
+                this.vx = baseVx + this.ix;
+                this.vy = baseVy + this.iy;
 
-                if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
-                
-                this.rotation += (0.015 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.004) * dt;
+                this.x += this.vx * dt;
+                this.y += this.vy * dt;
+
+                if(this.x < -50 || this.x > w + 50 || this.y < -50 || this.y > h + 50) this.reset();
             }
             
             draw(ctx) {
+                // 🧭 核心进化：让粒子角度完全咬合飞行航向，呈现顶级风洞流线感
+                this.rotation = Math.atan2(this.vy, this.vx);
+
                 ctx.save();
                 ctx.globalAlpha = this.alpha;
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation);
                 ctx.fillStyle = this.color;
-                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                
+                // 🚀 核心进化：根据实时速度，动态拉伸长度（极速拉丝，慢速回归星尘）
+                let currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                let stretch = 1 + Math.min(currentSpeed * 0.2, 4.0); 
+
+                ctx.fillRect(-this.width * stretch / 2, -this.height / 2, this.width * stretch, this.height);
                 ctx.restore();
             }
         }
