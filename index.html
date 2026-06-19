@@ -321,4 +321,42 @@
 
         function animate() {
             let currentTime = performance.now();
-            let dt
+            let dt = (currentTime - lastTime) / 16.666;
+            
+            if (dt > 2.0 || dt < 0.1 || isNaN(dt)) dt = 1.0; 
+            lastTime = currentTime;
+
+            globalTime += dt;
+            
+            bgCtx.fillStyle = 'rgba(3, 3, 7, 0.12)';
+            bgCtx.fillRect(0, 0, w, h);
+            
+            topCtx.globalCompositeOperation = 'lighter';
+            topCtx.clearRect(0, 0, w, h);
+
+            let breathingRadius = 160 + Math.sin(globalTime * 0.002) * 90;
+            let currentFriction = Math.pow(0.968, dt);
+
+            particles.forEach(p => {
+                p.update(mouse, globalTime, dt, breathingRadius, currentFriction);
+                p.draw(topCtx);
+            });
+
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+
+        /* 📸 灯箱核心控制函数 */
+        function openLightbox(url) {
+            const overlay = document.getElementById('lightbox-overlay');
+            const img = document.getElementById('lightbox-img');
+            img.src = url;
+            overlay.classList.add('active');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-overlay').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
