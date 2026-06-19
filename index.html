@@ -202,8 +202,8 @@
                     this.ix *= coreFriction;
                     this.iy *= coreFriction;
                     
-                    baseVx *= (1 - force * 1.25);
-                    baseVy *= (1 - force * 1.25);
+                    baseVx *= (1 - force * 0.85);
+                    baseVy *= (1 - force * 0.85);
                 } else {
                     this.ix *= currentFriction; 
                     this.iy *= currentFriction;
