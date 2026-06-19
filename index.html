@@ -67,13 +67,13 @@
         }
         .grid::-webkit-scrollbar { display: none; }
         
-        /* 基础作品卡片结构 */
         .card { 
             background: rgba(255, 255, 255, 0.02); 
             backdrop-filter: blur(16px); 
             -webkit-backdrop-filter: blur(16px); 
             border: 1px solid rgba(255, 255, 255, 0.06); 
             border-radius: 20px; 
+            padding: 30px; 
             cursor: pointer; 
             touch-action: auto; 
             transform: translateZ(0); 
@@ -81,6 +81,9 @@
         }
         .card:hover { border-color: var(--accent-color); background: rgba(255, 227, 179, 0.06); transform: translateY(-5px); box-shadow: 0 0 25px rgba(255,227,179,0.15); }
 
+        /* =========================================================
+           👇 补全的照片卡片与全屏灯箱魔法样式 
+           ========================================================= */
         .photo-card {
             background-size: cover;
             background-position: center;
@@ -101,41 +104,20 @@
             pointer-events: none;
             z-index: 2;
         }
-
-        /* ==========================================================================
-           🛠️ 核心微调：将全屏放大背板由纯黑降至 rgba(3, 3, 7, 0.45) 
-           让底层 6000 个流体噪波粒子完美穿透，形成高级的环境滤光
-           ========================================================================== */
         #lightbox-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 3, 7, 0.45); /* 🔴 已调透，拒绝纯黑死板 */
-            backdrop-filter: blur(20px); /* 保持高阶雾面质感 */
-            -webkit-backdrop-filter: blur(20px);
-            z-index: 200; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 3, 7, 0.45); /* 漂亮的半透明滤光 */
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 200; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        #lightbox-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        #lightbox-overlay.active { opacity: 1; pointer-events: auto; }
         #lightbox-img {
-            max-width: 90%;
-            max-height: 82%;
-            object-fit: contain;
-            border-radius: 16px;
+            max-width: 90%; max-height: 82%; object-fit: contain; border-radius: 16px;
             box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255,255,255,0.2);
-            transform: scale(0.96);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: scale(0.96); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        #lightbox-overlay.active #lightbox-img {
-            transform: scale(1);
-        }
+        #lightbox-overlay.active #lightbox-img { transform: scale(1); }
     </style>
 </head>
 <body>
@@ -156,20 +138,18 @@
 
         <div id="works" class="page">
             <div class="grid">
+                <div class="card" onclick="alert('Electric Motorcycle Analysis')"><h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Electric Motorcycle</h3></div>
+                <div class="card" onclick="alert('Modular Storage System')"><h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Modular Storage</h3></div>
+                
                 <div class="card photo-card" style="background-image: url('./images/943.png');" onclick="openLightbox('./images/943.png')">
-    <div class="photo-card-overlay">
-        <h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">AURA-FLOW TRANSPARENCY SYSTEM</h3>
-    </div>
-</div>
-                <div class="card photo-card" style="background-image: url('./IMG_6926.jpg');" onclick="openLightbox('./IMG_6926.jpg')">
                     <div class="photo-card-overlay">
-                        <h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">AURA-FLOW TRANSPARENCY SYSTEM</h3>
+                        <h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">PROJECT 01</h3>
                     </div>
                 </div>
 
-                <div class="card photo-card" style="background-image: url('./IMG_6783.jpg');" onclick="openLightbox('./IMG_6783.jpg')">
+                <div class="card photo-card" style="background-image: url('./images/944.png');" onclick="openLightbox('./images/944.png')">
                     <div class="photo-card-overlay">
-                        <h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">ELECTRIC MOTORCYCLE MODEL</h3>
+                        <h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">PROJECT 02</h3>
                     </div>
                 </div>
 
@@ -339,6 +319,9 @@
         }
         requestAnimationFrame(animate);
 
+        /* =========================================================
+           👇 补全的打开/关闭大图交互功能
+           ========================================================= */
         function openLightbox(url) {
             const overlay = document.getElementById('lightbox-overlay');
             const img = document.getElementById('lightbox-img');
@@ -347,8 +330,7 @@
         }
 
         function closeLightbox() {
-            const overlay = document.getElementById('lightbox-overlay');
-            overlay.classList.remove('active');
+            document.getElementById('lightbox-overlay').classList.remove('active');
         }
     </script>
 </body>
