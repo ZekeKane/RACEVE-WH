@@ -145,7 +145,7 @@
         ];
         
         let globalTime = 0;
-        let lastTime = performance.now(); // 统一采用高精度时间
+        let lastTime = performance.now();
 
         class Particle {
             constructor() { this.reset(); }
@@ -176,7 +176,10 @@
             update(mouse, time, dt, breathingRadius, currentFriction) {
                 if (this.alpha < 1) this.alpha += 0.008 * dt; 
 
-                this.angle = Math.sin(time * 0.0008 + this.x * 0.0015) * Math.PI;
+                let flowDirX = Math.sin(time * 0.0007) * 1.5;
+                let flowDirY = Math.cos(time * 0.0005 + 1.0) * 1.2;
+                this.angle = Math.sin(this.x * 0.0025 + flowDirX) + Math.cos(this.y * 0.0025 + flowDirY);
+
                 let baseVx = Math.cos(this.angle) * this.velocity;
                 let baseVy = Math.sin(this.angle) * this.velocity;
 
@@ -184,14 +187,27 @@
                 let dy = mouse.y - this.y;
                 let dist = Math.sqrt(dx*dx + dy*dy);
                 
-                if (dist < breathingRadius) {
-                    let force = (breathingRadius - dist) / breathingRadius;
-                    this.ix += dx * force * 0.0025 * dt; 
-                    this.iy += dy * force * 0.0025 * dt;
+                if (dist < breathingRadius && dist > 1) {
+                    let force = (breathingRadius - dist) / breathingRadius; 
+                    
+                    let dirX = dx / dist;
+                    let dirY = dy / dist;
+                    
+                    // 🧲 提高向心加速度系数：从 0.42 提升至 0.58，汇聚更有力
+                    let pullStrength = force * 0.58; 
+                    this.ix += dirX * pullStrength * dt;
+                    this.iy += dirY * pullStrength * dt;
+                    
+                    let coreFriction = Math.pow(0.968 - (0.09 * force), dt);
+                    this.ix *= coreFriction;
+                    this.iy *= coreFriction;
+                    
+                    baseVx *= (1 - force * 0.85);
+                    baseVy *= (1 - force * 0.85);
+                } else {
+                    this.ix *= currentFriction; 
+                    this.iy *= currentFriction;
                 }
-
-                this.ix *= currentFriction; 
-                this.iy *= currentFriction;
 
                 this.x += (baseVx + this.ix) * dt;
                 this.y += (baseVy + this.iy) * dt;
@@ -201,7 +217,6 @@
                 this.rotation += (0.015 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.004) * dt;
             }
             
-            // 🛡️ 安全回滚：换回硬件极为熟悉且深度优化的标准渲染管线，彻底根除闪烁
             draw(ctx) {
                 ctx.save();
                 ctx.globalAlpha = this.alpha;
@@ -225,10 +240,8 @@
 
         function animate() {
             let currentTime = performance.now();
-            // 计算时间步长
             let dt = (currentTime - lastTime) / 16.666;
             
-            // 🛡️ 核心限幅：锁死步长边界，防止任何时间差带来的突发粒子暴走或闪退感
             if (dt > 2.0 || dt < 0.1 || isNaN(dt)) dt = 1.0; 
             lastTime = currentTime;
 
@@ -240,7 +253,6 @@
             topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
 
-            // 完美保留高刷下不堆积开销的提取设计
             let breathingRadius = 160 + Math.sin(globalTime * 0.002) * 90;
             let currentFriction = Math.pow(0.968, dt);
 
