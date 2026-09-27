@@ -7,6 +7,9 @@
     <style>
         :root { --accent-color: #FFE3B3; --text-color: #ffffff; }
         
+        
+        * { -webkit-tap-highlight-color: transparent; }
+        
         html, body { 
             margin: 0; 
             padding: 0; 
@@ -29,9 +32,20 @@
         
         nav, .page { pointer-events: auto; }
         
-        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(3,3,7,1), rgba(3,3,7,0)); }
+        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(3,3,7,1), rgba(3,3,7,0)); }
         nav button { background: none; border: none; color: #888; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; letter-spacing: 2px; }
         nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 15px rgba(255,227,179,0.6); }
+        
+        
+        .lang-btn {
+            color: var(--accent-color) !important;
+            border: 1px solid rgba(255, 227, 179, 0.25) !important;
+            border-radius: 20px;
+            padding: 4px 14px !important;
+            font-size: 12px !important;
+            margin-left: 10px;
+            letter-spacing: 1px !important;
+        }
         
         .page { 
             position: absolute; 
@@ -92,6 +106,8 @@
             position: relative;
             overflow: hidden;
             padding: 0 !important; 
+            -webkit-touch-callout: none;
+            user-select: none;
         }
         .photo-card-overlay {
             width: 100%;
@@ -109,29 +125,49 @@
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             z-index: 200; display: flex; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; 
-            
             transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
         #lightbox-overlay.active { opacity: 1; pointer-events: auto; }
         
         #lightbox-img {
             max-width: 90%; max-height: 82%; object-fit: contain; border-radius: 16px;
-           
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.0), 0 0 0px rgba(255,255,255,0);
             transform: scale(0.85) translateY(30px);
             opacity: 0;
             filter: blur(8px);
-            
             transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
         #lightbox-overlay.active #lightbox-img { 
-           
             box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255,255,255,0.3);
             transform: scale(1) translateY(0);
             opacity: 1;
             filter: blur(0px);
         }
+
+        
+        .subpage-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 3, 7, 0.65);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            z-index: 220; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .subpage-overlay.active { opacity: 1; pointer-events: auto; }
+        .subpage-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px; padding: 40px; max-width: 580px; width: 85%;
+            position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            transform: scale(0.95) translateY(20px); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: left;
+        }
+        .subpage-overlay.active .subpage-card { transform: scale(1) translateY(0); }
+        .subpage-close-btn {
+            position: absolute; top: 20px; right: 25px; background: none; border: none;
+            color: #888; font-size: 22px; cursor: pointer; transition: 0.3s;
+        }
+        .subpage-close-btn:hover { color: #fff; }
     </style>
 </head>
 <body>
@@ -141,29 +177,36 @@
 
     <div class="content-layer">
         <nav>
-            <button onclick="window.switchPage('home')" id="btn-home" class="active">INDEX</button>
-            <button onclick="window.switchPage('works')" id="btn-works">PROJECTS</button>
+            <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="首页">INDEX</button>
+            <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="作品集">PROJECTS</button>
+            <!-- 🌐 新增：一键无缝语言切换按钮 -->
+            <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">中 / EN</button>
         </nav>
 
         <div id="home" class="page active">
-            <h1 style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
-            <p style="color: #555; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
+            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
+            <p class="i18n" data-en="Collections" data-zh="设计与工程作品集" style="color: #555; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
         </div>
 
         <div id="works" class="page">
             <div class="grid">
-                <div class="card" onclick="alert('Electric Motorcycle Analysis')"><h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Electric Motorcycle</h3></div>
-                <div class="card" onclick="alert('Modular Storage System')"><h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Modular Storage</h3></div>
+                
+                <div class="card" onclick="openSubpage('Electric Motorcycle', '电动摩托车车架结构与空气动力学分析项目，探讨低风阻造型与高强度车架的解构设计。', 'Electric Motorcycle Analysis')">
+                    <h3 class="i18n" data-en="Electric Motorcycle" data-zh="电动摩托车" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Electric Motorcycle</h3>
+                </div>
+                <div class="card" onclick="openSubpage('Modular Storage', '模块化自锁收纳箱设计，结合微型机械结构与离心自锁机构。', 'Modular Storage System')">
+                    <h3 class="i18n" data-en="Modular Storage" data-zh="模块化收纳" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Modular Storage</h3>
+                </div>
                 
                 <div class="card photo-card" style="background-image: url('./images/9c7d0954bc69ba19df3e73a3964ef35a.jpeg');" onclick="openLightbox('./images/9c7d0954bc69ba19df3e73a3964ef35a.jpeg')">
                     <div class="photo-card-overlay">
-                        <h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">PROJECT 01</h3>
+                        <h3 class="i18n" data-en="PROJECT 01" data-zh="项目 01" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">PROJECT 01</h3>
                     </div>
                 </div>
 
                 <div class="card photo-card" style="background-image: url('./images/641.png');" onclick="openLightbox('./images/641.png')">
                     <div class="photo-card-overlay">
-                        <h3 style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">PROJECT 02</h3>
+                        <h3 class="i18n" data-en="PROJECT 02" data-zh="项目 02" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">PROJECT 02</h3>
                     </div>
                 </div>
 
@@ -171,11 +214,51 @@
         </div>
     </div>
 
+    
+    <div id="subpage-overlay" class="subpage-overlay" onclick="closeSubpage()">
+        <div class="subpage-card" onclick="event.stopPropagation()">
+            <button class="subpage-close-btn" onclick="closeSubpage()">✕</button>
+            <h2 id="subpage-title" style="color: #FFE3B3; font-weight: 300; letter-spacing: 2px; margin-top: 0; font-size: 20px;">PROJECT DETAILS</h2>
+            <div id="subpage-body" style="color: #bbb; font-size: 14px; line-height: 1.8; margin-top: 15px;">
+                
+            </div>
+        </div>
+    </div>
+
+   
     <div id="lightbox-overlay" onclick="closeLightbox()">
         <img id="lightbox-img" src="" alt="Enlarged View">
     </div>
 
     <script>
+        
+        let currentLang = 'en';
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            document.querySelectorAll('.i18n').forEach(el => {
+                const text = el.getAttribute(`data-${currentLang}`);
+                if (text) el.textContent = text;
+            });
+            document.getElementById('btn-lang').textContent = currentLang === 'en' ? '中 / EN' : 'EN / 中';
+        }
+
+        
+        function openSubpage(titleEn, bodyTextEn, titleZh = null, bodyTextZh = null) {
+            const overlay = document.getElementById('subpage-overlay');
+            const titleEl = document.getElementById('subpage-title');
+            const bodyEl = document.getElementById('subpage-body');
+            
+            titleEl.textContent = (currentLang === 'zh' && titleZh) ? titleZh : titleEn;
+            bodyEl.textContent = (currentLang === 'zh' && bodyTextZh) ? bodyTextZh : bodyTextEn;
+            
+            overlay.classList.add('active');
+        }
+
+        function closeSubpage() {
+            document.getElementById('subpage-overlay').classList.remove('active');
+        }
+
+        
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
