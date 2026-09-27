@@ -7,7 +7,6 @@
     <style>
         :root { --accent-color: #FFE3B3; --text-color: #ffffff; }
         
-        
         * { -webkit-tap-highlight-color: transparent; }
         
         html, body { 
@@ -36,31 +35,23 @@
         nav button { background: none; border: none; color: #888; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; letter-spacing: 2px; }
         nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 15px rgba(255,227,179,0.6); }
         
-        
+        /* 🌐 修正后的绝对定位语言按钮（不影响导航栏居中） */
         .lang-btn {
-    position: absolute;
-    right: 40px;          
-    color: var(--accent-color) !important;
-    border: 1px solid rgba(255, 227, 179, 0.25) !important;
-    border-radius: 20px;
-    padding: 4px 14px !important;
-    font-size: 12px !important;
-    letter-spacing: 1px !important;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.lang-btn:hover {
-    border-color: var(--accent-color) !important;
-    box-shadow: 0 0 15px rgba(255, 227, 179, 0.3);
-}
+            position: absolute;
+            right: 40px;          
             color: var(--accent-color) !important;
             border: 1px solid rgba(255, 227, 179, 0.25) !important;
             border-radius: 20px;
             padding: 4px 14px !important;
             font-size: 12px !important;
-            margin-left: 10px;
             letter-spacing: 1px !important;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn:hover {
+            border-color: var(--accent-color) !important;
+            box-shadow: 0 0 15px rgba(255, 227, 179, 0.3);
         }
         
         .page { 
@@ -134,7 +125,6 @@
             z-index: 2;
         }
         
-        
         #lightbox-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(3, 3, 7, 0.45); 
@@ -161,7 +151,6 @@
             filter: blur(0px);
         }
 
-        
         .subpage-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(3, 3, 7, 0.65);
@@ -195,7 +184,6 @@
         <nav>
             <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="首页">INDEX</button>
             <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="作品集">PROJECTS</button>
-            <!-- 🌐 新增：一键无缝语言切换按钮 -->
             <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">中 / EN</button>
         </nav>
 
@@ -206,7 +194,6 @@
 
         <div id="works" class="page">
             <div class="grid">
-                
                 <div class="card" onclick="openSubpage('Electric Motorcycle', '电动摩托车车架结构与空气动力学分析项目，探讨低风阻造型与高强度车架的解构设计。', 'Electric Motorcycle Analysis')">
                     <h3 class="i18n" data-en="Electric Motorcycle" data-zh="电动摩托车" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Electric Motorcycle</h3>
                 </div>
@@ -230,24 +217,19 @@
         </div>
     </div>
 
-    
     <div id="subpage-overlay" class="subpage-overlay" onclick="closeSubpage()">
         <div class="subpage-card" onclick="event.stopPropagation()">
             <button class="subpage-close-btn" onclick="closeSubpage()">✕</button>
             <h2 id="subpage-title" style="color: #FFE3B3; font-weight: 300; letter-spacing: 2px; margin-top: 0; font-size: 20px;">PROJECT DETAILS</h2>
-            <div id="subpage-body" style="color: #bbb; font-size: 14px; line-height: 1.8; margin-top: 15px;">
-                
-            </div>
+            <div id="subpage-body" style="color: #bbb; font-size: 14px; line-height: 1.8; margin-top: 15px;"></div>
         </div>
     </div>
 
-   
     <div id="lightbox-overlay" onclick="closeLightbox()">
         <img id="lightbox-img" src="" alt="Enlarged View">
     </div>
 
     <script>
-        
         let currentLang = 'en';
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'zh' : 'en';
@@ -258,7 +240,6 @@
             document.getElementById('btn-lang').textContent = currentLang === 'en' ? '中 / EN' : 'EN / 中';
         }
 
-        
         function openSubpage(titleEn, bodyTextEn, titleZh = null, bodyTextZh = null) {
             const overlay = document.getElementById('subpage-overlay');
             const titleEl = document.getElementById('subpage-title');
@@ -274,7 +255,6 @@
             document.getElementById('subpage-overlay').classList.remove('active');
         }
 
-        
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
