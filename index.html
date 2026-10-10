@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { 
-            /* GitHub Dark Mode Colors */
             --accent-color: #FFE3B3; 
             --gh-text-main: #e6edf3;
             --gh-text-muted: #8b949e;
@@ -40,7 +39,6 @@
         
         nav, .page { pointer-events: auto; }
         
-        /* Transparent Glassmorphic Navigation Bar */
         nav { 
             position: fixed; 
             top: 0; 
@@ -108,17 +106,15 @@
             transform: scale(1); 
         }
 
-        /* FIX 1: Raised Home Landing Page */
         #home {
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Align to top instead of center */
+            justify-content: flex-start; 
             align-items: center;
             text-align: center;
-            padding-top: 18vh; /* Visually raised height */
+            padding-top: 18vh; 
         }
 
-        /* FIX 2: Bulletproof Workspace Layout */
         #works {
             padding: 0;
             display: flex;
@@ -129,7 +125,6 @@
         .ptc-workspace {
             display: flex;
             flex-direction: row;
-            /* Strict mathematical calculation to guarantee it NEVER overflows */
             width: calc(100% - 48px); 
             max-width: 1600px;
             height: calc(100% - 40px); 
@@ -142,7 +137,6 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.7);
         }
 
-        /* Sidebar Tree Layout */
         .ptc-sidebar {
             width: 300px;
             min-width: 300px;
@@ -268,7 +262,6 @@
         }
         .project-node .file-icon { margin-right: 6px; font-size: 0.85rem; opacity: 0.8; }
 
-        /* Right Viewport */
         .ptc-main {
             flex: 1;
             min-width: 0;
@@ -367,7 +360,6 @@
             justify-content: space-between;
         }
 
-        /* Lightbox Modal */
         #lightbox-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(1, 4, 9, 0.9); 
@@ -395,14 +387,14 @@
 
     <div class="content-layer">
         <nav>
-            <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="首页">INDEX</button>
-            <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="作品集">PROJECTS</button>
+            <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="Index">INDEX</button>
+            <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="Projects">PROJECTS</button>
             <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">中 / EN</button>
         </nav>
 
         <div id="home" class="page active">
-            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
-            <p class="i18n" data-en="Collections" data-zh="设计与工程作品集" style="color: #666; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
+            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE'S Warehouse" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
+            <p class="i18n" data-en="Collections" data-zh="Collections" style="color: #666; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
         </div>
 
         <div id="works" class="page">
@@ -413,23 +405,22 @@
                             <span style="font-size: 1.1rem;">🗂️</span> Files Explorer
                         </div>
                     </div>
-                    <!-- 就是这一行，从 nav 换成了 div -->
                     <div class="tree-nav" id="treeNav"></div>
                 </aside>
 
                 <main class="ptc-main">
                     <header class="top-bar">
                         <div class="breadcrumb" id="breadcrumb">
-                            <span class="i18n" data-en="Select a project folder from the sidebar" data-zh="请从左侧栏选择项目文件夹">Select a project folder from the sidebar</span>
+                            <span class="i18n" data-en="Select a project folder from the sidebar" data-zh="Select a project folder from the sidebar">Select a project folder from the sidebar</span>
                         </div>
-                        <button id="scrollToTopBtn" class="control-btn i18n" data-en="Top ↑" data-zh="顶部 ↑">Top ↑</button>
+                        <button id="scrollToTopBtn" class="control-btn i18n" data-en="Top ↑" data-zh="Top ↑">Top ↑</button>
                     </header>
 
                     <section class="gallery-viewport" id="galleryViewport">
                         <div class="empty-state" id="emptyState">
                             <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-text-muted);">📁</div>
-                            <h3 class="i18n" data-en="No project selected" data-zh="未选择项目">No project selected</h3>
-                            <p class="i18n" data-en="Select any folder from the left sidebar to render presentation sheets." data-zh="从左侧文件树选择项目以渲染高清展板长图。">Select any folder from the left sidebar to render presentation sheets.</p>
+                            <h3 class="i18n" data-en="No project selected" data-zh="No project selected">No project selected</h3>
+                            <p class="i18n" data-en="Select any folder from the left sidebar to render presentation sheets." data-zh="Select any folder from the left sidebar to render presentation sheets.">Select any folder from the left sidebar to render presentation sheets.</p>
                         </div>
                         <div class="image-stream" id="imageStream"></div>
                     </section>
@@ -549,8 +540,10 @@
 
         const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG', '.JPEG'];
         const MAX_IMAGES_PER_FOLDER = 99;
-
+        
+        let currentLoadSession = 0;
         let currentLang = 'en';
+
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'zh' : 'en';
             document.querySelectorAll('.i18n').forEach(el => {
@@ -655,21 +648,29 @@
 
           emptyState.style.display = 'none';
           imageStream.innerHTML = '';
+          galleryViewport.scrollTo({ top: 0, behavior: 'instant' });
 
-          loadProjectImages(project);
+          currentLoadSession++;
+          loadProjectImages(project, currentLoadSession);
         }
 
-        async function loadProjectImages(projectObj) {
+        async function loadProjectImages(projectObj, sessionToken) {
           let activeIndex = 1;
 
           while (activeIndex <= MAX_IMAGES_PER_FOLDER) {
+            if (sessionToken !== currentLoadSession) return;
+
             const paddedNum = String(activeIndex).padStart(2, '0');
             
             let foundImage = await testImageSrc(projectObj.primary, paddedNum);
             
+            if (sessionToken !== currentLoadSession) return;
+
             if (!foundImage && projectObj.fallback) {
               foundImage = await testImageSrc(projectObj.fallback, paddedNum);
             }
+            
+            if (sessionToken !== currentLoadSession) return;
 
             if (foundImage) {
               renderImageCard(foundImage, paddedNum);
@@ -679,11 +680,11 @@
             }
           }
 
-          if (activeIndex === 1) {
+          if (activeIndex === 1 && sessionToken === currentLoadSession) {
             imageStream.innerHTML = `
               <div class="empty-state">
                 <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-border);">🚫</div>
-                <p>No valid indexed images (01, 02...) detected in project folder.</p>
+                <p>No images detected in project folder.</p>
               </div>
             `;
           }
@@ -754,7 +755,6 @@
             document.getElementById('lightbox-overlay').classList.remove('active');
         }
 
-        // FIX 3: Reduced Particles to 2500 to prevent WebGL Memory Crash
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         const topCanvas = document.getElementById('top-canvas');
