@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>KE's Warehouse</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --accent-color: #FFE3B3; --text-color: #ffffff; }
         
-        * { -webkit-tap-highlight-color: transparent; }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
         html, body { 
             margin: 0; 
@@ -35,7 +36,6 @@
         nav button { background: none; border: none; color: #888; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; letter-spacing: 2px; }
         nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 15px rgba(255,227,179,0.6); }
         
-        /* 🌐 修正后的绝对定位语言按钮（不影响导航栏居中） */
         .lang-btn {
             position: absolute;
             right: 40px;          
@@ -59,13 +59,15 @@
             top: 0; 
             left: 0; 
             width: 100%; 
-            padding-top: 150px; 
+            height: 100vh;
+            padding-top: 120px; 
             text-align: center; 
             opacity: 0; 
             pointer-events: none; 
             transform: scale(0.97) translateY(15px); 
             transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity, transform; 
+            overflow-y: auto;
         }
         
         .page.active { 
@@ -78,15 +80,10 @@
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             gap: 30px; 
-            padding: 20px 40px 60px 40px; 
+            padding: 20px 40px 40px 40px; 
             max-width: 1000px; 
             margin: 0 auto; 
-            max-height: calc(100vh - 240px); 
-            overflow-y: auto; 
-            overscroll-behavior: contain; 
-            -webkit-overflow-scrolling: touch;
         }
-        .grid::-webkit-scrollbar { display: none; }
         
         .card { 
             background: rgba(255, 255, 255, 0.02); 
@@ -173,6 +170,227 @@
             color: #888; font-size: 22px; cursor: pointer; transition: 0.3s;
         }
         .subpage-close-btn:hover { color: #fff; }
+
+        /* Appended Styles for PTC 3-Tier Sidebar and Image Gallery */
+        .ptc-section-divider {
+            margin: 40px auto 20px auto;
+            max-width: 1200px;
+            border-bottom: 1px solid rgba(255, 227, 179, 0.2);
+            padding-bottom: 10px;
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            letter-spacing: 2px;
+        }
+
+        .ptc-workspace {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            height: 75vh;
+            margin: 0 auto 60px auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(15, 18, 23, 0.55);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            text-align: left;
+        }
+
+        .ptc-sidebar {
+            width: 320px;
+            min-width: 320px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            background: rgba(3, 3, 7, 0.4);
+        }
+
+        .sidebar-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .brand-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            color: var(--accent-color);
+        }
+
+        .tree-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+        }
+
+        .tree-category { margin-bottom: 6px; }
+
+        .title-node {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+            text-transform: uppercase;
+        }
+        .title-node:hover { background-color: rgba(255, 227, 179, 0.08); }
+        .title-node .icon { margin-right: 8px; font-size: 0.7rem; transition: transform 0.2s ease; }
+
+        .subcategory-list {
+            padding-left: 12px;
+            border-left: 1px dashed rgba(255, 255, 255, 0.1);
+            margin-left: 12px;
+            display: none;
+        }
+        .subcategory-list.open { display: block; }
+
+        .subcategory-node {
+            display: flex;
+            align-items: center;
+            padding: 6px 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: #d1d5db;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 2px 0;
+        }
+        .subcategory-node:hover { background-color: rgba(255, 227, 179, 0.08); color: var(--accent-color); }
+
+        .project-list {
+            padding-left: 12px;
+            border-left: 1px dashed rgba(255, 255, 255, 0.1);
+            margin-left: 10px;
+            display: none;
+        }
+        .project-list.open { display: block; }
+
+        .project-node {
+            display: flex;
+            align-items: center;
+            padding: 5px 8px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: #8b949e;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 1px 0;
+            transition: all 0.15s ease;
+        }
+        .project-node:hover { color: #fff; background-color: rgba(255, 227, 179, 0.08); }
+        .project-node.active {
+            color: var(--accent-color);
+            background-color: rgba(255, 227, 179, 0.18);
+            font-weight: 600;
+            border-left: 2px solid var(--accent-color);
+        }
+
+        .ptc-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(3, 3, 7, 0.2);
+        }
+
+        .top-bar {
+            height: 48px;
+            padding: 0 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(15, 18, 23, 0.4);
+        }
+
+        .breadcrumb {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .breadcrumb .separator { color: #8b949e; }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .control-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+
+        .gallery-viewport {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            scroll-behavior: smooth;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #8b949e;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .empty-state h3 { color: var(--accent-color); margin-bottom: 8px; font-weight: 400; }
+
+        .image-stream {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .gallery-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+        }
+        .gallery-card:hover { border-color: var(--accent-color); transform: translateY(-2px); }
+        .gallery-card img { width: 100%; height: auto; display: block; }
+
+        .card-meta {
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #8b949e;
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
@@ -193,6 +411,7 @@
         </div>
 
         <div id="works" class="page">
+            <!-- Original Grid Cards Section (Untouched) -->
             <div class="grid">
                 <div class="card" onclick="openSubpage('Electric Motorcycle', '电动摩托车车架结构与空气动力学分析项目，探讨低风阻造型与高强度车架的解构设计。', 'Electric Motorcycle Analysis')">
                     <h3 class="i18n" data-en="Electric Motorcycle" data-zh="电动摩托车" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Electric Motorcycle</h3>
@@ -212,11 +431,44 @@
                         <h3 class="i18n" data-en="PROJECT 02" data-zh="项目 02" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">PROJECT 02</h3>
                     </div>
                 </div>
+            </div>
 
+            <!-- Appended Section: PTC 3-Tier Feature Tree Sidebar & Display Workspace -->
+            <div class="ptc-section-divider i18n" data-en="--- DETAILED CAD FEATURE TREE DIRECTORY ---" data-zh="--- 详细 CAD 特征树目录 ---">
+                --- DETAILED CAD FEATURE TREE DIRECTORY ---
+            </div>
+
+            <div class="ptc-workspace">
+                <aside class="ptc-sidebar">
+                    <div class="sidebar-header">
+                        <span class="brand-title">CAD.FEATURE_TREE</span>
+                        <span style="font-size: 0.7rem; color: #888;">v2.0</span>
+                    </div>
+                    <nav class="tree-nav" id="treeNav"></nav>
+                </aside>
+
+                <main class="ptc-main">
+                    <header class="top-bar">
+                        <div class="breadcrumb" id="breadcrumb">
+                            <span class="i18n" data-en="Select a project folder from the CAD feature tree" data-zh="请从左侧 CAD 特征树选择项目文件夹">Select a project folder from the CAD feature tree</span>
+                        </div>
+                        <button id="scrollToTopBtn" class="control-btn i18n" data-en="↑ Top" data-zh="↑ 顶部">↑ Top</button>
+                    </header>
+
+                    <section class="gallery-viewport" id="galleryViewport">
+                        <div class="empty-state" id="emptyState">
+                            <div style="font-size: 2.5rem; margin-bottom: 12px; color: var(--accent-color);">⚡</div>
+                            <h3 class="i18n" data-en="FEATURE TREE NAVIGATION" data-zh="特征树导航">FEATURE TREE NAVIGATION</h3>
+                            <p class="i18n" data-en="Select any project from the left sidebar to render presentation sheets." data-zh="从左侧侧边栏选择项目以渲染高清展板长图。">Select any project from the left sidebar to render presentation sheets.</p>
+                        </div>
+                        <div class="image-stream" id="imageStream"></div>
+                    </section>
+                </main>
             </div>
         </div>
     </div>
 
+    <!-- Original Overlay Components (Untouched) -->
     <div id="subpage-overlay" class="subpage-overlay" onclick="closeSubpage()">
         <div class="subpage-card" onclick="event.stopPropagation()">
             <button class="subpage-close-btn" onclick="closeSubpage()">✕</button>
@@ -230,6 +482,7 @@
     </div>
 
     <script>
+        // Original Script Part 1: Language & Pages Logic
         let currentLang = 'en';
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'zh' : 'en';
@@ -262,6 +515,7 @@
             document.getElementById('btn-'+p).classList.add('active');
         };
 
+        // Original Script Part 2: Particle Animation Engine
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         const topCanvas = document.getElementById('top-canvas');
@@ -422,6 +676,281 @@
         function closeLightbox() {
             document.getElementById('lightbox-overlay').classList.remove('active');
         }
+
+        // Appended Script: PTC 3-Tier Sidebar Directory & Dynamic Probing Gallery Logic
+        const portfolioData = [
+          {
+            title: "Transportation",
+            icon: "♞",
+            subcategories: [
+              {
+                name: "Vehicle_researches",
+                projects: [
+                  { name: "Prototypes", path: "images/Vehicle_researches/Prototypes" },
+                  { name: "Vehicle_references", path: "images/Vehicle_researches/Vehicle_references" },
+                  { name: "Works", path: "images/Vehicle_researches/Works" }
+                ]
+              },
+              {
+                name: "Aircraft_Researches",
+                projects: [
+                  { name: "Aircraft_References", path: "images/Aircraft_Researches/Aircraft_References" },
+                  { name: "Aircraft_works", path: "images/Aircraft_Researches/Aircraft_works" }
+                ]
+              },
+              {
+                name: "Derailleur",
+                projects: [
+                  { name: "Fairing", path: "images/Derailleur/Fairing" },
+                  { name: "Hollow_type", path: "images/Derailleur/Hollow_type" }
+                ]
+              },
+              {
+                name: "Clay_Bmw_Gen12",
+                projects: [
+                  { name: "Chassis", path: "images/Clay_Bmw_Gen12/Chassis" },
+                  { name: "Works", path: "images/Clay_Bmw_Gen12/Works" }
+                ]
+              },
+              {
+                name: "E_MP",
+                projects: [
+                  { name: "E-MP_References", path: "images/E_MP/E-MP_References" },
+                  { name: "Main_Gallery", path: "images/E_MP" }
+                ]
+              }
+            ]
+          },
+          {
+            title: "Discoveries",
+            icon: "♞",
+            subcategories: [
+              {
+                name: "Skills",
+                projects: [
+                  { name: "Modeling_Work", path: "images/Skills/Modeling_Work" },
+                  { name: "Pistol_Study", path: "images/Skills/Pistol_Study" },
+                  { name: "Plumbing", path: "images/Skills/Plumbing" },
+                  { name: "Technical_Skills", path: "images/Skills/Technical_Skills" },
+                  { name: "Web_Dev", path: "images/Skills/Web_Dev" }
+                ]
+              },
+              {
+                name: "Topology_researches",
+                projects: [
+                  { name: "Topology_researches", path: "images/Topology_researches" }
+                ]
+              }
+            ]
+          },
+          {
+            title: "Commissioned_Works",
+            icon: "♞",
+            subcategories: [
+              {
+                name: "Course_Projects",
+                projects: [
+                  { name: "Campus_display_board", path: "images/Course_Projects/Campus_display_board" },
+                  { name: "Competitions", path: "images/Course_Projects/Competitions" },
+                  { name: "Courseworks", path: "images/Course_Projects/Courseworks" },
+                  { name: "Lamps", path: "images/Course_Projects/Lamps" }
+                ]
+              },
+              {
+                name: "Client_projects",
+                projects: [
+                  { name: "Client_projects", path: "images/Client_projects" }
+                ]
+              }
+            ]
+          },
+          {
+            title: "Others",
+            icon: "♞",
+            subcategories: [
+              {
+                name: "Everyday_Items",
+                projects: [
+                  { name: "Brackets", path: "images/Everyday_Items/Brackets" },
+                  { name: "Others", path: "images/Everyday_Items/Others" },
+                  { name: "Trash_bin", path: "images/Everyday_Items/Trash_bin" }
+                ]
+              },
+              {
+                name: "References",
+                projects: [
+                  { name: "References", path: "images/References" }
+                ]
+              }
+            ]
+          }
+        ];
+
+        const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp'];
+        const MAX_IMAGES_PER_FOLDER = 99;
+
+        const treeNav = document.getElementById('treeNav');
+        const breadcrumb = document.getElementById('breadcrumb');
+        const galleryViewport = document.getElementById('galleryViewport');
+        const emptyState = document.getElementById('emptyState');
+        const imageStream = document.getElementById('imageStream');
+
+        function buildTreeNavigation() {
+          treeNav.innerHTML = '';
+
+          portfolioData.forEach((category) => {
+            const catDiv = document.createElement('div');
+            catDiv.className = 'tree-category';
+
+            const titleNode = document.createElement('div');
+            titleNode.className = 'title-node';
+            titleNode.innerHTML = `<span class="icon">►</span> ${category.icon} ${category.title}`;
+
+            const subCatList = document.createElement('div');
+            subCatList.className = 'subcategory-list';
+
+            category.subcategories.forEach((subcat) => {
+              const subCatNode = document.createElement('div');
+              subCatNode.className = 'subcategory-node';
+              subCatNode.innerHTML = `<span class="icon">►</span> 📂 ${subcat.name}`;
+
+              const projectList = document.createElement('div');
+              projectList.className = 'project-list';
+
+              subcat.projects.forEach((proj) => {
+                const projNode = document.createElement('div');
+                projNode.className = 'project-node';
+                projNode.innerHTML = `📄 ${proj.name}`;
+
+                projNode.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  setActiveProject(projNode, category.title, subcat.name, proj);
+                });
+
+                projectList.appendChild(projNode);
+              });
+
+              subCatNode.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = projectList.classList.contains('open');
+                projectList.classList.toggle('open');
+                subCatNode.querySelector('.icon').textContent = isOpen ? '►' : '▼';
+              });
+
+              subCatList.appendChild(subCatNode);
+              subCatList.appendChild(projectList);
+            });
+
+            titleNode.addEventListener('click', () => {
+              const isOpen = subCatList.classList.contains('open');
+              subCatList.classList.toggle('open');
+              titleNode.querySelector('.icon').textContent = isOpen ? '►' : '▼';
+            });
+
+            catDiv.appendChild(titleNode);
+            catDiv.appendChild(subCatList);
+            treeNav.appendChild(catDiv);
+          });
+        }
+
+        function setActiveProject(node, title, subcat, project) {
+          document.querySelectorAll('.project-node').forEach(n => n.classList.remove('active'));
+          node.classList.add('active');
+
+          breadcrumb.innerHTML = `
+            <span>${title}</span>
+            <span class="separator">/</span>
+            <span>${subcat}</span>
+            <span class="separator">/</span>
+            <span style="color: var(--accent-color); font-weight: 600;">${project.name}</span>
+          `;
+
+          emptyState.style.display = 'none';
+          imageStream.innerHTML = '';
+
+          loadProjectImages(project.path);
+        }
+
+        async function loadProjectImages(folderPath) {
+          let activeIndex = 1;
+
+          while (activeIndex <= MAX_IMAGES_PER_FOLDER) {
+            const paddedNum = String(activeIndex).padStart(2, '0');
+            const foundImage = await testImageSrc(folderPath, paddedNum);
+
+            if (foundImage) {
+              renderImageCard(foundImage, paddedNum);
+              activeIndex++;
+            } else {
+              break;
+            }
+          }
+
+          if (activeIndex === 1) {
+            imageStream.innerHTML = `
+              <div class="empty-state">
+                <p>No valid indexed images (01, 02...) detected in <code>${folderPath}</code></p>
+              </div>
+            `;
+          }
+        }
+
+        function testImageSrc(folderPath, num) {
+          return new Promise((resolve) => {
+            let tried = 0;
+            let resolved = false;
+
+            IMAGE_EXTENSIONS.forEach((ext) => {
+              const testUrl = `${folderPath}/${num}${ext}`;
+              const img = new Image();
+
+              img.onload = () => {
+                if (!resolved) {
+                  resolved = true;
+                  resolve(testUrl);
+                }
+              };
+
+              img.onerror = () => {
+                tried++;
+                if (tried === IMAGE_EXTENSIONS.length && !resolved) {
+                  resolve(null);
+                }
+              };
+
+              img.src = testUrl;
+            });
+          });
+        }
+
+        function renderImageCard(src, indexStr) {
+          const card = document.createElement('div');
+          card.className = 'gallery-card';
+          card.onclick = () => openLightbox(src);
+
+          const img = document.createElement('img');
+          img.src = src;
+          img.loading = 'lazy';
+          img.alt = `Design Sheet ${indexStr}`;
+
+          const meta = document.createElement('div');
+          meta.className = 'card-meta';
+          meta.innerHTML = `
+            <span>SHEET: ${indexStr}</span>
+            <span>STATUS: RENDERED</span>
+          `;
+
+          card.appendChild(img);
+          card.appendChild(meta);
+          imageStream.appendChild(card);
+        }
+
+        document.getElementById('scrollToTopBtn').addEventListener('click', () => {
+          galleryViewport.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Initialize PTC Feature Tree
+        buildTreeNavigation();
     </script>
 </body>
 </html>
