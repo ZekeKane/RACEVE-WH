@@ -89,10 +89,6 @@
             box-shadow: 0 0 15px rgba(255, 227, 179, 0.3);
         }
         
-        /* 
-         * FIX: Container Layout 
-         * Used display: block instead of flex center to prevent cutoff bugs
-         */
         .page { 
             position: fixed; 
             top: 65px; 
@@ -112,38 +108,41 @@
             transform: scale(1); 
         }
 
+        /* FIX 1: Raised Home Landing Page */
         #home {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start; /* Align to top instead of center */
             align-items: center;
             text-align: center;
+            padding-top: 18vh; /* Visually raised height */
         }
 
+        /* FIX 2: Bulletproof Workspace Layout */
         #works {
-            padding: 20px 24px 24px 24px;
-            display: block; /* Prevents the flex-center cutoff bug */
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .ptc-workspace {
             display: flex;
             flex-direction: row;
-            width: 100%;
+            /* Strict mathematical calculation to guarantee it NEVER overflows */
+            width: calc(100% - 48px); 
             max-width: 1600px;
-            height: 100%;
-            margin: 0 auto; /* Horizontal Center */
+            height: calc(100% - 40px); 
             border: 1px solid var(--gh-border);
             border-radius: 12px;
             overflow: hidden;
-            background: rgba(13, 17, 23, 0.75); /* GitHub Theme Dark */
+            background: rgba(13, 17, 23, 0.75);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             box-shadow: 0 20px 60px rgba(0,0,0,0.7);
         }
 
-        /* 
-         * STRICT SIDEBAR ALIGNMENT 
-         */
+        /* Sidebar Tree Layout */
         .ptc-sidebar {
             width: 300px;
             min-width: 300px;
@@ -187,7 +186,6 @@
             gap: 2px;
         }
 
-        /* Custom Scrollbars */
         .tree-nav::-webkit-scrollbar, .gallery-viewport::-webkit-scrollbar { width: 6px; }
         .tree-nav::-webkit-scrollbar-thumb, .gallery-viewport::-webkit-scrollbar-thumb { 
             background: rgba(255, 255, 255, 0.1); 
@@ -197,12 +195,9 @@
             background: rgba(255, 255, 255, 0.2); 
         }
 
-        /* 
-         * GITHUB-STYLE TREE VIEW 
-         */
         .tree-category { 
-            display: flex !important; 
-            flex-direction: column !important; 
+            display: flex; 
+            flex-direction: column; 
             width: 100%;
         }
 
@@ -226,10 +221,10 @@
             padding-left: 20px;
             margin-left: 6px;
             border-left: 1px solid var(--gh-border);
-            display: none !important;
-            flex-direction: column !important;
+            display: none;
+            flex-direction: column;
         }
-        .subcategory-list.open { display: flex !important; }
+        .subcategory-list.open { display: flex; }
 
         .subcategory-node {
             display: flex;
@@ -249,10 +244,10 @@
             padding-left: 20px;
             margin-left: 6px;
             border-left: 1px solid var(--gh-border);
-            display: none !important;
-            flex-direction: column !important;
+            display: none;
+            flex-direction: column;
         }
-        .project-list.open { display: flex !important; }
+        .project-list.open { display: flex; }
 
         .project-node {
             display: flex;
@@ -442,13 +437,11 @@
         </div>
     </div>
 
-    <!-- Lightbox Modal -->
     <div id="lightbox-overlay" onclick="closeLightbox()">
         <img id="lightbox-img" src="" alt="Enlarged View">
     </div>
 
     <script>
-        // 1. Portfolio Directory Structure Data
         const portfolioData = [
           {
             title: "Transportation",
@@ -511,3 +504,396 @@
                 ]
               }
             ]
+          },
+          {
+            title: "Commissioned_Works",
+            subcategories: [
+              {
+                name: "Course_Projects",
+                projects: [
+                  { name: "Campus_display_board", primary: "images/Commissioned_Works/Course_Projects/Campus_display_board", fallback: "images/Course_Projects/Campus_display_board" },
+                  { name: "Competitions", primary: "images/Commissioned_Works/Course_Projects/Competitions", fallback: "images/Course_Projects/Competitions" },
+                  { name: "Courseworks", primary: "images/Commissioned_Works/Course_Projects/Courseworks", fallback: "images/Course_Projects/Courseworks" },
+                  { name: "Lamps", primary: "images/Commissioned_Works/Course_Projects/Lamps", fallback: "images/Course_Projects/Lamps" }
+                ]
+              },
+              {
+                name: "Client_projects",
+                projects: [
+                  { name: "Client_projects", primary: "images/Commissioned_Works/Client_projects", fallback: "images/Client_projects" }
+                ]
+              }
+            ]
+          },
+          {
+            title: "Others",
+            subcategories: [
+              {
+                name: "Everyday_Items",
+                projects: [
+                  { name: "Brackets", primary: "images/Others/Everyday_Items/Brackets", fallback: "images/Everyday_Items/Brackets" },
+                  { name: "Others", primary: "images/Others/Everyday_Items/Others", fallback: "images/Everyday_Items/Others" },
+                  { name: "Trash_bin", primary: "images/Others/Everyday_Items/Trash_bin", fallback: "images/Everyday_Items/Trash_bin" }
+                ]
+              },
+              {
+                name: "References",
+                projects: [
+                  { name: "References", primary: "images/Others/References", fallback: "images/References" }
+                ]
+              }
+            ]
+          }
+        ];
+
+        const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG', '.JPEG'];
+        const MAX_IMAGES_PER_FOLDER = 99;
+
+        let currentLang = 'en';
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            document.querySelectorAll('.i18n').forEach(el => {
+                const text = el.getAttribute(`data-${currentLang}`);
+                if (text) el.textContent = text;
+            });
+            document.getElementById('btn-lang').textContent = currentLang === 'en' ? '中 / EN' : 'EN / 中';
+        }
+
+        window.switchPage = function(p) {
+            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+            document.getElementById(p).classList.add('active');
+            document.getElementById('btn-'+p).classList.add('active');
+        };
+
+        const treeNav = document.getElementById('treeNav');
+        const breadcrumb = document.getElementById('breadcrumb');
+        const galleryViewport = document.getElementById('galleryViewport');
+        const emptyState = document.getElementById('emptyState');
+        const imageStream = document.getElementById('imageStream');
+
+        function buildTreeNavigation() {
+          treeNav.innerHTML = '';
+
+          portfolioData.forEach((category) => {
+            const catDiv = document.createElement('div');
+            catDiv.className = 'tree-category';
+
+            const titleNode = document.createElement('div');
+            titleNode.className = 'title-node';
+            titleNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> ${category.title}`;
+
+            const subCatList = document.createElement('div');
+            subCatList.className = 'subcategory-list';
+
+            category.subcategories.forEach((subcat) => {
+              const subCatNode = document.createElement('div');
+              subCatNode.className = 'subcategory-node';
+              subCatNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> ${subcat.name}`;
+
+              const projectList = document.createElement('div');
+              projectList.className = 'project-list';
+
+              subcat.projects.forEach((proj) => {
+                const projNode = document.createElement('div');
+                projNode.className = 'project-node';
+                projNode.innerHTML = `<span class="file-icon">📄</span> ${proj.name}`;
+
+                projNode.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  setActiveProject(projNode, category.title, subcat.name, proj);
+                });
+
+                projectList.appendChild(projNode);
+              });
+
+              subCatNode.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = projectList.classList.contains('open');
+                if (isOpen) {
+                  projectList.classList.remove('open');
+                  subCatNode.querySelector('.icon').textContent = '▸';
+                } else {
+                  projectList.classList.add('open');
+                  subCatNode.querySelector('.icon').textContent = '▾';
+                }
+              });
+
+              subCatList.appendChild(subCatNode);
+              subCatList.appendChild(projectList);
+            });
+
+            titleNode.addEventListener('click', () => {
+              const isOpen = subCatList.classList.contains('open');
+              if (isOpen) {
+                subCatList.classList.remove('open');
+                titleNode.querySelector('.icon').textContent = '▸';
+              } else {
+                subCatList.classList.add('open');
+                titleNode.querySelector('.icon').textContent = '▾';
+              }
+            });
+
+            catDiv.appendChild(titleNode);
+            catDiv.appendChild(subCatList);
+            treeNav.appendChild(catDiv);
+          });
+        }
+
+        function setActiveProject(node, title, subcat, project) {
+          document.querySelectorAll('.project-node').forEach(n => n.classList.remove('active'));
+          node.classList.add('active');
+
+          breadcrumb.innerHTML = `
+            <span style="color: var(--gh-text-main)">${title}</span>
+            <span class="separator">/</span>
+            <span>${subcat}</span>
+            <span class="separator">/</span>
+            <span style="color: #00e5ff; font-weight: 600;">${project.name}</span>
+          `;
+
+          emptyState.style.display = 'none';
+          imageStream.innerHTML = '';
+
+          loadProjectImages(project);
+        }
+
+        async function loadProjectImages(projectObj) {
+          let activeIndex = 1;
+
+          while (activeIndex <= MAX_IMAGES_PER_FOLDER) {
+            const paddedNum = String(activeIndex).padStart(2, '0');
+            
+            let foundImage = await testImageSrc(projectObj.primary, paddedNum);
+            
+            if (!foundImage && projectObj.fallback) {
+              foundImage = await testImageSrc(projectObj.fallback, paddedNum);
+            }
+
+            if (foundImage) {
+              renderImageCard(foundImage, paddedNum);
+              activeIndex++;
+            } else {
+              break;
+            }
+          }
+
+          if (activeIndex === 1) {
+            imageStream.innerHTML = `
+              <div class="empty-state">
+                <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-border);">🚫</div>
+                <p>No valid indexed images (01, 02...) detected in project folder.</p>
+              </div>
+            `;
+          }
+        }
+
+        function testImageSrc(folderPath, num) {
+          return new Promise((resolve) => {
+            let tried = 0;
+            let resolved = false;
+
+            IMAGE_EXTENSIONS.forEach((ext) => {
+              const testUrl = encodeURI(`${folderPath}/${num}${ext}`);
+              const img = new Image();
+
+              img.onload = () => {
+                if (!resolved) {
+                  resolved = true;
+                  resolve(testUrl);
+                }
+              };
+
+              img.onerror = () => {
+                tried++;
+                if (tried === IMAGE_EXTENSIONS.length && !resolved) {
+                  resolve(null);
+                }
+              };
+
+              img.src = testUrl;
+            });
+          });
+        }
+
+        function renderImageCard(src, indexStr) {
+          const card = document.createElement('div');
+          card.className = 'gallery-card';
+          card.onclick = () => openLightbox(src);
+
+          const img = document.createElement('img');
+          img.src = src;
+          img.loading = 'lazy';
+          img.alt = `Design Sheet ${indexStr}`;
+
+          const meta = document.createElement('div');
+          meta.className = 'card-meta';
+          meta.innerHTML = `
+            <span>📄 FILE: ${indexStr}</span>
+            <span>STATUS: RENDERED</span>
+          `;
+
+          card.appendChild(img);
+          card.appendChild(meta);
+          imageStream.appendChild(card);
+        }
+
+        document.getElementById('scrollToTopBtn').addEventListener('click', () => {
+          galleryViewport.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function openLightbox(url) {
+            const overlay = document.getElementById('lightbox-overlay');
+            const img = document.getElementById('lightbox-img');
+            img.src = url;
+            overlay.classList.add('active');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-overlay').classList.remove('active');
+        }
+
+        // FIX 3: Reduced Particles to 2500 to prevent WebGL Memory Crash
+        const bgCanvas = document.getElementById('bg-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        const topCanvas = document.getElementById('top-canvas');
+        const topCtx = topCanvas.getContext('2d');
+
+        const dpr = window.devicePixelRatio || 1;
+        let w = window.innerWidth;
+        let h = window.innerHeight;
+
+        function initCanvasSize() {
+            w = window.innerWidth;
+            h = window.innerHeight;
+            bgCanvas.width = topCanvas.width = w * dpr;
+            bgCanvas.height = topCanvas.height = h * dpr;
+            bgCanvas.style.width = topCanvas.style.width = w + 'px';
+            bgCanvas.style.height = topCanvas.style.height = h + 'px';
+            bgCtx.scale(dpr, dpr);
+            topCtx.scale(dpr, dpr);
+        }
+        initCanvasSize();
+        window.addEventListener('resize', initCanvasSize);
+
+        const particles = [];
+        const totalParticles = 2500; 
+        
+        const colors = [
+            '#FFE3B3', '#FFC563', '#0099FF', '#00FFFF', '#FFFFFF', 
+            'rgba(255, 227, 179, 0.95)', 'rgba(0, 255, 255, 0.95)'
+        ];
+        
+        let globalTime = 0;
+        let lastTime = performance.now();
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * w; 
+                this.y = Math.random() * h;
+                
+                const sizeRand = Math.random();
+                if (sizeRand > 0.8) {
+                    this.width = Math.random() * 6 + 4;  
+                    this.height = Math.random() * 1.5 + 0.8;
+                    this.velocity = Math.random() * 0.5 + 0.2;
+                } else {
+                    this.width = Math.random() * 3 + 1.5;    
+                    this.height = Math.random() * 0.8 + 0.4;
+                    this.velocity = Math.random() * 0.7 + 0.4; 
+                }
+                
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.rotation = Math.random() * Math.PI * 2;
+                this.angle = Math.random() * Math.PI * 2;
+                
+                this.ix = 0;
+                this.iy = 0;
+                this.alpha = 0; 
+            }
+            
+            update(mouse, time, dt, breathingRadius, currentFriction) {
+                if (this.alpha < 1) this.alpha += 0.008 * dt; 
+
+                let flowDirX = Math.sin(time * 0.0007) * 1.5;
+                let flowDirY = Math.cos(time * 0.0005 + 1.0) * 1.2;
+                this.angle = Math.sin(this.x * 0.0025 + flowDirX) + Math.cos(this.y * 0.0025 + flowDirY);
+
+                let baseVx = Math.cos(this.angle) * this.velocity;
+                let baseVy = Math.sin(this.angle) * this.velocity;
+
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if (dist < breathingRadius && dist > 1) {
+                    let force = (breathingRadius - dist) / breathingRadius; 
+                    let pullStrength = force * 0.58; 
+                    this.ix += (dx / dist) * pullStrength * dt;
+                    this.iy += (dy / dist) * pullStrength * dt;
+                    let coreFriction = Math.pow(0.968 - (0.09 * force), dt);
+                    this.ix *= coreFriction;
+                    this.iy *= coreFriction;
+                    baseVx *= (1 - force * 0.85);
+                    baseVy *= (1 - force * 0.85);
+                } else {
+                    this.ix *= currentFriction; 
+                    this.iy *= currentFriction;
+                }
+
+                this.x += (baseVx + this.ix) * dt;
+                this.y += (baseVy + this.iy) * dt;
+
+                if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+                this.rotation += (0.015 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.004) * dt;
+            }
+            
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.fillStyle = this.color;
+                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < totalParticles; i++) particles.push(new Particle());
+
+        let mouse = { x: -2000, y: -2000 };
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('touchmove', e => { 
+            const t = e.touches[0]; mouse.x = t.clientX; mouse.y = t.clientY; 
+        }, { passive: true });
+        window.addEventListener('touchend', () => { window.scrollTo(0, 0); });
+
+        function animate() {
+            let currentTime = performance.now();
+            let dt = (currentTime - lastTime) / 16.666;
+            if (dt > 2.0 || dt < 0.1 || isNaN(dt)) dt = 1.0; 
+            lastTime = currentTime;
+            globalTime += dt;
+            
+            bgCtx.fillStyle = 'rgba(3, 3, 7, 0.12)';
+            bgCtx.fillRect(0, 0, w, h);
+            topCtx.globalCompositeOperation = 'lighter';
+            topCtx.clearRect(0, 0, w, h);
+
+            let breathingRadius = 160 + Math.sin(globalTime * 0.002) * 90;
+            let currentFriction = Math.pow(0.968, dt);
+
+            particles.forEach(p => {
+                p.update(mouse, globalTime, dt, breathingRadius, currentFriction);
+                p.draw(topCtx);
+            });
+
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+
+        buildTreeNavigation();
+    </script>
+</body>
+</html>
