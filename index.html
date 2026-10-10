@@ -8,7 +8,9 @@
     <style>
         :root { 
             --accent-color: #FFE3B3; 
-            --text-color: #ffffff; 
+            --bg-dark: #030307;
+            --panel-bg: #0c0e14;
+            --sidebar-bg: #12161f;
             --border-color: rgba(255, 255, 255, 0.12);
             --hover-bg: rgba(255, 227, 179, 0.08);
             --active-bg: rgba(255, 227, 179, 0.18);
@@ -21,15 +23,13 @@
         html, body { 
             margin: 0; 
             padding: 0; 
-            width: 100%; 
-            height: 100%; 
+            width: 100vw; 
+            height: 100vh; 
             position: fixed; 
             overflow: hidden; 
-            overscroll-behavior: none; 
-            background-color: #030307; 
+            background-color: var(--bg-dark); 
             color: white; 
             font-family: var(--font-sans); 
-            -webkit-overflow-scrolling: touch; 
         }
         
         #bg-canvas, #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -40,18 +40,19 @@
         
         nav, .page { pointer-events: auto; }
         
+        /* Solid Header Nav - Prevents Image Bleed-Through */
         nav { 
             position: fixed; 
             top: 0; 
+            left: 0;
             width: 100%; 
+            height: 70px;
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            z-index: 100; 
-            padding: 24px 0; 
-            background: linear-gradient(to bottom, rgba(3,3,7,0.95), rgba(3,3,7,0)); 
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000; 
+            background: #030307; 
+            border-bottom: 1px solid var(--border-color);
         }
         nav button { 
             background: none; 
@@ -88,35 +89,36 @@
         }
         
         .page { 
-            position: absolute; 
-            top: 0; 
+            position: fixed; 
+            top: 70px; 
             left: 0; 
-            width: 100%; 
-            height: 100vh;
-            padding-top: 85px; 
+            width: 100vw; 
+            height: calc(100vh - 70px);
             opacity: 0; 
             pointer-events: none; 
-            transform: scale(0.98) translateY(10px); 
-            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: opacity, transform; 
+            transform: scale(0.98); 
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            overflow: hidden;
         }
         
         .page.active { 
             opacity: 1; 
             pointer-events: auto; 
-            transform: scale(1) translateY(0); 
+            transform: scale(1); 
         }
 
-        /* Home Page */
+        /* Home View */
         #home {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            padding-top: 180px;
         }
 
-        /* Works Page Layout */
+        /* Works View Locked Container */
         #works {
-            height: calc(100vh - 85px);
-            padding: 10px 24px 24px 24px;
+            padding: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -126,45 +128,44 @@
             display: flex;
             flex-direction: row;
             width: 100%;
-            max-width: 1400px;
+            max-width: 1600px;
             height: 100%;
             border: 1px solid var(--border-color);
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            background: rgba(15, 18, 23, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: var(--panel-bg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             text-align: left;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
         }
 
-        /* Strict Vertical Column Sidebar */
+        /* Strictly Constrained Vertical Sidebar */
         .ptc-sidebar {
-            width: 320px;
-            min-width: 320px;
-            max-width: 320px;
+            width: 300px;
+            min-width: 300px;
+            max-width: 300px;
             flex-shrink: 0;
+            height: 100%;
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             user-select: none;
-            background: rgba(3, 3, 7, 0.55);
+            background: var(--sidebar-bg);
             overflow: hidden;
         }
 
         .sidebar-header {
-            padding: 16px 20px;
+            padding: 14px 18px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-family: var(--font-mono);
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
         }
 
         .brand-title {
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             letter-spacing: 1.5px;
             color: var(--accent-color);
         }
@@ -172,18 +173,19 @@
         .tree-nav {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             width: 100%;
         }
 
-        /* Enforce Vertical Flow Across All Tree Levels */
-        .tree-category { 
-            width: 100%;
-            display: flex; 
-            flex-direction: column; 
+        /* Force Strict Vertical Stacking */
+        .tree-category, .subcategory-list, .project-list { 
+            width: 100% !important;
+            display: flex !important; 
+            flex-direction: column !important; 
+            box-sizing: border-box !important;
         }
 
         .title-node {
@@ -192,7 +194,7 @@
             align-items: center;
             padding: 8px 10px;
             font-family: var(--font-mono);
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
             color: var(--accent-color);
             cursor: pointer;
@@ -204,14 +206,12 @@
         .title-node .icon { margin-right: 8px; font-size: 0.7rem; transition: transform 0.2s ease; }
 
         .subcategory-list {
-            width: 100%;
-            padding-left: 12px;
+            padding-left: 10px;
             border-left: 1px dashed var(--border-color);
-            margin-left: 10px;
-            display: none;
-            flex-direction: column;
+            margin-left: 8px;
+            display: none !important;
         }
-        .subcategory-list.open { display: flex; }
+        .subcategory-list.open { display: flex !important; }
 
         .subcategory-node {
             width: 100%;
@@ -219,30 +219,28 @@
             align-items: center;
             padding: 6px 8px;
             font-family: var(--font-mono);
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: #d1d5db;
             cursor: pointer;
             border-radius: 4px;
-            margin: 2px 0;
+            margin: 1px 0;
         }
         .subcategory-node:hover { background-color: var(--hover-bg); color: var(--accent-color); }
 
         .project-list {
-            width: 100%;
-            padding-left: 12px;
+            padding-left: 10px;
             border-left: 1px dashed var(--border-color);
-            margin-left: 8px;
-            display: none;
-            flex-direction: column;
+            margin-left: 6px;
+            display: none !important;
         }
-        .project-list.open { display: flex; }
+        .project-list.open { display: flex !important; }
 
         .project-node {
             width: 100%;
             display: flex;
             align-items: center;
             padding: 5px 8px;
-            font-size: 0.75rem;
+            font-size: 0.73rem;
             font-family: var(--font-mono);
             color: #8b949e;
             cursor: pointer;
@@ -258,29 +256,31 @@
             border-left: 2px solid var(--accent-color);
         }
 
-        /* Main Viewport Container */
+        /* Main Display Viewport */
         .ptc-main {
             flex: 1;
             min-width: 0;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            background: rgba(3, 3, 7, 0.2);
+            background: #080a0f;
             overflow: hidden;
         }
 
         .top-bar {
-            height: 48px;
-            padding: 0 24px;
+            height: 45px;
+            min-height: 45px;
+            padding: 0 20px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(15, 18, 23, 0.5);
+            background: var(--sidebar-bg);
         }
 
         .breadcrumb {
             font-family: var(--font-mono);
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             color: #aaa;
             display: flex;
             align-items: center;
@@ -298,7 +298,7 @@
             padding: 4px 12px;
             border-radius: 12px;
             font-family: var(--font-mono);
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -327,7 +327,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 24px;
+            gap: 20px;
             max-width: 1000px;
             margin: 0 auto;
         }
@@ -335,48 +335,46 @@
         .gallery-card {
             width: 100%;
             background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.2s ease, border-color 0.2s ease;
             cursor: pointer;
         }
         .gallery-card:hover { border-color: var(--accent-color); transform: translateY(-2px); }
         .gallery-card img { width: 100%; height: auto; display: block; }
 
         .card-meta {
-            padding: 8px 16px;
-            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 14px;
+            background: rgba(0, 0, 0, 0.4);
             border-top: 1px solid var(--border-color);
             font-family: var(--font-mono);
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: #8b949e;
             display: flex;
             justify-content: space-between;
         }
 
-        /* Lightbox Modal */
+        /* Lightbox Overlay */
         #lightbox-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 3, 7, 0.75); 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(3, 3, 7, 0.85); 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            z-index: 200; display: flex; align-items: center; justify-content: center;
+            z-index: 2000; display: flex; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; 
-            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.4s ease;
         }
         #lightbox-overlay.active { opacity: 1; pointer-events: auto; }
         
         #lightbox-img {
-            max-width: 90%; max-height: 85%; object-fit: contain; border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-            transform: scale(0.9) translateY(20px);
+            max-width: 92%; max-height: 88%; object-fit: contain; border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            transform: scale(0.92);
             opacity: 0;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.4s ease;
         }
-        #lightbox-overlay.active #lightbox-img { transform: scale(1) translateY(0); opacity: 1; }
+        #lightbox-overlay.active #lightbox-img { transform: scale(1); opacity: 1; }
     </style>
 </head>
 <body>
@@ -391,13 +389,13 @@
             <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">中 / EN</button>
         </nav>
 
-        <!-- Home Page -->
+        <!-- Home View -->
         <div id="home" class="page active">
             <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
-            <p class="i18n" data-en="Collections" data-zh="设计与工程作品集" style="color: #555; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
+            <p class="i18n" data-en="Collections" data-zh="设计与工程作品集" style="color: #666; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
         </div>
 
-        <!-- Works Page (Only PTC Workspace, Old Grid Cards Removed) -->
+        <!-- Works View -->
         <div id="works" class="page">
             <div class="ptc-workspace">
                 <aside class="ptc-sidebar">
@@ -435,7 +433,7 @@
     </div>
 
     <script>
-        // 1. Portfolio 3-Tier Structure Data
+        // 1. Portfolio 3-Tier Structure Data with Dual Candidate Paths
         const portfolioData = [
           {
             title: "Transportation",
@@ -444,37 +442,37 @@
               {
                 name: "Vehicle_researches",
                 projects: [
-                  { name: "Prototypes", path: "images/Vehicle_researches/Prototypes" },
-                  { name: "Vehicle_references", path: "images/Vehicle_researches/Vehicle_references" },
-                  { name: "Works", path: "images/Vehicle_researches/Works" }
+                  { name: "Prototypes", primary: "images/Transportation/Vehicle_researches/Prototypes", fallback: "images/Vehicle_researches/Prototypes" },
+                  { name: "Vehicle_references", primary: "images/Transportation/Vehicle_researches/Vehicle_references", fallback: "images/Vehicle_researches/Vehicle_references" },
+                  { name: "Works", primary: "images/Transportation/Vehicle_researches/Works", fallback: "images/Vehicle_researches/Works" }
                 ]
               },
               {
                 name: "Aircraft_Researches",
                 projects: [
-                  { name: "Aircraft_References", path: "images/Aircraft_Researches/Aircraft_References" },
-                  { name: "Aircraft_works", path: "images/Aircraft_Researches/Aircraft_works" }
+                  { name: "Aircraft_References", primary: "images/Transportation/Aircraft_Researches/Aircraft_References", fallback: "images/Aircraft_Researches/Aircraft_References" },
+                  { name: "Aircraft_works", primary: "images/Transportation/Aircraft_Researches/Aircraft_works", fallback: "images/Aircraft_Researches/Aircraft_works" }
                 ]
               },
               {
                 name: "Derailleur",
                 projects: [
-                  { name: "Fairing", path: "images/Derailleur/Fairing" },
-                  { name: "Hollow_type", path: "images/Derailleur/Hollow_type" }
+                  { name: "Fairing", primary: "images/Transportation/Derailleur/Fairing", fallback: "images/Derailleur/Fairing" },
+                  { name: "Hollow_type", primary: "images/Transportation/Derailleur/Hollow_type", fallback: "images/Derailleur/Hollow_type" }
                 ]
               },
               {
                 name: "Clay_Bmw_Gen12",
                 projects: [
-                  { name: "Chassis", path: "images/Clay_Bmw_Gen12/Chassis" },
-                  { name: "Works", path: "images/Clay_Bmw_Gen12/Works" }
+                  { name: "Chassis", primary: "images/Transportation/Clay_Bmw_Gen12/Chassis", fallback: "images/Clay_Bmw_Gen12/Chassis" },
+                  { name: "Works", primary: "images/Transportation/Clay_Bmw_Gen12/Works", fallback: "images/Clay_Bmw_Gen12/Works" }
                 ]
               },
               {
                 name: "E_MP",
                 projects: [
-                  { name: "E-MP_References", path: "images/E_MP/E-MP_References" },
-                  { name: "Main_Gallery", path: "images/E_MP" }
+                  { name: "E-MP_References", primary: "images/Transportation/E_MP/E-MP_References", fallback: "images/E_MP/E-MP_References" },
+                  { name: "Main_Gallery", primary: "images/Transportation/E_MP", fallback: "images/E_MP" }
                 ]
               }
             ]
@@ -486,17 +484,17 @@
               {
                 name: "Skills",
                 projects: [
-                  { name: "Modeling_Work", path: "images/Skills/Modeling_Work" },
-                  { name: "Pistol_Study", path: "images/Skills/Pistol_Study" },
-                  { name: "Plumbing", path: "images/Skills/Plumbing" },
-                  { name: "Technical_Skills", path: "images/Skills/Technical_Skills" },
-                  { name: "Web_Dev", path: "images/Skills/Web_Dev" }
+                  { name: "Modeling_Work", primary: "images/Discoveries/Skills/Modeling_Work", fallback: "images/Skills/Modeling_Work" },
+                  { name: "Pistol_Study", primary: "images/Discoveries/Skills/Pistol_Study", fallback: "images/Skills/Pistol_Study" },
+                  { name: "Plumbing", primary: "images/Discoveries/Skills/Plumbing", fallback: "images/Skills/Plumbing" },
+                  { name: "Technical_Skills", primary: "images/Discoveries/Skills/Technical_Skills", fallback: "images/Skills/Technical_Skills" },
+                  { name: "Web_Dev", primary: "images/Discoveries/Skills/Web_Dev", fallback: "images/Skills/Web_Dev" }
                 ]
               },
               {
                 name: "Topology_researches",
                 projects: [
-                  { name: "Topology_researches", path: "images/Topology_researches" }
+                  { name: "Topology_researches", primary: "images/Discoveries/Topology_researches", fallback: "images/Topology_researches" }
                 ]
               }
             ]
@@ -508,16 +506,16 @@
               {
                 name: "Course_Projects",
                 projects: [
-                  { name: "Campus_display_board", path: "images/Course_Projects/Campus_display_board" },
-                  { name: "Competitions", path: "images/Course_Projects/Competitions" },
-                  { name: "Courseworks", path: "images/Course_Projects/Courseworks" },
-                  { name: "Lamps", path: "images/Course_Projects/Lamps" }
+                  { name: "Campus_display_board", primary: "images/Commissioned_Works/Course_Projects/Campus_display_board", fallback: "images/Course_Projects/Campus_display_board" },
+                  { name: "Competitions", primary: "images/Commissioned_Works/Course_Projects/Competitions", fallback: "images/Course_Projects/Competitions" },
+                  { name: "Courseworks", primary: "images/Commissioned_Works/Course_Projects/Courseworks", fallback: "images/Course_Projects/Courseworks" },
+                  { name: "Lamps", primary: "images/Commissioned_Works/Course_Projects/Lamps", fallback: "images/Course_Projects/Lamps" }
                 ]
               },
               {
                 name: "Client_projects",
                 projects: [
-                  { name: "Client_projects", path: "images/Client_projects" }
+                  { name: "Client_projects", primary: "images/Commissioned_Works/Client_projects", fallback: "images/Client_projects" }
                 ]
               }
             ]
@@ -529,26 +527,25 @@
               {
                 name: "Everyday_Items",
                 projects: [
-                  { name: "Brackets", path: "images/Everyday_Items/Brackets" },
-                  { name: "Others", path: "images/Everyday_Items/Others" },
-                  { name: "Trash_bin", path: "images/Everyday_Items/Trash_bin" }
+                  { name: "Brackets", primary: "images/Others/Everyday_Items/Brackets", fallback: "images/Everyday_Items/Brackets" },
+                  { name: "Others", primary: "images/Others/Everyday_Items/Others", fallback: "images/Everyday_Items/Others" },
+                  { name: "Trash_bin", primary: "images/Others/Everyday_Items/Trash_bin", fallback: "images/Everyday_Items/Trash_bin" }
                 ]
               },
               {
                 name: "References",
                 projects: [
-                  { name: "References", path: "images/References" }
+                  { name: "References", primary: "images/Others/References", fallback: "images/References" }
                 ]
               }
             ]
           }
         ];
 
-        // Extended Extensions for Case Sensitivity Probing
         const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG', '.JPEG'];
         const MAX_IMAGES_PER_FOLDER = 99;
 
-        // 2. Bilingual Switching Engine
+        // 2. Bilingual Switching
         let currentLang = 'en';
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'zh' : 'en';
@@ -559,7 +556,7 @@
             document.getElementById('btn-lang').textContent = currentLang === 'en' ? '中 / EN' : 'EN / 中';
         }
 
-        // 3. Navigation Switcher
+        // 3. Page Switcher
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
@@ -612,8 +609,13 @@
               subCatNode.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const isOpen = projectList.classList.contains('open');
-                projectList.classList.toggle('open');
-                subCatNode.querySelector('.icon').textContent = isOpen ? '►' : '▼';
+                if (isOpen) {
+                  projectList.classList.remove('open');
+                  subCatNode.querySelector('.icon').textContent = '►';
+                } else {
+                  projectList.classList.add('open');
+                  subCatNode.querySelector('.icon').textContent = '▼';
+                }
               });
 
               subCatList.appendChild(subCatNode);
@@ -622,8 +624,13 @@
 
             titleNode.addEventListener('click', () => {
               const isOpen = subCatList.classList.contains('open');
-              subCatList.classList.toggle('open');
-              titleNode.querySelector('.icon').textContent = isOpen ? '►' : '▼';
+              if (isOpen) {
+                subCatList.classList.remove('open');
+                titleNode.querySelector('.icon').textContent = '►';
+              } else {
+                subCatList.classList.add('open');
+                titleNode.querySelector('.icon').textContent = '▼';
+              }
             });
 
             catDiv.appendChild(titleNode);
@@ -647,16 +654,23 @@
           emptyState.style.display = 'none';
           imageStream.innerHTML = '';
 
-          loadProjectImages(project.path);
+          loadProjectImages(project);
         }
 
-        // 5. Image Probing Loader with Case Sensitivity and Path Encoding
-        async function loadProjectImages(folderPath) {
+        // 5. Dual-Path Smart Image Prober
+        async function loadProjectImages(projectObj) {
           let activeIndex = 1;
 
           while (activeIndex <= MAX_IMAGES_PER_FOLDER) {
             const paddedNum = String(activeIndex).padStart(2, '0');
-            const foundImage = await testImageSrc(folderPath, paddedNum);
+            
+            // Try Primary Path First
+            let foundImage = await testImageSrc(projectObj.primary, paddedNum);
+            
+            // If primary fails, probe Fallback Path
+            if (!foundImage && projectObj.fallback) {
+              foundImage = await testImageSrc(projectObj.fallback, paddedNum);
+            }
 
             if (foundImage) {
               renderImageCard(foundImage, paddedNum);
@@ -669,7 +683,7 @@
           if (activeIndex === 1) {
             imageStream.innerHTML = `
               <div class="empty-state">
-                <p>No valid indexed images (01, 02...) detected in <code>${folderPath}</code></p>
+                <p>No valid indexed images (01, 02...) detected in project folder.</p>
               </div>
             `;
           }
@@ -741,7 +755,7 @@
             document.getElementById('lightbox-overlay').classList.remove('active');
         }
 
-        // 7. Particle Canvas Animation Engine
+        // 7. Particle Background Animation Engine
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         const topCanvas = document.getElementById('top-canvas');
@@ -892,7 +906,7 @@
         }
         requestAnimationFrame(animate);
 
-        // Build 3-Tier Tree Navigation Menu on Init
+        // App Init
         buildTreeNavigation();
     </script>
 </body>
