@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { 
-            /* GitHub Dark Mode Colors */
             --accent-color: #FFE3B3; 
             --gh-text-main: #e6edf3;
             --gh-text-muted: #8b949e;
@@ -40,7 +39,6 @@
         
         nav, .page { pointer-events: auto; }
         
-        /* Transparent Glassmorphic Navigation Bar */
         nav { 
             position: fixed; 
             top: 0; 
@@ -108,7 +106,6 @@
             transform: scale(1); 
         }
 
-        /* Home Landing Page */
         #home {
             display: flex;
             flex-direction: column;
@@ -118,7 +115,6 @@
             padding-top: 18vh; 
         }
 
-        /* Workspace Layout */
         #works {
             padding: 0;
             display: flex;
@@ -141,7 +137,6 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.7);
         }
 
-        /* Sidebar Tree Layout */
         .ptc-sidebar {
             width: 300px;
             min-width: 300px;
@@ -268,7 +263,6 @@
         }
         .project-node .file-icon { margin-right: 6px; font-size: 0.85rem; opacity: 0.8; }
 
-        /* Right Viewport */
         .ptc-main {
             flex: 1;
             min-width: 0;
@@ -367,7 +361,6 @@
             justify-content: space-between;
         }
 
-        /* Lightbox Modal */
         #lightbox-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(1, 4, 9, 0.9); 
@@ -387,7 +380,6 @@
         }
         #lightbox-overlay.active #lightbox-img { transform: scale(1); opacity: 1; }
 
-        /* Mobile responsive layout fixes */
         @media (max-width: 768px) {
             .ptc-workspace {
                 flex-direction: column;
@@ -572,8 +564,7 @@
           }
         ];
 
-        /* Streamlined extensions for faster probing */
-        const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG', '.JPEG'];
+        const IMAGE_EXTENSIONS = ['.jpg', '.png', '.jpeg', '.webp', '.JPG', '.PNG'];
         const MAX_IMAGES_PER_FOLDER = 99;
         
         const projectImageCache = {};
@@ -697,10 +688,11 @@
           loadProjectImages(project, currentLoadSession);
         }
 
-async function loadProjectImages(projectObj, sessionToken) {
-          // 1. 首先检查内存中是否已经缓存了该文件夹的图片路径
-          if (projectImageCache[projectObj.name]) {
-            const cachedUrls = projectImageCache[projectObj.name];
+        async function loadProjectImages(projectObj, sessionToken) {
+          const cacheKey = projectObj.primary; 
+
+          if (projectImageCache[cacheKey]) {
+            const cachedUrls = projectImageCache[cacheKey];
             cachedUrls.forEach((url, i) => {
               const paddedNum = String(i + 1).padStart(2, '0');
               renderImageCard(url, paddedNum);
@@ -716,12 +708,12 @@ async function loadProjectImages(projectObj, sessionToken) {
 
             const paddedNum = String(activeIndex).padStart(2, '0');
             
-            let foundImage = await testImageSrc(projectObj.primary, paddedNum);
+            let foundImage = await testImageSrc(projectObj.primary, paddedNum, sessionToken);
             
             if (sessionToken !== currentLoadSession) return;
 
             if (!foundImage && projectObj.fallback) {
-              foundImage = await testImageSrc(projectObj.fallback, paddedNum);
+              foundImage = await testImageSrc(projectObj.fallback, paddedNum, sessionToken);
             }
             
             if (sessionToken !== currentLoadSession) return;
@@ -735,9 +727,8 @@ async function loadProjectImages(projectObj, sessionToken) {
             }
           }
 
-          
-          if (validUrls.length > 0) {
-            projectImageCache[projectObj.name] = validUrls;
+          if (validUrls.length > 0 && sessionToken === currentLoadSession) {
+            projectImageCache[cacheKey] = validUrls;
           }
 
           if (activeIndex === 1 && sessionToken === currentLoadSession) {
@@ -752,20 +743,56 @@ async function loadProjectImages(projectObj, sessionToken) {
           }
         }
 
-        /* Sequential probing with timeout to prevent network freezes */
-        async function testImageSrc(folderPath, num) {
-          for (let ext of IMAGE_EXTENSIONS) {
-            const testUrl = encodeURI(`${folderPath}/${num}${ext}`);
-            const exists = await new Promise((resolve) => {
-              const img = new Image();
-              const timer = setTimeout(() => { img.src = ''; resolve(false); }, 8000); 
-              img.onload = () => { clearTimeout(timer); resolve(true); };
-              img.onerror = () => { clearTimeout(timer); resolve(false); };
-              img.src = testUrl;
+        function testImageSrc(folderPath, num, sessionToken) {
+          return new Promise((resolve) => {
+            let failedCount = 0;
+            let resolved = false;
+            const imgObjects = [];
+
+            const checkSession = setInterval(() => {
+                if (sessionToken !== currentLoadSession && !resolved) {
+                    resolved = true;
+                    clearInterval(checkSession);
+                    imgObjects.forEach(img => img.src = ''); 
+                    resolve(null);
+                }
+            }, 100);
+
+            IMAGE_EXTENSIONS.forEach(ext => {
+                const testUrl = encodeURI(`${folderPath}/${num}${ext}`);
+                const img = new Image();
+                imgObjects.push(img);
+                
+                img.onload = () => {
+                    if (!resolved) {
+                        resolved = true;
+                        clearInterval(checkSession);
+                        resolve(testUrl);
+                    }
+                };
+                
+                img.onerror = () => {
+                    if (resolved) return;
+                    failedCount++;
+                    if (failedCount === IMAGE_EXTENSIONS.length) {
+                        resolved = true;
+                        clearInterval(checkSession);
+                        resolve(null);
+                    }
+                };
+                
+                img.src = testUrl;
             });
-            if (exists) return testUrl;
-          }
-          return null;
+            
+            setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    clearInterval(checkSession);
+                    imgObjects.forEach(img => img.src = '');
+                    resolve(null);
+                }
+            }, 15000); 
+          });
         }
 
         function renderImageCard(src, indexStr) {
