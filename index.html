@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { 
+            /* GitHub Dark Mode Colors */
             --accent-color: #FFE3B3; 
             --gh-text-main: #e6edf3;
             --gh-text-muted: #8b949e;
@@ -39,6 +40,7 @@
         
         nav, .page { pointer-events: auto; }
         
+        /* Transparent Glassmorphic Navigation Bar */
         nav { 
             position: fixed; 
             top: 0; 
@@ -106,6 +108,7 @@
             transform: scale(1); 
         }
 
+        /* Home Landing Page */
         #home {
             display: flex;
             flex-direction: column;
@@ -115,6 +118,7 @@
             padding-top: 18vh; 
         }
 
+        /* Workspace Layout */
         #works {
             padding: 0;
             display: flex;
@@ -137,6 +141,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.7);
         }
 
+        /* Sidebar Tree Layout */
         .ptc-sidebar {
             width: 300px;
             min-width: 300px;
@@ -262,6 +267,7 @@
         }
         .project-node .file-icon { margin-right: 6px; font-size: 0.85rem; opacity: 0.8; }
 
+        /* Right Viewport */
         .ptc-main {
             flex: 1;
             min-width: 0;
@@ -360,6 +366,7 @@
             justify-content: space-between;
         }
 
+        /* Lightbox Modal */
         #lightbox-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(1, 4, 9, 0.9); 
@@ -379,7 +386,7 @@
         }
         #lightbox-overlay.active #lightbox-img { transform: scale(1); opacity: 1; }
 
-        /* 📱 手机端自适应布局修复 */
+        /* Mobile responsive layout fixes */
         @media (max-width: 768px) {
             .ptc-workspace {
                 flex-direction: column;
@@ -415,7 +422,7 @@
         <nav>
             <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="首页">INDEX</button>
             <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="作品集">PROJECTS</button>
-            <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">中 / EN</button>
+            <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">EN / 中</button>
         </nav>
 
         <div id="home" class="page active">
@@ -564,20 +571,24 @@
           }
         ];
 
-        /* 精简了探测后缀名，极大提升探测速度 */
-        const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.JPG', '.PNG'];
+        /* Streamlined extensions for faster probing */
+        const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG', '.JPEG'];
         const MAX_IMAGES_PER_FOLDER = 99;
         
         let currentLoadSession = 0;
         let currentLang = 'en';
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'zh' : 'en';
+        function applyLanguage() {
             document.querySelectorAll('.i18n').forEach(el => {
                 const text = el.getAttribute(`data-${currentLang}`);
                 if (text) el.textContent = text;
             });
             document.getElementById('btn-lang').textContent = currentLang === 'en' ? '中 / EN' : 'EN / 中';
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            applyLanguage();
         }
 
         window.switchPage = function(p) {
@@ -660,7 +671,7 @@
             treeNav.appendChild(catDiv);
           });
           
-          toggleLanguage();
+          applyLanguage();
         }
 
         function setActiveProject(node, title, subcat, project) {
@@ -717,17 +728,17 @@
                 <p class="i18n" data-en="Ensure images are named '01.png', '02.jpg', etc., in the repository." data-zh="请确保仓库中的图片严格命名为 '01.png', '02.jpg' 等。">Ensure images are named '01.png', '02.jpg', etc., in the repository.</p>
               </div>
             `;
-            toggleLanguage();
+            applyLanguage();
           }
         }
 
-        /* 串行探测并加入了5秒超时熔断机制，防止无VPN时网络防火墙静默丢弃导致长达几分钟的假死 */
+        /* Sequential probing with timeout to prevent network freezes */
         async function testImageSrc(folderPath, num) {
           for (let ext of IMAGE_EXTENSIONS) {
             const testUrl = encodeURI(`${folderPath}/${num}${ext}`);
             const exists = await new Promise((resolve) => {
               const img = new Image();
-              const timer = setTimeout(() => { img.src = ''; resolve(false); }, 5000); 
+              const timer = setTimeout(() => { img.src = ''; resolve(false); }, 8000); 
               img.onload = () => { clearTimeout(timer); resolve(true); };
               img.onerror = () => { clearTimeout(timer); resolve(false); };
               img.src = testUrl;
@@ -744,6 +755,7 @@
 
           const img = document.createElement('img');
           img.src = src;
+          img.decoding = 'async';
           img.loading = 'lazy';
           img.alt = `Design Sheet ${indexStr}`;
 
