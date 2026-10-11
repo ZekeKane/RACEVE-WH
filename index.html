@@ -688,7 +688,7 @@
           loadProjectImages(project, currentLoadSession);
         }
 
-        async function loadProjectImages(projectObj, sessionToken) {
+async function loadProjectImages(projectObj, sessionToken) {
           const cacheKey = projectObj.primary; 
 
           if (projectImageCache[cacheKey]) {
@@ -702,6 +702,8 @@
 
           let activeIndex = 1;
           const validUrls = []; 
+          let retryCount = 0;
+          const MAX_RETRIES = 2;
 
           while (activeIndex <= MAX_IMAGES_PER_FOLDER) {
             if (sessionToken !== currentLoadSession) return;
@@ -722,8 +724,13 @@
               validUrls.push(foundImage); 
               renderImageCard(foundImage, paddedNum);
               activeIndex++;
+              retryCount = 0; 
             } else {
-              break;
+              retryCount++;
+              if (retryCount > MAX_RETRIES) {
+                break; 
+              }
+              await new Promise(r => setTimeout(r, 1200));
             }
           }
 
@@ -735,8 +742,8 @@
             imageStream.innerHTML = `
               <div class="empty-state">
                 <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-border);">🚫</div>
-                <h3 class="i18n" data-en="No images detected" data-zh="未检测到图片">No images detected</h3>
-                <p class="i18n" data-en="Ensure images are named '01.png', '02.jpg', etc., in the repository." data-zh="请确保仓库中的图片严格命名为 '01.png', '02.jpg' 等。">Ensure images are named '01.png', '02.jpg', etc., in the repository.</p>
+                <h3 class="i18n" data-en="No images detected" data-zh="No images detected">No images detected</h3>
+                <p class="i18n" data-en="Ensure images are named '01.png', '02.jpg', etc., in the repository." data-zh="Ensure images are named '01.png', '02.jpg', etc., in the repository.">Ensure images are named '01.png', '02.jpg', etc., in the repository.</p>
               </div>
             `;
             applyLanguage();
@@ -791,7 +798,7 @@
                     imgObjects.forEach(img => img.src = '');
                     resolve(null);
                 }
-            }, 15000); 
+            }, 8000); 
           });
         }
 
