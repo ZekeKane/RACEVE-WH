@@ -576,6 +576,8 @@
         const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG', '.JPEG'];
         const MAX_IMAGES_PER_FOLDER = 99;
         
+        const projectImageCache = {};
+        
         let currentLoadSession = 0;
         let currentLang = 'en';
 
@@ -695,8 +697,18 @@
           loadProjectImages(project, currentLoadSession);
         }
 
-        async function loadProjectImages(projectObj, sessionToken) {
+async function loadProjectImages(projectObj, sessionToken) {
+          if (projectImageCache[projectObj.name]) {
+            const cachedUrls = projectImageCache[projectObj.name];
+            cachedUrls.forEach((url, i) => {
+              const paddedNum = String(i + 1).padStart(2, '0');
+              renderImageCard(url, paddedNum);
+            });
+            return;
+          }
+
           let activeIndex = 1;
+          const validUrls = [];
 
           while (activeIndex <= MAX_IMAGES_PER_FOLDER) {
             if (sessionToken !== currentLoadSession) return;
@@ -714,11 +726,16 @@
             if (sessionToken !== currentLoadSession) return;
 
             if (foundImage) {
+              validUrls.push(foundImage);
               renderImageCard(foundImage, paddedNum);
               activeIndex++;
             } else {
               break;
             }
+          }
+
+          if (validUrls.length > 0) {
+            projectImageCache[projectObj.name] = validUrls;
           }
 
           if (activeIndex === 1 && sessionToken === currentLoadSession) {
