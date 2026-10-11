@@ -860,16 +860,24 @@ async function loadProjectImages(projectObj, sessionToken) {
             const delta = e.deltaY < 0 ? 1 : -1;
             const newScale = Math.min(Math.max(1, lbScale + delta * zoomSpeed * lbScale), 8); 
             
-            const xs = (e.clientX - lbPointX) / lbScale;
-            const ys = (e.clientY - lbPointY) / lbScale;
+            const rect = lightboxImg.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const dx = e.clientX - centerX;
+            const dy = e.clientY - centerY;
+            
+            const ratio = newScale / lbScale;
             
             lbScale = newScale;
             if (lbScale === 1) {
-                lbPointX = 0; lbPointY = 0;
+                lbPointX = 0; 
+                lbPointY = 0;
             } else {
-                lbPointX = e.clientX - xs * lbScale;
-                lbPointY = e.clientY - ys * lbScale;
+                lbPointX -= dx * (ratio - 1);
+                lbPointY -= dy * (ratio - 1);
             }
+            
             lightboxImg.style.transform = `translate(${lbPointX}px, ${lbPointY}px) scale(${lbScale})`;
             lightboxImg.style.cursor = lbScale > 1 ? 'grab' : 'default';
         }, { passive: false });
