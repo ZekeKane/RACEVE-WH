@@ -4,38 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>KE's Warehouse</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --accent-color: #FFE3B3; --text-color: #ffffff; }
+        :root { 
+            --accent-color: #FFE3B3; 
+            --gh-text-main: #e6edf3;
+            --gh-text-muted: #8b949e;
+            --gh-border: #30363d;
+            --gh-hover: rgba(177, 186, 196, 0.12);
+            --gh-active: rgba(0, 229, 255, 0.15);
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+        }
         
-        * { -webkit-tap-highlight-color: transparent; }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
         html, body { 
             margin: 0; 
             padding: 0; 
-            width: 100%; 
-            height: 100%; 
+            width: 100vw; 
+            height: 100vh; 
             position: fixed; 
             overflow: hidden; 
-            overscroll-behavior: none; 
             background-color: #030307; 
             color: white; 
-            font-family: -apple-system, sans-serif; 
-            -webkit-overflow-scrolling: touch; 
+            font-family: var(--font-sans); 
         }
         
         #bg-canvas, #top-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         #bg-canvas { z-index: 0; }
         #top-canvas { z-index: 50; } 
         
-        .content-layer { position: relative; z-index: 60; width: 100%; min-height: 100vh; pointer-events: none; }
+        .content-layer { position: relative; z-index: 60; width: 100%; height: 100vh; pointer-events: none; }
         
         nav, .page { pointer-events: auto; }
         
-        nav { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; z-index: 100; padding: 30px 0; background: linear-gradient(to bottom, rgba(3,3,7,1), rgba(3,3,7,0)); }
-        nav button { background: none; border: none; color: #888; padding: 0 20px; cursor: pointer; font-weight: 600; font-size: 16px; transition: 0.3s; letter-spacing: 2px; }
-        nav button.active, nav button:hover { color: var(--accent-color); text-shadow: 0 0 15px rgba(255,227,179,0.6); }
+        nav { 
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 65px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000; 
+            background: linear-gradient(to bottom, rgba(3,3,7,0.95) 0%, rgba(3,3,7,0) 100%); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        nav button { 
+            background: none; 
+            border: none; 
+            color: var(--gh-text-muted); 
+            padding: 0 20px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 15px; 
+            transition: 0.3s; 
+            letter-spacing: 2px; 
+            font-family: var(--font-mono);
+        }
+        nav button.active, nav button:hover { 
+            color: var(--accent-color); 
+            text-shadow: 0 0 15px rgba(255,227,179,0.6); 
+        }
         
-        /* 🌐 修正后的绝对定位语言按钮（不影响导航栏居中） */
         .lang-btn {
             position: absolute;
             right: 40px;          
@@ -48,131 +82,302 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
         .lang-btn:hover {
             border-color: var(--accent-color) !important;
             box-shadow: 0 0 15px rgba(255, 227, 179, 0.3);
         }
         
         .page { 
-            position: absolute; 
-            top: 0; 
+            position: fixed; 
+            top: 65px; 
             left: 0; 
-            width: 100%; 
-            padding-top: 150px; 
-            text-align: center; 
+            width: 100vw; 
+            height: calc(100vh - 65px);
             opacity: 0; 
             pointer-events: none; 
-            transform: scale(0.97) translateY(15px); 
-            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: opacity, transform; 
+            transform: scale(0.98); 
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            overflow: hidden;
         }
         
         .page.active { 
             opacity: 1; 
             pointer-events: auto; 
-            transform: scale(1) translateY(0); 
+            transform: scale(1); 
         }
-        
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 30px; 
-            padding: 20px 40px 60px 40px; 
-            max-width: 1000px; 
-            margin: 0 auto; 
-            max-height: calc(100vh - 240px); 
-            overflow-y: auto; 
-            overscroll-behavior: contain; 
-            -webkit-overflow-scrolling: touch;
-        }
-        .grid::-webkit-scrollbar { display: none; }
-        
-        .card { 
-            background: rgba(255, 255, 255, 0.02); 
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px); 
-            border: 1px solid rgba(255, 255, 255, 0.06); 
-            border-radius: 20px; 
-            padding: 30px; 
-            cursor: pointer; 
-            touch-action: auto; 
-            transform: translateZ(0); 
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background-color 0.3s ease; 
-        }
-        .card:hover { border-color: var(--accent-color); background: rgba(255, 227, 179, 0.06); transform: translateY(-5px); box-shadow: 0 0 25px rgba(255,227,179,0.15); }
 
-        .photo-card {
-            background-size: cover;
-            background-position: center;
-            min-height: 200px;
+        #home {
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
+            justify-content: flex-start; 
             align-items: center;
-            position: relative;
-            overflow: hidden;
-            padding: 0 !important; 
-            -webkit-touch-callout: none;
-            user-select: none;
-        }
-        .photo-card-overlay {
-            width: 100%;
-            padding: 20px 0;
-            background: linear-gradient(to top, rgba(3,3,7,0.85) 0%, rgba(3,3,7,0) 100%);
             text-align: center;
-            pointer-events: none;
-            z-index: 2;
+            padding-top: 18vh; 
         }
-        
+
+        #works {
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ptc-workspace {
+            display: flex;
+            flex-direction: row;
+            width: calc(100% - 48px); 
+            max-width: 1600px;
+            height: calc(100% - 40px); 
+            border: 1px solid var(--gh-border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(13, 17, 23, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+        }
+
+        .ptc-sidebar {
+            width: 300px;
+            min-width: 300px;
+            flex-shrink: 0;
+            height: 100%;
+            border-right: 1px solid var(--gh-border);
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            background: rgba(1, 4, 9, 0.6);
+        }
+
+        .sidebar-header {
+            height: 50px;
+            min-height: 50px;
+            flex-shrink: 0;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--gh-border);
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            font-family: var(--font-mono);
+        }
+
+        .brand-title {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--gh-text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tree-nav {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 12px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .tree-nav::-webkit-scrollbar, .gallery-viewport::-webkit-scrollbar { width: 6px; }
+        .tree-nav::-webkit-scrollbar-thumb, .gallery-viewport::-webkit-scrollbar-thumb { 
+            background: rgba(255, 255, 255, 0.1); 
+            border-radius: 3px; 
+        }
+        .tree-nav::-webkit-scrollbar-thumb:hover, .gallery-viewport::-webkit-scrollbar-thumb:hover { 
+            background: rgba(255, 255, 255, 0.2); 
+        }
+
+        .tree-category { 
+            display: flex; 
+            flex-direction: column; 
+            width: 100%;
+        }
+
+        .title-node {
+            display: flex;
+            align-items: center;
+            padding: 6px 8px;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gh-text-main);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.1s ease;
+        }
+        .title-node:hover { background-color: var(--gh-hover); }
+        .title-node .icon { width: 16px; display: inline-block; font-size: 0.7rem; color: var(--gh-text-muted); }
+        .title-node .folder-icon { margin-right: 6px; font-size: 0.9rem; }
+
+        .subcategory-list {
+            padding-left: 20px;
+            margin-left: 6px;
+            border-left: 1px solid var(--gh-border);
+            display: none;
+            flex-direction: column;
+        }
+        .subcategory-list.open { display: flex; }
+
+        .subcategory-node {
+            display: flex;
+            align-items: center;
+            padding: 6px 8px;
+            font-family: var(--font-sans);
+            font-size: 0.82rem;
+            color: var(--gh-text-main);
+            cursor: pointer;
+            border-radius: 6px;
+            margin-top: 2px;
+        }
+        .subcategory-node:hover { background-color: var(--gh-hover); }
+        .subcategory-node .icon { width: 16px; display: inline-block; font-size: 0.7rem; color: var(--gh-text-muted); }
+
+        .project-list {
+            padding-left: 20px;
+            margin-left: 6px;
+            border-left: 1px solid var(--gh-border);
+            display: none;
+            flex-direction: column;
+        }
+        .project-list.open { display: flex; }
+
+        .project-node {
+            display: flex;
+            align-items: center;
+            padding: 6px 8px;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            color: var(--gh-text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            margin-top: 2px;
+            transition: all 0.15s ease;
+        }
+        .project-node:hover { color: var(--gh-text-main); background-color: var(--gh-hover); }
+        .project-node.active {
+            color: #00e5ff;
+            background-color: var(--gh-active);
+        }
+        .project-node .file-icon { margin-right: 6px; font-size: 0.85rem; opacity: 0.8; }
+
+        .ptc-main {
+            flex: 1;
+            min-width: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: rgba(13, 17, 23, 0.4);
+            overflow: hidden;
+        }
+
+        .top-bar {
+            height: 50px;
+            min-height: 50px;
+            flex-shrink: 0;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--gh-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(1, 4, 9, 0.4);
+        }
+
+        .breadcrumb {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--gh-text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .breadcrumb .separator { color: var(--gh-border); }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--gh-border);
+            color: var(--gh-text-main);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .control-btn:hover { border-color: var(--gh-text-muted); background: var(--gh-hover); }
+
+        .gallery-viewport {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            scroll-behavior: smooth;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gh-text-muted);
+            text-align: center;
+            font-family: var(--font-sans);
+        }
+        .empty-state h3 { color: var(--gh-text-main); margin-bottom: 8px; font-weight: 600; }
+
+        .image-stream {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .gallery-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--gh-border);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: border-color 0.2s ease;
+            cursor: pointer;
+        }
+        .gallery-card:hover { border-color: var(--gh-text-muted); }
+        .gallery-card img { width: 100%; height: auto; display: block; }
+
+        .card-meta {
+            padding: 10px 16px;
+            background: rgba(1, 4, 9, 0.6);
+            border-top: 1px solid var(--gh-border);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--gh-text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
         #lightbox-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 3, 7, 0.45); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            z-index: 200; display: flex; align-items: center; justify-content: center;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(1, 4, 9, 0.9); 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            z-index: 2000; display: flex; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; 
-            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.3s ease;
         }
         #lightbox-overlay.active { opacity: 1; pointer-events: auto; }
         
         #lightbox-img {
-            max-width: 90%; max-height: 82%; object-fit: contain; border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.0), 0 0 0px rgba(255,255,255,0);
-            transform: scale(0.85) translateY(30px);
+            max-width: 95%; max-height: 90%; object-fit: contain; border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            transform: scale(0.95);
             opacity: 0;
-            filter: blur(8px);
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s ease;
         }
-        
-        #lightbox-overlay.active #lightbox-img { 
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255,255,255,0.3);
-            transform: scale(1) translateY(0);
-            opacity: 1;
-            filter: blur(0px);
-        }
-
-        .subpage-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 3, 7, 0.65);
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            z-index: 220; display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .subpage-overlay.active { opacity: 1; pointer-events: auto; }
-        .subpage-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px; padding: 40px; max-width: 580px; width: 85%;
-            position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            transform: scale(0.95) translateY(20px); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            text-align: left;
-        }
-        .subpage-overlay.active .subpage-card { transform: scale(1) translateY(0); }
-        .subpage-close-btn {
-            position: absolute; top: 20px; right: 25px; background: none; border: none;
-            color: #888; font-size: 22px; cursor: pointer; transition: 0.3s;
-        }
-        .subpage-close-btn:hover { color: #fff; }
+        #lightbox-overlay.active #lightbox-img { transform: scale(1); opacity: 1; }
     </style>
 </head>
 <body>
@@ -182,46 +387,45 @@
 
     <div class="content-layer">
         <nav>
-            <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="首页">INDEX</button>
-            <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="作品集">PROJECTS</button>
+            <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="Index">INDEX</button>
+            <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="Projects">PROJECTS</button>
             <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">中 / EN</button>
         </nav>
 
         <div id="home" class="page active">
-            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
-            <p class="i18n" data-en="Collections" data-zh="设计与工程作品集" style="color: #555; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
+            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE'S Warehouse" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
+            <p class="i18n" data-en="Collections" data-zh="Collections" style="color: #666; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
         </div>
 
         <div id="works" class="page">
-            <div class="grid">
-                <div class="card" onclick="openSubpage('Electric Motorcycle', '电动摩托车车架结构与空气动力学分析项目，探讨低风阻造型与高强度车架的解构设计。', 'Electric Motorcycle Analysis')">
-                    <h3 class="i18n" data-en="Electric Motorcycle" data-zh="电动摩托车" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Electric Motorcycle</h3>
-                </div>
-                <div class="card" onclick="openSubpage('Modular Storage', '模块化自锁收纳箱设计，结合微型机械结构与离心自锁机构。', 'Modular Storage System')">
-                    <h3 class="i18n" data-en="Modular Storage" data-zh="模块化收纳" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px;">Modular Storage</h3>
-                </div>
-                
-                <div class="card photo-card" style="background-image: url('./images/9c7d0954bc69ba19df3e73a3964ef35a.jpeg');" onclick="openLightbox('./images/9c7d0954bc69ba19df3e73a3964ef35a.jpeg')">
-                    <div class="photo-card-overlay">
-                        <h3 class="i18n" data-en="PROJECT 01" data-zh="项目 01" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">PROJECT 01</h3>
+            <div class="ptc-workspace">
+                <aside class="ptc-sidebar">
+                    <div class="sidebar-header">
+                        <div class="brand-title">
+                            <span style="font-size: 1.1rem;">🗂️</span> Files Explorer
+                        </div>
                     </div>
-                </div>
+                    <div class="tree-nav" id="treeNav"></div>
+                </aside>
 
-                <div class="card photo-card" style="background-image: url('./images/641.png');" onclick="openLightbox('./images/641.png')">
-                    <div class="photo-card-overlay">
-                        <h3 class="i18n" data-en="PROJECT 02" data-zh="项目 02" style="color: #FFE3B3; font-weight: 400; letter-spacing: 1px; margin:0; font-size:14px;">PROJECT 02</h3>
-                    </div>
-                </div>
+                <main class="ptc-main">
+                    <header class="top-bar">
+                        <div class="breadcrumb" id="breadcrumb">
+                            <span class="i18n" data-en="Select a project folder from the sidebar" data-zh="Select a project folder from the sidebar">Select a project folder from the sidebar</span>
+                        </div>
+                        <button id="scrollToTopBtn" class="control-btn i18n" data-en="Top ↑" data-zh="Top ↑">Top ↑</button>
+                    </header>
 
+                    <section class="gallery-viewport" id="galleryViewport">
+                        <div class="empty-state" id="emptyState">
+                            <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-text-muted);">📁</div>
+                            <h3 class="i18n" data-en="No project selected" data-zh="No project selected">No project selected</h3>
+                            <p class="i18n" data-en="Select any folder from the left sidebar to render presentation sheets." data-zh="Select any folder from the left sidebar to render presentation sheets.">Select any folder from the left sidebar to render presentation sheets.</p>
+                        </div>
+                        <div class="image-stream" id="imageStream"></div>
+                    </section>
+                </main>
             </div>
-        </div>
-    </div>
-
-    <div id="subpage-overlay" class="subpage-overlay" onclick="closeSubpage()">
-        <div class="subpage-card" onclick="event.stopPropagation()">
-            <button class="subpage-close-btn" onclick="closeSubpage()">✕</button>
-            <h2 id="subpage-title" style="color: #FFE3B3; font-weight: 300; letter-spacing: 2px; margin-top: 0; font-size: 20px;">PROJECT DETAILS</h2>
-            <div id="subpage-body" style="color: #bbb; font-size: 14px; line-height: 1.8; margin-top: 15px;"></div>
         </div>
     </div>
 
@@ -230,7 +434,116 @@
     </div>
 
     <script>
+        const portfolioData = [
+          {
+            title: "Transportation",
+            subcategories: [
+              {
+                name: "Vehicle_researches",
+                projects: [
+                  { name: "Prototypes", primary: "images/Transportation/Vehicle_researches/Prototypes", fallback: "images/Vehicle_researches/Prototypes" },
+                  { name: "Vehicle_references", primary: "images/Transportation/Vehicle_researches/Vehicle_references", fallback: "images/Vehicle_researches/Vehicle_references" },
+                  { name: "Works", primary: "images/Transportation/Vehicle_researches/Works", fallback: "images/Vehicle_researches/Works" }
+                ]
+              },
+              {
+                name: "Aircraft_Researches",
+                projects: [
+                  { name: "Aircraft_References", primary: "images/Transportation/Aircraft_Researches/Aircraft_References", fallback: "images/Aircraft_Researches/Aircraft_References" },
+                  { name: "Aircraft_works", primary: "images/Transportation/Aircraft_Researches/Aircraft_works", fallback: "images/Aircraft_Researches/Aircraft_works" }
+                ]
+              },
+              {
+                name: "Derailleur",
+                projects: [
+                  { name: "Fairing", primary: "images/Transportation/Derailleur/Fairing", fallback: "images/Derailleur/Fairing" },
+                  { name: "Hollow_type", primary: "images/Transportation/Derailleur/Hollow_type", fallback: "images/Derailleur/Hollow_type" }
+                ]
+              },
+              {
+                name: "Clay_Bmw_Gen12",
+                projects: [
+                  { name: "Chassis", primary: "images/Transportation/Clay_Bmw_Gen12/Chassis", fallback: "images/Clay_Bmw_Gen12/Chassis" },
+                  { name: "Works", primary: "images/Transportation/Clay_Bmw_Gen12/Works", fallback: "images/Clay_Bmw_Gen12/Works" }
+                ]
+              },
+              {
+                name: "E_MP",
+                projects: [
+                  { name: "E-MP_References", primary: "images/Transportation/E_MP/E-MP_References", fallback: "images/E_MP/E-MP_References" },
+                  { name: "Main_Gallery", primary: "images/Transportation/E_MP", fallback: "images/E_MP" }
+                ]
+              }
+            ]
+          },
+          {
+            title: "Discoveries",
+            subcategories: [
+              {
+                name: "Skills",
+                projects: [
+                  { name: "Modeling_Work", primary: "images/Discoveries/Skills/Modeling_Work", fallback: "images/Skills/Modeling_Work" },
+                  { name: "Pistol_Study", primary: "images/Discoveries/Skills/Pistol_Study", fallback: "images/Skills/Pistol_Study" },
+                  { name: "Plumbing", primary: "images/Discoveries/Skills/Plumbing", fallback: "images/Skills/Plumbing" },
+                  { name: "Technical_Skills", primary: "images/Discoveries/Skills/Technical_Skills", fallback: "images/Skills/Technical_Skills" },
+                  { name: "Web_Dev", primary: "images/Discoveries/Skills/Web_Dev", fallback: "images/Skills/Web_Dev" }
+                ]
+              },
+              {
+                name: "Topology_researches",
+                projects: [
+                  { name: "Topology_researches", primary: "images/Discoveries/Topology_researches", fallback: "images/Topology_researches" }
+                ]
+              }
+            ]
+          },
+          {
+            title: "Commissioned_Works",
+            subcategories: [
+              {
+                name: "Course_Projects",
+                projects: [
+                  { name: "Campus_display_board", primary: "images/Commissioned_Works/Course_Projects/Campus_display_board", fallback: "images/Course_Projects/Campus_display_board" },
+                  { name: "Competitions", primary: "images/Commissioned_Works/Course_Projects/Competitions", fallback: "images/Course_Projects/Competitions" },
+                  { name: "Courseworks", primary: "images/Commissioned_Works/Course_Projects/Courseworks", fallback: "images/Course_Projects/Courseworks" },
+                  { name: "Lamps", primary: "images/Commissioned_Works/Course_Projects/Lamps", fallback: "images/Course_Projects/Lamps" }
+                ]
+              },
+              {
+                name: "Client_projects",
+                projects: [
+                  { name: "Client_projects", primary: "images/Commissioned_Works/Client_projects", fallback: "images/Client_projects" }
+                ]
+              }
+            ]
+          },
+          {
+            title: "Others",
+            subcategories: [
+              {
+                name: "Everyday_Items",
+                projects: [
+                  { name: "Brackets", primary: "images/Others/Everyday_Items/Brackets", fallback: "images/Everyday_Items/Brackets" },
+                  { name: "Others", primary: "images/Others/Everyday_Items/Others", fallback: "images/Everyday_Items/Others" },
+                  { name: "Trash_bin", primary: "images/Others/Everyday_Items/Trash_bin", fallback: "images/Everyday_Items/Trash_bin" }
+                ]
+              },
+              {
+                name: "References",
+                projects: [
+                  { name: "References", primary: "images/Others/References", fallback: "images/References" }
+                ]
+              }
+            ]
+          }
+        ];
+
+        const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG', '.JPEG'];
+        const MAX_IMAGES_PER_FOLDER = 99;
+        
+        let currentLoadSession = 0;
         let currentLang = 'en';
+
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'zh' : 'en';
             document.querySelectorAll('.i18n').forEach(el => {
@@ -240,27 +553,207 @@
             document.getElementById('btn-lang').textContent = currentLang === 'en' ? '中 / EN' : 'EN / 中';
         }
 
-        function openSubpage(titleEn, bodyTextEn, titleZh = null, bodyTextZh = null) {
-            const overlay = document.getElementById('subpage-overlay');
-            const titleEl = document.getElementById('subpage-title');
-            const bodyEl = document.getElementById('subpage-body');
-            
-            titleEl.textContent = (currentLang === 'zh' && titleZh) ? titleZh : titleEn;
-            bodyEl.textContent = (currentLang === 'zh' && bodyTextZh) ? bodyTextZh : bodyTextEn;
-            
-            overlay.classList.add('active');
-        }
-
-        function closeSubpage() {
-            document.getElementById('subpage-overlay').classList.remove('active');
-        }
-
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
             document.getElementById(p).classList.add('active');
             document.getElementById('btn-'+p).classList.add('active');
         };
+
+        const treeNav = document.getElementById('treeNav');
+        const breadcrumb = document.getElementById('breadcrumb');
+        const galleryViewport = document.getElementById('galleryViewport');
+        const emptyState = document.getElementById('emptyState');
+        const imageStream = document.getElementById('imageStream');
+
+        function buildTreeNavigation() {
+          treeNav.innerHTML = '';
+
+          portfolioData.forEach((category) => {
+            const catDiv = document.createElement('div');
+            catDiv.className = 'tree-category';
+
+            const titleNode = document.createElement('div');
+            titleNode.className = 'title-node';
+            titleNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> ${category.title}`;
+
+            const subCatList = document.createElement('div');
+            subCatList.className = 'subcategory-list';
+
+            category.subcategories.forEach((subcat) => {
+              const subCatNode = document.createElement('div');
+              subCatNode.className = 'subcategory-node';
+              subCatNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> ${subcat.name}`;
+
+              const projectList = document.createElement('div');
+              projectList.className = 'project-list';
+
+              subcat.projects.forEach((proj) => {
+                const projNode = document.createElement('div');
+                projNode.className = 'project-node';
+                projNode.innerHTML = `<span class="file-icon">📄</span> ${proj.name}`;
+
+                projNode.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  setActiveProject(projNode, category.title, subcat.name, proj);
+                });
+
+                projectList.appendChild(projNode);
+              });
+
+              subCatNode.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = projectList.classList.contains('open');
+                if (isOpen) {
+                  projectList.classList.remove('open');
+                  subCatNode.querySelector('.icon').textContent = '▸';
+                } else {
+                  projectList.classList.add('open');
+                  subCatNode.querySelector('.icon').textContent = '▾';
+                }
+              });
+
+              subCatList.appendChild(subCatNode);
+              subCatList.appendChild(projectList);
+            });
+
+            titleNode.addEventListener('click', () => {
+              const isOpen = subCatList.classList.contains('open');
+              if (isOpen) {
+                subCatList.classList.remove('open');
+                titleNode.querySelector('.icon').textContent = '▸';
+              } else {
+                subCatList.classList.add('open');
+                titleNode.querySelector('.icon').textContent = '▾';
+              }
+            });
+
+            catDiv.appendChild(titleNode);
+            catDiv.appendChild(subCatList);
+            treeNav.appendChild(catDiv);
+          });
+        }
+
+        function setActiveProject(node, title, subcat, project) {
+          document.querySelectorAll('.project-node').forEach(n => n.classList.remove('active'));
+          node.classList.add('active');
+
+          breadcrumb.innerHTML = `
+            <span style="color: var(--gh-text-main)">${title}</span>
+            <span class="separator">/</span>
+            <span>${subcat}</span>
+            <span class="separator">/</span>
+            <span style="color: #00e5ff; font-weight: 600;">${project.name}</span>
+          `;
+
+          emptyState.style.display = 'none';
+          imageStream.innerHTML = '';
+          galleryViewport.scrollTo({ top: 0, behavior: 'instant' });
+
+          currentLoadSession++;
+          loadProjectImages(project, currentLoadSession);
+        }
+
+        async function loadProjectImages(projectObj, sessionToken) {
+          let activeIndex = 1;
+
+          while (activeIndex <= MAX_IMAGES_PER_FOLDER) {
+            if (sessionToken !== currentLoadSession) return;
+
+            const paddedNum = String(activeIndex).padStart(2, '0');
+            
+            let foundImage = await testImageSrc(projectObj.primary, paddedNum);
+            
+            if (sessionToken !== currentLoadSession) return;
+
+            if (!foundImage && projectObj.fallback) {
+              foundImage = await testImageSrc(projectObj.fallback, paddedNum);
+            }
+            
+            if (sessionToken !== currentLoadSession) return;
+
+            if (foundImage) {
+              renderImageCard(foundImage, paddedNum);
+              activeIndex++;
+            } else {
+              break;
+            }
+          }
+
+          if (activeIndex === 1 && sessionToken === currentLoadSession) {
+            imageStream.innerHTML = `
+              <div class="empty-state">
+                <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-border);">🚫</div>
+                <p>No images detected in project folder.</p>
+              </div>
+            `;
+          }
+        }
+
+        function testImageSrc(folderPath, num) {
+          return new Promise((resolve) => {
+            let tried = 0;
+            let resolved = false;
+
+            IMAGE_EXTENSIONS.forEach((ext) => {
+              const testUrl = encodeURI(`${folderPath}/${num}${ext}`);
+              const img = new Image();
+
+              img.onload = () => {
+                if (!resolved) {
+                  resolved = true;
+                  resolve(testUrl);
+                }
+              };
+
+              img.onerror = () => {
+                tried++;
+                if (tried === IMAGE_EXTENSIONS.length && !resolved) {
+                  resolve(null);
+                }
+              };
+
+              img.src = testUrl;
+            });
+          });
+        }
+
+        function renderImageCard(src, indexStr) {
+          const card = document.createElement('div');
+          card.className = 'gallery-card';
+          card.onclick = () => openLightbox(src);
+
+          const img = document.createElement('img');
+          img.src = src;
+          img.loading = 'lazy';
+          img.alt = `Design Sheet ${indexStr}`;
+
+          const meta = document.createElement('div');
+          meta.className = 'card-meta';
+          meta.innerHTML = `
+            <span>📄 FILE: ${indexStr}</span>
+            <span>STATUS: RENDERED</span>
+          `;
+
+          card.appendChild(img);
+          card.appendChild(meta);
+          imageStream.appendChild(card);
+        }
+
+        document.getElementById('scrollToTopBtn').addEventListener('click', () => {
+          galleryViewport.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function openLightbox(url) {
+            const overlay = document.getElementById('lightbox-overlay');
+            const img = document.getElementById('lightbox-img');
+            img.src = url;
+            overlay.classList.add('active');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-overlay').classList.remove('active');
+        }
 
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
@@ -285,7 +778,7 @@
         window.addEventListener('resize', initCanvasSize);
 
         const particles = [];
-        const totalParticles = 6000; 
+        const totalParticles = 2500; 
         
         const colors = [
             '#FFE3B3', '#FFC563', '#0099FF', '#00FFFF', '#FFFFFF', 
@@ -337,18 +830,12 @@
                 
                 if (dist < breathingRadius && dist > 1) {
                     let force = (breathingRadius - dist) / breathingRadius; 
-                    
-                    let dirX = dx / dist;
-                    let dirY = dy / dist;
-                    
                     let pullStrength = force * 0.58; 
-                    this.ix += dirX * pullStrength * dt;
-                    this.iy += dirY * pullStrength * dt;
-                    
+                    this.ix += (dx / dist) * pullStrength * dt;
+                    this.iy += (dy / dist) * pullStrength * dt;
                     let coreFriction = Math.pow(0.968 - (0.09 * force), dt);
                     this.ix *= coreFriction;
                     this.iy *= coreFriction;
-                    
                     baseVx *= (1 - force * 0.85);
                     baseVy *= (1 - force * 0.85);
                 } else {
@@ -360,7 +847,6 @@
                 this.y += (baseVy + this.iy) * dt;
 
                 if(this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
-                
                 this.rotation += (0.015 + (Math.abs(this.ix) + Math.abs(this.iy)) * 0.004) * dt;
             }
             
@@ -382,21 +868,17 @@
         window.addEventListener('touchmove', e => { 
             const t = e.touches[0]; mouse.x = t.clientX; mouse.y = t.clientY; 
         }, { passive: true });
-
         window.addEventListener('touchend', () => { window.scrollTo(0, 0); });
 
         function animate() {
             let currentTime = performance.now();
             let dt = (currentTime - lastTime) / 16.666;
-            
             if (dt > 2.0 || dt < 0.1 || isNaN(dt)) dt = 1.0; 
             lastTime = currentTime;
-
             globalTime += dt;
             
             bgCtx.fillStyle = 'rgba(3, 3, 7, 0.12)';
             bgCtx.fillRect(0, 0, w, h);
-            
             topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
 
@@ -412,16 +894,7 @@
         }
         requestAnimationFrame(animate);
 
-        function openLightbox(url) {
-            const overlay = document.getElementById('lightbox-overlay');
-            const img = document.getElementById('lightbox-img');
-            img.src = url;
-            overlay.classList.add('active');
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightbox-overlay').classList.remove('active');
-        }
+        buildTreeNavigation();
     </script>
 </body>
 </html>
