@@ -698,17 +698,18 @@
         }
 
 async function loadProjectImages(projectObj, sessionToken) {
+          // 1. 首先检查内存中是否已经缓存了该文件夹的图片路径
           if (projectImageCache[projectObj.name]) {
             const cachedUrls = projectImageCache[projectObj.name];
             cachedUrls.forEach((url, i) => {
               const paddedNum = String(i + 1).padStart(2, '0');
               renderImageCard(url, paddedNum);
             });
-            return;
+            return; 
           }
 
           let activeIndex = 1;
-          const validUrls = [];
+          const validUrls = []; 
 
           while (activeIndex <= MAX_IMAGES_PER_FOLDER) {
             if (sessionToken !== currentLoadSession) return;
@@ -726,7 +727,7 @@ async function loadProjectImages(projectObj, sessionToken) {
             if (sessionToken !== currentLoadSession) return;
 
             if (foundImage) {
-              validUrls.push(foundImage);
+              validUrls.push(foundImage); 
               renderImageCard(foundImage, paddedNum);
               activeIndex++;
             } else {
@@ -734,6 +735,7 @@ async function loadProjectImages(projectObj, sessionToken) {
             }
           }
 
+          
           if (validUrls.length > 0) {
             projectImageCache[projectObj.name] = validUrls;
           }
