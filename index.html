@@ -378,6 +378,32 @@
             transition: all 0.3s ease;
         }
         #lightbox-overlay.active #lightbox-img { transform: scale(1); opacity: 1; }
+
+        /* 📱 手机端自适应布局修复 */
+        @media (max-width: 768px) {
+            .ptc-workspace {
+                flex-direction: column;
+                width: calc(100% - 20px);
+                height: calc(100% - 20px);
+            }
+            .ptc-sidebar {
+                width: 100%;
+                min-width: 100%;
+                height: 35%;
+                border-right: none;
+                border-bottom: 1px solid var(--gh-border);
+            }
+            .ptc-main {
+                height: 65%;
+            }
+            .gallery-viewport {
+                padding: 15px;
+            }
+            .lang-btn {
+                right: 15px;
+                padding: 4px 10px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -387,14 +413,14 @@
 
     <div class="content-layer">
         <nav>
-            <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="Index">INDEX</button>
-            <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="Projects">PROJECTS</button>
+            <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="首页">INDEX</button>
+            <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="作品集">PROJECTS</button>
             <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">中 / EN</button>
         </nav>
 
         <div id="home" class="page active">
-            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE'S Warehouse" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
-            <p class="i18n" data-en="Collections" data-zh="Collections" style="color: #666; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
+            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
+            <p class="i18n" data-en="Collections" data-zh="设计与工程作品集" style="color: #666; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
         </div>
 
         <div id="works" class="page">
@@ -411,16 +437,16 @@
                 <main class="ptc-main">
                     <header class="top-bar">
                         <div class="breadcrumb" id="breadcrumb">
-                            <span class="i18n" data-en="Select a project folder from the sidebar" data-zh="Select a project folder from the sidebar">Select a project folder from the sidebar</span>
+                            <span class="i18n" data-en="Select a project folder from the sidebar" data-zh="请从左侧栏选择项目文件夹">Select a project folder from the sidebar</span>
                         </div>
-                        <button id="scrollToTopBtn" class="control-btn i18n" data-en="Top ↑" data-zh="Top ↑">Top ↑</button>
+                        <button id="scrollToTopBtn" class="control-btn i18n" data-en="Top ↑" data-zh="顶部 ↑">Top ↑</button>
                     </header>
 
                     <section class="gallery-viewport" id="galleryViewport">
                         <div class="empty-state" id="emptyState">
                             <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-text-muted);">📁</div>
-                            <h3 class="i18n" data-en="No project selected" data-zh="No project selected">No project selected</h3>
-                            <p class="i18n" data-en="Select any folder from the left sidebar to render presentation sheets." data-zh="Select any folder from the left sidebar to render presentation sheets.">Select any folder from the left sidebar to render presentation sheets.</p>
+                            <h3 class="i18n" data-en="No project selected" data-zh="未选择项目">No project selected</h3>
+                            <p class="i18n" data-en="Select any folder from the left sidebar to render presentation sheets." data-zh="从左侧文件树选择项目以渲染高清展板长图。">Select any folder from the left sidebar to render presentation sheets.</p>
                         </div>
                         <div class="image-stream" id="imageStream"></div>
                     </section>
@@ -538,7 +564,8 @@
           }
         ];
 
-        const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.PNG', '.JPG', '.JPEG'];
+        /* 精简了探测后缀名，极大提升探测速度 */
+        const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.JPG', '.PNG'];
         const MAX_IMAGES_PER_FOLDER = 99;
         
         let currentLoadSession = 0;
@@ -575,7 +602,7 @@
 
             const titleNode = document.createElement('div');
             titleNode.className = 'title-node';
-            titleNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> ${category.title}`;
+            titleNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> <span class="i18n" data-en="${category.title}" data-zh="${category.title}">${category.title}</span>`;
 
             const subCatList = document.createElement('div');
             subCatList.className = 'subcategory-list';
@@ -583,7 +610,7 @@
             category.subcategories.forEach((subcat) => {
               const subCatNode = document.createElement('div');
               subCatNode.className = 'subcategory-node';
-              subCatNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> ${subcat.name}`;
+              subCatNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> <span class="i18n" data-en="${subcat.name}" data-zh="${subcat.name}">${subcat.name}</span>`;
 
               const projectList = document.createElement('div');
               projectList.className = 'project-list';
@@ -591,7 +618,7 @@
               subcat.projects.forEach((proj) => {
                 const projNode = document.createElement('div');
                 projNode.className = 'project-node';
-                projNode.innerHTML = `<span class="file-icon">📄</span> ${proj.name}`;
+                projNode.innerHTML = `<span class="file-icon">📄</span> <span class="i18n" data-en="${proj.name}" data-zh="${proj.name}">${proj.name}</span>`;
 
                 projNode.addEventListener('click', (e) => {
                   e.stopPropagation();
@@ -632,6 +659,8 @@
             catDiv.appendChild(subCatList);
             treeNav.appendChild(catDiv);
           });
+          
+          toggleLanguage();
         }
 
         function setActiveProject(node, title, subcat, project) {
@@ -684,38 +713,28 @@
             imageStream.innerHTML = `
               <div class="empty-state">
                 <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-border);">🚫</div>
-                <p>No images detected in project folder.</p>
+                <h3 class="i18n" data-en="No images detected" data-zh="未检测到图片">No images detected</h3>
+                <p class="i18n" data-en="Ensure images are named '01.png', '02.jpg', etc., in the repository." data-zh="请确保仓库中的图片严格命名为 '01.png', '02.jpg' 等。">Ensure images are named '01.png', '02.jpg', etc., in the repository.</p>
               </div>
             `;
+            toggleLanguage();
           }
         }
 
-        function testImageSrc(folderPath, num) {
-          return new Promise((resolve) => {
-            let tried = 0;
-            let resolved = false;
-
-            IMAGE_EXTENSIONS.forEach((ext) => {
-              const testUrl = encodeURI(`${folderPath}/${num}${ext}`);
+        /* 串行探测并加入了5秒超时熔断机制，防止无VPN时网络防火墙静默丢弃导致长达几分钟的假死 */
+        async function testImageSrc(folderPath, num) {
+          for (let ext of IMAGE_EXTENSIONS) {
+            const testUrl = encodeURI(`${folderPath}/${num}${ext}`);
+            const exists = await new Promise((resolve) => {
               const img = new Image();
-
-              img.onload = () => {
-                if (!resolved) {
-                  resolved = true;
-                  resolve(testUrl);
-                }
-              };
-
-              img.onerror = () => {
-                tried++;
-                if (tried === IMAGE_EXTENSIONS.length && !resolved) {
-                  resolve(null);
-                }
-              };
-
+              const timer = setTimeout(() => { img.src = ''; resolve(false); }, 5000); 
+              img.onload = () => { clearTimeout(timer); resolve(true); };
+              img.onerror = () => { clearTimeout(timer); resolve(false); };
               img.src = testUrl;
             });
-          });
+            if (exists) return testUrl;
+          }
+          return null;
         }
 
         function renderImageCard(src, indexStr) {
