@@ -856,6 +856,13 @@ async function loadProjectImages(projectObj, sessionToken) {
             if (e.target === lightboxOverlay) closeLightbox();
         });
 
+        lightboxOverlay.addEventListener('touchend', (e) => {
+            if (e.target === lightboxOverlay) {
+                e.preventDefault(); 
+                closeLightbox();
+            }
+        });
+
         lightboxImg.addEventListener('click', (e) => {
             const dist = Math.abs(e.clientX - lbClickX) + Math.abs(e.clientY - lbClickY);
             if (dist < 5) closeLightbox();
@@ -936,8 +943,8 @@ async function loadProjectImages(projectObj, sessionToken) {
             } else if (e.touches.length === 1) {
                 lbClickX = e.touches[0].clientX;
                 lbClickY = e.touches[0].clientY;
+                e.preventDefault(); 
                 if (lbScale > 1) {
-                    e.preventDefault();
                     lbPanning = true;
                     lbStartX = e.touches[0].clientX - lbPointX;
                     lbStartY = e.touches[0].clientY - lbPointY;
@@ -969,7 +976,10 @@ async function loadProjectImages(projectObj, sessionToken) {
             
             if (e.changedTouches.length === 1 && !lbPanning) {
                 const dist = Math.abs(e.changedTouches[0].clientX - lbClickX) + Math.abs(e.changedTouches[0].clientY - lbClickY);
-                if (dist < 5) closeLightbox();
+                if (dist < 5) {
+                    e.preventDefault(); 
+                    closeLightbox();
+                }
             }
         });
         const bgCanvas = document.getElementById('bg-canvas');
