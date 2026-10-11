@@ -841,7 +841,7 @@ async function loadProjectImages(projectObj, sessionToken) {
             lbScale = 1; lbPointX = 0; lbPointY = 0;
             lightboxImg.style.transition = ''; 
             lightboxImg.style.transform = ''; 
-            lightboxImg.style.cursor = 'zoom-out'; 
+            lightboxImg.style.cursor = 'default';
             lightboxImg.src = url;
             lightboxOverlay.classList.add('active');
         }
@@ -858,122 +858,9 @@ async function loadProjectImages(projectObj, sessionToken) {
 
         lightboxImg.addEventListener('click', (e) => {
             const dist = Math.abs(e.clientX - lbClickX) + Math.abs(e.clientY - lbClickY);
-            if (dist < 30) closeLightbox(); 
+            if (dist < 5) closeLightbox();
         });
 
-        function applyZoom(clientX, clientY, newScale) {
-            const rect = lightboxImg.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            const dx = clientX - centerX;
-            const dy = clientY - centerY;
-            
-            const ratio = newScale / lbScale;
-            
-            lbScale = newScale;
-            if (lbScale === 1) {
-                lbPointX = 0; 
-                lbPointY = 0;
-            } else {
-                lbPointX -= dx * (ratio - 1);
-                lbPointY -= dy * (ratio - 1);
-            }
-            
-            lightboxImg.style.transform = `translate(${lbPointX}px, ${lbPointY}px) scale(${lbScale})`;
-            lightboxImg.style.cursor = lbScale > 1 ? 'grab' : 'zoom-out';
-        }
-
-        lightboxOverlay.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            lightboxImg.style.transition = 'none'; 
-            const zoomSpeed = 0.15;
-            const delta = e.deltaY < 0 ? 1 : -1;
-            const newScale = Math.min(Math.max(1, lbScale + delta * zoomSpeed * lbScale), 8); 
-            applyZoom(e.clientX, e.clientY, newScale);
-        }, { passive: false });
-
-        lightboxImg.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            lbClickX = e.clientX;
-            lbClickY = e.clientY;
-            if (lbScale <= 1) return;
-            lbPanning = true;
-            lbStartX = e.clientX - lbPointX;
-            lbStartY = e.clientY - lbPointY;
-            lightboxImg.style.cursor = 'grabbing';
-            lightboxImg.style.transition = 'none'; 
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if (!lbPanning) return;
-            lbPointX = e.clientX - lbStartX;
-            lbPointY = e.clientY - lbStartY;
-            lightboxImg.style.transform = `translate(${lbPointX}px, ${lbPointY}px) scale(${lbScale})`;
-        });
-
-        window.addEventListener('mouseup', () => {
-            if (lbPanning) {
-                lbPanning = false;
-                lightboxImg.style.cursor = 'grab';
-            }
-        });
-
-        function getPinchDist(e) {
-            return Math.hypot(
-                e.touches[0].clientX - e.touches[1].clientX,
-                e.touches[0].clientY - e.touches[1].clientY
-            );
-        }
-
-        lightboxImg.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                e.preventDefault();
-                initialPinchDist = getPinchDist(e);
-                initialScale = lbScale;
-                lbPanning = false; 
-                lightboxImg.style.transition = 'none';
-            } else if (e.touches.length === 1) {
-                lbClickX = e.touches[0].clientX;
-                lbClickY = e.touches[0].clientY;
-                if (lbScale > 1) {
-                    e.preventDefault();
-                    lbPanning = true;
-                    lbStartX = e.touches[0].clientX - lbPointX;
-                    lbStartY = e.touches[0].clientY - lbPointY;
-                    lightboxImg.style.transition = 'none';
-                }
-            }
-        }, { passive: false });
-
-        lightboxImg.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2) {
-                e.preventDefault();
-                const currentDist = getPinchDist(e);
-                const scaleFactor = currentDist / initialPinchDist;
-                const newScale = Math.min(Math.max(1, initialScale * scaleFactor), 8);
-                const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-                applyZoom(midX, midY, newScale);
-            } else if (e.touches.length === 1 && lbPanning) {
-                e.preventDefault();
-                lbPointX = e.touches[0].clientX - lbStartX;
-                lbPointY = e.touches[0].clientY - lbStartY;
-                lightboxImg.style.transform = `translate(${lbPointX}px, ${lbPointY}px) scale(${lbScale})`;
-            }
-        }, { passive: false });
-
-        lightboxImg.addEventListener('touchend', (e) => {
-            if (e.touches.length < 2) initialPinchDist = 0;
-            
-            const wasPanning = lbPanning; 
-            if (e.touches.length === 0) lbPanning = false;
-            
-            if (e.changedTouches.length === 1 && !wasPanning) {
-                const dist = Math.abs(e.changedTouches[0].clientX - lbClickX) + Math.abs(e.changedTouches[0].clientY - lbClickY);
-                if (dist < 30) closeLightbox(); 
-            }
-        });
         function applyZoom(clientX, clientY, newScale) {
             const rect = lightboxImg.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
