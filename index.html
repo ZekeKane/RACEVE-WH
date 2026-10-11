@@ -829,9 +829,10 @@ async function loadProjectImages(projectObj, sessionToken) {
           galleryViewport.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        const lightboxOverlay = document.getElementById('lightbox-overlay');
+       const lightboxOverlay = document.getElementById('lightbox-overlay');
         const lightboxImg = document.getElementById('lightbox-img');
         let lbScale = 1, lbPanning = false, lbPointX = 0, lbPointY = 0, lbStartX = 0, lbStartY = 0;
+        let lbClickX = 0, lbClickY = 0; 
 
         function openLightbox(url) {
             lbScale = 1; lbPointX = 0; lbPointY = 0;
@@ -849,7 +850,14 @@ async function loadProjectImages(projectObj, sessionToken) {
         }
 
         lightboxOverlay.addEventListener('click', (e) => {
-            if (e.target !== lightboxImg) closeLightbox();
+            if (e.target === lightboxOverlay) closeLightbox();
+        });
+
+        lightboxImg.addEventListener('click', (e) => {
+            const dist = Math.abs(e.clientX - lbClickX) + Math.abs(e.clientY - lbClickY);
+            if (dist < 5) {
+                closeLightbox();
+            }
         });
 
         lightboxOverlay.addEventListener('wheel', (e) => {
@@ -883,8 +891,12 @@ async function loadProjectImages(projectObj, sessionToken) {
         }, { passive: false });
 
         lightboxImg.addEventListener('mousedown', (e) => {
-            if (lbScale <= 1) return;
             e.preventDefault();
+            lbClickX = e.clientX;
+            lbClickY = e.clientY;
+            
+            if (lbScale <= 1) return;
+            
             lbPanning = true;
             lbStartX = e.clientX - lbPointX;
             lbStartY = e.clientY - lbPointY;
@@ -905,7 +917,6 @@ async function loadProjectImages(projectObj, sessionToken) {
                 lightboxImg.style.cursor = 'grab';
             }
         });
-
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         const topCanvas = document.getElementById('top-canvas');
