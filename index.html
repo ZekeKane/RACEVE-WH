@@ -455,7 +455,7 @@
         </div>
     </div>
 
-    <div id="lightbox-overlay" onclick="closeLightbox()">
+    <div id="lightbox-overlay">
         <img id="lightbox-img" src="" alt="Enlarged View">
     </div>
 
@@ -829,16 +829,74 @@ async function loadProjectImages(projectObj, sessionToken) {
           galleryViewport.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
+        const lightboxOverlay = document.getElementById('lightbox-overlay');
+        const lightboxImg = document.getElementById('lightbox-img');
+        let lbScale = 1, lbPanning = false, lbPointX = 0, lbPointY = 0, lbStartX = 0, lbStartY = 0;
+
         function openLightbox(url) {
-            const overlay = document.getElementById('lightbox-overlay');
-            const img = document.getElementById('lightbox-img');
-            img.src = url;
-            overlay.classList.add('active');
+            lbScale = 1; lbPointX = 0; lbPointY = 0;
+            lightboxImg.style.transition = ''; 
+            lightboxImg.style.transform = ''; 
+            lightboxImg.style.cursor = 'default';
+            lightboxImg.src = url;
+            lightboxOverlay.classList.add('active');
         }
 
         function closeLightbox() {
-            document.getElementById('lightbox-overlay').classList.remove('active');
+            lightboxOverlay.classList.remove('active');
+            lightboxImg.style.transition = '';
+            lightboxImg.style.transform = ''; 
         }
+
+        lightboxOverlay.addEventListener('click', (e) => {
+            if (e.target !== lightboxImg) closeLightbox();
+        });
+
+        lightboxOverlay.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            lightboxImg.style.transition = 'none'; 
+            
+            const zoomSpeed = 0.15;
+            const delta = e.deltaY < 0 ? 1 : -1;
+            const newScale = Math.min(Math.max(1, lbScale + delta * zoomSpeed * lbScale), 8); 
+            
+            const xs = (e.clientX - lbPointX) / lbScale;
+            const ys = (e.clientY - lbPointY) / lbScale;
+            
+            lbScale = newScale;
+            if (lbScale === 1) {
+                lbPointX = 0; lbPointY = 0;
+            } else {
+                lbPointX = e.clientX - xs * lbScale;
+                lbPointY = e.clientY - ys * lbScale;
+            }
+            lightboxImg.style.transform = `translate(${lbPointX}px, ${lbPointY}px) scale(${lbScale})`;
+            lightboxImg.style.cursor = lbScale > 1 ? 'grab' : 'default';
+        }, { passive: false });
+
+        lightboxImg.addEventListener('mousedown', (e) => {
+            if (lbScale <= 1) return;
+            e.preventDefault();
+            lbPanning = true;
+            lbStartX = e.clientX - lbPointX;
+            lbStartY = e.clientY - lbPointY;
+            lightboxImg.style.cursor = 'grabbing';
+            lightboxImg.style.transition = 'none'; 
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!lbPanning) return;
+            lbPointX = e.clientX - lbStartX;
+            lbPointY = e.clientY - lbStartY;
+            lightboxImg.style.transform = `translate(${lbPointX}px, ${lbPointY}px) scale(${lbScale})`;
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (lbPanning) {
+                lbPanning = false;
+                lightboxImg.style.cursor = 'grab';
+            }
+        });
 
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
