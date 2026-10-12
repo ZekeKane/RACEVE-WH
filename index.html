@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>KE's Warehouse</title>
-    <!-- 引入全新的现代几何字体 Poppins 以匹配科技感设计语言 -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
-            /* 全新霓虹/暗黑科技配色系统 */
             --accent-color: #ff00aa; 
             --accent-cyan: #00e5ff;
             --accent-purple: #b026ff;
@@ -17,7 +15,7 @@
             --gh-border: rgba(255, 255, 255, 0.08);
             --gh-hover: rgba(176, 38, 255, 0.12);
             --gh-active: rgba(176, 38, 255, 0.2);
-            --bg-base: #090414; /* 深邃紫蓝色背景 */
+            --bg-base: #090414; 
             --font-mono: 'JetBrains Mono', monospace;
             --font-sans: 'Poppins', -apple-system, sans-serif;
         }
@@ -79,7 +77,7 @@
             position: absolute;
             right: 40px;          
             color: #fff !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border: none !important;
             border-radius: 20px;
             padding: 6px 16px !important;
             font-size: 12px !important;
@@ -87,10 +85,10 @@
             cursor: pointer;
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.03);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1), inset 0 0 10px rgba(255, 255, 255, 0.05) !important;
         }
         .lang-btn:hover {
-            border-color: var(--accent-color) !important;
-            box-shadow: 0 0 20px rgba(255, 0, 170, 0.4);
+            box-shadow: 0 0 25px rgba(255, 0, 170, 0.5), inset 0 0 15px rgba(255, 0, 170, 0.2) !important;
             background: rgba(255, 0, 170, 0.1);
         }
         
@@ -122,13 +120,12 @@
             padding-top: 18vh; 
         }
 
-        /* 强制覆盖内联样式，注入霓虹高对比设计语言 */
         #home h1 {
             background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-color) 100%) !important;
             -webkit-background-clip: text !important;
             -webkit-text-fill-color: transparent !important;
             font-weight: 800 !important;
-            letter-spacing: 2px !important; /* 收紧字间距更显现代 */
+            letter-spacing: 2px !important;
             text-transform: uppercase;
         }
         
@@ -145,20 +142,23 @@
             align-items: center;
         }
 
-        /* 窗口大圆角与霓虹发光质感 */
         .ptc-workspace {
             display: flex;
             flex-direction: row;
             width: calc(100% - 48px); 
             max-width: 1600px;
             height: calc(100% - 40px); 
-            border: 1px solid var(--gh-border);
-            border-radius: 24px; /* 增大圆角 */
+            border: none;
+            border-radius: 24px; 
             overflow: hidden;
             background: rgba(16, 10, 36, 0.6);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 40px rgba(176, 38, 255, 0.12); /* 增加环境紫光 */
+            box-shadow: 
+                0 30px 60px rgba(0,0,0,0.8), 
+                0 0 50px rgba(176, 38, 255, 0.15),
+                inset 0 0 30px rgba(255, 255, 255, 0.03),
+                inset 0 0 20px rgba(176, 38, 255, 0.05);
         }
 
         .ptc-sidebar {
@@ -166,11 +166,12 @@
             min-width: 300px;
             flex-shrink: 0;
             height: 100%;
-            border-right: 1px solid var(--gh-border);
+            border-right: none;
             display: flex;
             flex-direction: column;
             user-select: none;
             background: rgba(5, 2, 12, 0.4);
+            box-shadow: 10px 0 30px -10px rgba(0,0,0,0.5);
         }
 
         .sidebar-header {
@@ -178,11 +179,12 @@
             min-height: 50px;
             flex-shrink: 0;
             padding: 0 16px;
-            border-bottom: 1px solid var(--gh-border);
+            border-bottom: none;
             display: flex;
             align-items: center;
             background: rgba(0, 0, 0, 0.3);
             font-family: var(--font-mono);
+            box-shadow: 0 10px 20px -10px rgba(0,0,0,0.4);
         }
 
         .brand-title {
@@ -239,9 +241,10 @@
         .subcategory-list {
             padding-left: 20px;
             margin-left: 6px;
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: none;
             display: none;
             flex-direction: column;
+            box-shadow: inset 2px 0 10px -2px rgba(255, 255, 255, 0.02);
         }
         .subcategory-list.open { display: flex; }
 
@@ -262,9 +265,10 @@
         .project-list {
             padding-left: 20px;
             margin-left: 6px;
-            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: none;
             display: none;
             flex-direction: column;
+            box-shadow: inset 2px 0 10px -2px rgba(255, 255, 255, 0.02);
         }
         .project-list.open { display: flex; }
 
@@ -282,7 +286,6 @@
         }
         .project-node:hover { color: var(--gh-text-main); background-color: var(--gh-hover); }
         
-        /* 全新侧边栏高亮效果 */
         .project-node.active {
             color: #fff;
             background: linear-gradient(90deg, var(--gh-active) 0%, rgba(0,0,0,0) 100%);
@@ -306,11 +309,12 @@
             min-height: 50px;
             flex-shrink: 0;
             padding: 0 24px;
-            border-bottom: 1px solid var(--gh-border);
+            border-bottom: none;
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
         }
 
         .breadcrumb {
@@ -325,7 +329,7 @@
 
         .control-btn {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--gh-border);
+            border: none;
             color: var(--gh-text-main);
             padding: 6px 14px;
             border-radius: 8px;
@@ -334,11 +338,11 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.05), inset 0 0 10px rgba(255, 255, 255, 0.02);
         }
         .control-btn:hover { 
-            border-color: var(--accent-purple); 
             background: var(--gh-hover); 
-            box-shadow: 0 0 15px rgba(176, 38, 255, 0.3);
+            box-shadow: 0 0 20px rgba(176, 38, 255, 0.4), inset 0 0 10px rgba(176, 38, 255, 0.2);
         }
 
         .gallery-viewport {
@@ -369,20 +373,24 @@
             margin: 0 auto;
         }
 
-        /* 更柔和圆润的展示卡片 */
         .gallery-card {
             width: 100%;
             background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--gh-border);
+            border: none;
             border-radius: 16px; 
             overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.6), 
+                0 0 25px rgba(0, 229, 255, 0.05),
+                inset 0 0 20px rgba(255, 255, 255, 0.04);
             transition: all 0.3s ease;
             cursor: pointer;
         }
         .gallery-card:hover { 
-            border-color: var(--accent-purple); 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 25px rgba(176, 38, 255, 0.25);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.8), 
+                0 0 35px rgba(176, 38, 255, 0.3),
+                inset 0 0 25px rgba(176, 38, 255, 0.15);
             transform: translateY(-2px);
         }
         .gallery-card img { width: 100%; height: auto; display: block; }
@@ -390,12 +398,13 @@
         .card-meta {
             padding: 12px 20px;
             background: rgba(0, 0, 0, 0.5);
-            border-top: 1px solid var(--gh-border);
+            border-top: none;
             font-family: var(--font-mono);
             font-size: 0.75rem;
             color: var(--gh-text-muted);
             display: flex;
             justify-content: space-between;
+            box-shadow: 0 -10px 25px -5px rgba(0,0,0,0.6);
         }
 
         #lightbox-overlay {
@@ -428,7 +437,8 @@
                 min-width: 100%;
                 height: 35%;
                 border-right: none;
-                border-bottom: 1px solid var(--gh-border);
+                border-bottom: none;
+                box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6);
             }
             .ptc-main {
                 height: 65%;
@@ -456,7 +466,6 @@
         </nav>
 
         <div id="home" class="page active">
-            <!-- 保持原有属性不变，通过 CSS 中的 !important 强制应用了霓虹渐变 -->
             <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
             <p class="i18n" data-en="Collections" data-zh="设计与工程作品集" style="color: #666; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
         </div>
@@ -1045,7 +1054,6 @@ async function loadProjectImages(projectObj, sessionToken) {
         const particles = [];
         const totalParticles = 2500; 
         
-        /* 底层粒子（彩带）颜色严格保持原有配方 */
         const colors = [
             '#FFE3B3', '#FFC563', '#0099FF', '#00FFFF', '#FFFFFF', 
             'rgba(255, 227, 179, 0.95)', 'rgba(0, 255, 255, 0.95)'
@@ -1143,7 +1151,6 @@ async function loadProjectImages(projectObj, sessionToken) {
             lastTime = currentTime;
             globalTime += dt;
             
-            /* 更新了背景清理颜色以匹配新的紫蓝色太空主题，但底层粒子数组已保留 */
             bgCtx.fillStyle = 'rgba(9, 4, 20, 0.15)';
             bgCtx.fillRect(0, 0, w, h);
             topCtx.globalCompositeOperation = 'lighter';
