@@ -150,6 +150,15 @@
             height: calc(100% - 40px); 
             border: none;
             overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ptc-workspace::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
             
             background: radial-gradient(ellipse at center, rgba(13, 17, 23, 0.4) 0%, rgba(13, 17, 23, 0.1) 60%, transparent 100%);
             
@@ -166,6 +175,7 @@
             mask-composite: intersect;
 
             box-shadow: inset 0 0 120px rgba(255, 227, 179, 0.05);
+            pointer-events: none;
         }
 
         .ptc-sidebar {
