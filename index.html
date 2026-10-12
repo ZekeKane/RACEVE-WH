@@ -4,18 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>KE's Warehouse</title>
+    <!-- 引入全新的现代几何字体 Poppins 以匹配科技感设计语言 -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
+            /* 全新霓虹/暗黑科技配色系统 */
+            --accent-color: #ff00aa; 
             --accent-cyan: #00e5ff;
             --accent-purple: #b026ff;
-            --accent-pink: #ff00aa;
             --gh-text-main: #ffffff;
             --gh-text-muted: #958ba8;
             --gh-border: rgba(255, 255, 255, 0.08);
             --gh-hover: rgba(176, 38, 255, 0.12);
             --gh-active: rgba(176, 38, 255, 0.2);
-            --bg-base: #06040d;
+            --bg-base: #090414; /* 深邃紫蓝色背景 */
             --font-mono: 'JetBrains Mono', monospace;
             --font-sans: 'Poppins', -apple-system, sans-serif;
         }
@@ -52,7 +54,7 @@
             justify-content: center; 
             align-items: center; 
             z-index: 1000; 
-            background: linear-gradient(to bottom, rgba(6, 4, 13, 0.95) 0%, rgba(6, 4, 13, 0) 100%); 
+            background: linear-gradient(to bottom, rgba(9, 4, 20, 0.95) 0%, rgba(9, 4, 20, 0) 100%); 
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
@@ -65,12 +67,31 @@
             font-weight: 600; 
             font-size: 15px; 
             transition: all 0.3s ease; 
-            letter-spacing: 2px; 
+            letter-spacing: 1px; 
             font-family: var(--font-sans);
         }
         nav button.active, nav button:hover { 
             color: #fff; 
             text-shadow: 0 0 15px rgba(176, 38, 255, 0.8); 
+        }
+        
+        .lang-btn {
+            position: absolute;
+            right: 40px;          
+            color: #fff !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 20px;
+            padding: 6px 16px !important;
+            font-size: 12px !important;
+            letter-spacing: 1px !important;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .lang-btn:hover {
+            border-color: var(--accent-color) !important;
+            box-shadow: 0 0 20px rgba(255, 0, 170, 0.4);
+            background: rgba(255, 0, 170, 0.1);
         }
         
         .page { 
@@ -101,24 +122,20 @@
             padding-top: 18vh; 
         }
 
+        /* 强制覆盖内联样式，注入霓虹高对比设计语言 */
         #home h1 {
-            font-size: 4.5rem; 
-            letter-spacing: 2px; 
-            margin: 0; 
-            font-weight: 800; 
-            background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-pink) 100%); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent;
+            background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-color) 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            font-weight: 800 !important;
+            letter-spacing: 2px !important; /* 收紧字间距更显现代 */
             text-transform: uppercase;
         }
-
+        
         #home p {
-            color: var(--gh-text-muted); 
-            margin-top: 16px; 
-            letter-spacing: 8px; 
-            font-size: 14px; 
-            text-transform: uppercase;
-            font-weight: 400;
+            color: var(--gh-text-muted) !important;
+            font-weight: 400 !important;
+            letter-spacing: 6px !important;
         }
 
         #works {
@@ -128,6 +145,7 @@
             align-items: center;
         }
 
+        /* 窗口大圆角与霓虹发光质感 */
         .ptc-workspace {
             display: flex;
             flex-direction: row;
@@ -135,12 +153,12 @@
             max-width: 1600px;
             height: calc(100% - 40px); 
             border: 1px solid var(--gh-border);
-            border-radius: 24px;
+            border-radius: 24px; /* 增大圆角 */
             overflow: hidden;
-            background: rgba(20, 15, 36, 0.45);
+            background: rgba(16, 10, 36, 0.6);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 40px rgba(176, 38, 255, 0.12);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 40px rgba(176, 38, 255, 0.12); /* 增加环境紫光 */
         }
 
         .ptc-sidebar {
@@ -152,7 +170,7 @@
             display: flex;
             flex-direction: column;
             user-select: none;
-            background: rgba(6, 4, 13, 0.4);
+            background: rgba(5, 2, 12, 0.4);
         }
 
         .sidebar-header {
@@ -263,10 +281,12 @@
             transition: all 0.2s ease;
         }
         .project-node:hover { color: var(--gh-text-main); background-color: var(--gh-hover); }
+        
+        /* 全新侧边栏高亮效果 */
         .project-node.active {
             color: #fff;
             background: linear-gradient(90deg, var(--gh-active) 0%, rgba(0,0,0,0) 100%);
-            border-left: 3px solid var(--accent-pink);
+            border-left: 3px solid var(--accent-cyan);
             border-radius: 4px 8px 8px 4px;
         }
         .project-node .file-icon { margin-right: 8px; font-size: 0.85rem; opacity: 0.8; }
@@ -277,7 +297,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            background: rgba(6, 4, 13, 0.2);
+            background: rgba(5, 2, 12, 0.2);
             overflow: hidden;
         }
 
@@ -349,11 +369,12 @@
             margin: 0 auto;
         }
 
+        /* 更柔和圆润的展示卡片 */
         .gallery-card {
             width: 100%;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--gh-border);
-            border-radius: 16px;
+            border-radius: 16px; 
             overflow: hidden;
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             transition: all 0.3s ease;
@@ -379,7 +400,7 @@
 
         #lightbox-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(6, 4, 13, 0.95); 
+            background: rgba(5, 2, 12, 0.95); 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             z-index: 2000; display: flex; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; 
@@ -415,6 +436,10 @@
             .gallery-viewport {
                 padding: 15px;
             }
+            .lang-btn {
+                right: 15px;
+                padding: 4px 10px !important;
+            }
         }
     </style>
 </head>
@@ -425,13 +450,15 @@
 
     <div class="content-layer">
         <nav>
-            <button onclick="window.switchPage('home')" id="btn-home" class="active">INDEX</button>
-            <button onclick="window.switchPage('works')" id="btn-works">PROJECTS</button>
+            <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="首页">INDEX</button>
+            <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="作品集">PROJECTS</button>
+            <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">EN / 中</button>
         </nav>
 
         <div id="home" class="page active">
-            <h1>KE'S Warehouse</h1>
-            <p>Collections</p>
+            <!-- 保持原有属性不变，通过 CSS 中的 !important 强制应用了霓虹渐变 -->
+            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
+            <p class="i18n" data-en="Collections" data-zh="设计与工程作品集" style="color: #666; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
         </div>
 
         <div id="works" class="page">
@@ -448,16 +475,16 @@
                 <main class="ptc-main">
                     <header class="top-bar">
                         <div class="breadcrumb" id="breadcrumb">
-                            <span style="color: var(--gh-text-main)">Select a project folder from the sidebar</span>
+                            <span class="i18n" data-en="Select a project folder from the sidebar" data-zh="请从左侧栏选择项目文件夹">Select a project folder from the sidebar</span>
                         </div>
-                        <button id="scrollToTopBtn" class="control-btn">Top ↑</button>
+                        <button id="scrollToTopBtn" class="control-btn i18n" data-en="Top ↑" data-zh="顶部 ↑">Top ↑</button>
                     </header>
 
                     <section class="gallery-viewport" id="galleryViewport">
                         <div class="empty-state" id="emptyState">
                             <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-text-muted);">📁</div>
-                            <h3>No project selected</h3>
-                            <p>Select any folder from the left sidebar to render presentation sheets.</p>
+                            <h3 class="i18n" data-en="No project selected" data-zh="未选择项目">No project selected</h3>
+                            <p class="i18n" data-en="Select any folder from the left sidebar to render presentation sheets." data-zh="从左侧文件树选择项目以渲染高清展板长图。">Select any folder from the left sidebar to render presentation sheets.</p>
                         </div>
                         <div class="image-stream" id="imageStream"></div>
                     </section>
@@ -579,7 +606,22 @@
         const MAX_IMAGES_PER_FOLDER = 99;
         
         const projectImageCache = {};
+        
         let currentLoadSession = 0;
+        let currentLang = 'en';
+
+        function applyLanguage() {
+            document.querySelectorAll('.i18n').forEach(el => {
+                const text = el.getAttribute(`data-${currentLang}`);
+                if (text) el.textContent = text;
+            });
+            document.getElementById('btn-lang').textContent = currentLang === 'en' ? '中 / EN' : 'EN / 中';
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            applyLanguage();
+        }
 
         window.switchPage = function(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
@@ -603,7 +645,7 @@
 
             const titleNode = document.createElement('div');
             titleNode.className = 'title-node';
-            titleNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> <span>${category.title}</span>`;
+            titleNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> <span class="i18n" data-en="${category.title}" data-zh="${category.title}">${category.title}</span>`;
 
             const subCatList = document.createElement('div');
             subCatList.className = 'subcategory-list';
@@ -611,7 +653,7 @@
             category.subcategories.forEach((subcat) => {
               const subCatNode = document.createElement('div');
               subCatNode.className = 'subcategory-node';
-              subCatNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> <span>${subcat.name}</span>`;
+              subCatNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> <span class="i18n" data-en="${subcat.name}" data-zh="${subcat.name}">${subcat.name}</span>`;
 
               const projectList = document.createElement('div');
               projectList.className = 'project-list';
@@ -619,7 +661,7 @@
               subcat.projects.forEach((proj) => {
                 const projNode = document.createElement('div');
                 projNode.className = 'project-node';
-                projNode.innerHTML = `<span class="file-icon">📄</span> <span>${proj.name}</span>`;
+                projNode.innerHTML = `<span class="file-icon">📄</span> <span class="i18n" data-en="${proj.name}" data-zh="${proj.name}">${proj.name}</span>`;
 
                 projNode.addEventListener('click', (e) => {
                   e.stopPropagation();
@@ -660,6 +702,8 @@
             catDiv.appendChild(subCatList);
             treeNav.appendChild(catDiv);
           });
+          
+          applyLanguage();
         }
 
         function setActiveProject(node, title, subcat, project) {
@@ -682,7 +726,7 @@
           loadProjectImages(project, currentLoadSession);
         }
 
-        async function loadProjectImages(projectObj, sessionToken) {
+async function loadProjectImages(projectObj, sessionToken) {
           const cacheKey = projectObj.primary; 
 
           if (projectImageCache[cacheKey]) {
@@ -736,10 +780,11 @@
             imageStream.innerHTML = `
               <div class="empty-state">
                 <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-border);">🚫</div>
-                <h3>No images detected</h3>
-                <p>Ensure images are named '01.png', '02.jpg', etc., in the repository.</p>
+                <h3 class="i18n" data-en="No images detected" data-zh="No images detected">No images detected</h3>
+                <p class="i18n" data-en="Ensure images are named '01.png', '02.jpg', etc., in the repository." data-zh="Ensure images are named '01.png', '02.jpg', etc., in the repository.">Ensure images are named '01.png', '02.jpg', etc., in the repository.</p>
               </div>
             `;
+            applyLanguage();
           }
         }
 
@@ -822,7 +867,7 @@
           galleryViewport.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        const lightboxOverlay = document.getElementById('lightbox-overlay');
+       const lightboxOverlay = document.getElementById('lightbox-overlay');
         const lightboxImg = document.getElementById('lightbox-img');
         let lbScale = 1, lbPanning = false, lbPointX = 0, lbPointY = 0, lbStartX = 0, lbStartY = 0;
         let lbClickX = 0, lbClickY = 0; 
@@ -975,7 +1020,6 @@
                 }
             }
         });
-
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         const topCanvas = document.getElementById('top-canvas');
@@ -1001,9 +1045,10 @@
         const particles = [];
         const totalParticles = 2500; 
         
+        /* 底层粒子（彩带）颜色严格保持原有配方 */
         const colors = [
-            '#0055ff', '#b026ff', '#ff00aa', '#00e5ff', '#FFFFFF', 
-            'rgba(176, 38, 255, 0.95)', 'rgba(0, 229, 255, 0.95)'
+            '#FFE3B3', '#FFC563', '#0099FF', '#00FFFF', '#FFFFFF', 
+            'rgba(255, 227, 179, 0.95)', 'rgba(0, 255, 255, 0.95)'
         ];
         
         let globalTime = 0;
@@ -1098,7 +1143,8 @@
             lastTime = currentTime;
             globalTime += dt;
             
-            bgCtx.fillStyle = 'rgba(6, 4, 13, 0.15)';
+            /* 更新了背景清理颜色以匹配新的紫蓝色太空主题，但底层粒子数组已保留 */
+            bgCtx.fillStyle = 'rgba(9, 4, 20, 0.15)';
             bgCtx.fillRect(0, 0, w, h);
             topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
