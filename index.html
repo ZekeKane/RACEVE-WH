@@ -7,16 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
-            /* 主题色回归淡金色 */
             --accent-color: #FFE3B3; 
-            --accent-cyan: #00e5ff; /* 专为保留标题渐变而留 */
-            --accent-purple: #b026ff; /* 专为保留标题渐变而留 */
+            --accent-cyan: #00e5ff; 
+            --accent-purple: #b026ff; 
             --gh-text-main: #ffffff;
             --gh-text-muted: #8b949e;
             --gh-border: rgba(255, 255, 255, 0.08);
             --gh-hover: rgba(255, 227, 179, 0.12);
             --gh-active: rgba(255, 227, 179, 0.2);
-            --bg-base: #030307; /* 回归原本的深邃暗黑底色 */
+            --bg-base: #030307; 
             --font-mono: 'JetBrains Mono', monospace;
             --font-sans: 'Poppins', -apple-system, sans-serif;
         }
@@ -121,7 +120,6 @@
             padding-top: 18vh; 
         }
 
-        /* 锁定保持不变的 Index 标题 */
         #home h1 {
             background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, #ff00aa 100%) !important;
             -webkit-background-clip: text !important;
@@ -153,7 +151,7 @@
             border: none;
             border-radius: 24px; 
             overflow: hidden;
-            background: rgba(13, 17, 23, 0.5); /* 柔和暗色衬托玻璃质感 */
+            background: rgba(13, 17, 23, 0.5); 
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             box-shadow: 
@@ -1153,7 +1151,6 @@ async function loadProjectImages(projectObj, sessionToken) {
             lastTime = currentTime;
             globalTime += dt;
             
-            /* 清理背景色回归原本的深黑设定 */
             bgCtx.fillStyle = 'rgba(3, 3, 7, 0.12)';
             bgCtx.fillRect(0, 0, w, h);
             topCtx.globalCompositeOperation = 'lighter';
