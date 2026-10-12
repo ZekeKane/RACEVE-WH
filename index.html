@@ -7,15 +7,16 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --accent-color: #ff00aa; 
-            --accent-cyan: #00e5ff;
-            --accent-purple: #b026ff;
+            /* 主题色回归淡金色 */
+            --accent-color: #FFE3B3; 
+            --accent-cyan: #00e5ff; /* 专为保留标题渐变而留 */
+            --accent-purple: #b026ff; /* 专为保留标题渐变而留 */
             --gh-text-main: #ffffff;
-            --gh-text-muted: #958ba8;
+            --gh-text-muted: #8b949e;
             --gh-border: rgba(255, 255, 255, 0.08);
-            --gh-hover: rgba(176, 38, 255, 0.12);
-            --gh-active: rgba(176, 38, 255, 0.2);
-            --bg-base: #090414; 
+            --gh-hover: rgba(255, 227, 179, 0.12);
+            --gh-active: rgba(255, 227, 179, 0.2);
+            --bg-base: #030307; /* 回归原本的深邃暗黑底色 */
             --font-mono: 'JetBrains Mono', monospace;
             --font-sans: 'Poppins', -apple-system, sans-serif;
         }
@@ -52,7 +53,7 @@
             justify-content: center; 
             align-items: center; 
             z-index: 1000; 
-            background: linear-gradient(to bottom, rgba(9, 4, 20, 0.95) 0%, rgba(9, 4, 20, 0) 100%); 
+            background: linear-gradient(to bottom, rgba(3, 3, 7, 0.95) 0%, rgba(3, 3, 7, 0) 100%); 
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
@@ -69,14 +70,14 @@
             font-family: var(--font-sans);
         }
         nav button.active, nav button:hover { 
-            color: #fff; 
-            text-shadow: 0 0 15px rgba(176, 38, 255, 0.8); 
+            color: var(--accent-color); 
+            text-shadow: 0 0 15px rgba(255, 227, 179, 0.8); 
         }
         
         .lang-btn {
             position: absolute;
             right: 40px;          
-            color: #fff !important;
+            color: var(--accent-color) !important;
             border: none !important;
             border-radius: 20px;
             padding: 6px 16px !important;
@@ -85,11 +86,11 @@
             cursor: pointer;
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.03);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1), inset 0 0 10px rgba(255, 255, 255, 0.05) !important;
+            box-shadow: 0 0 15px rgba(255, 227, 179, 0.1), inset 0 0 10px rgba(255, 227, 179, 0.05) !important;
         }
         .lang-btn:hover {
-            box-shadow: 0 0 25px rgba(255, 0, 170, 0.5), inset 0 0 15px rgba(255, 0, 170, 0.2) !important;
-            background: rgba(255, 0, 170, 0.1);
+            box-shadow: 0 0 25px rgba(255, 227, 179, 0.5), inset 0 0 15px rgba(255, 227, 179, 0.2) !important;
+            background: rgba(255, 227, 179, 0.1);
         }
         
         .page { 
@@ -120,8 +121,9 @@
             padding-top: 18vh; 
         }
 
+        /* 锁定保持不变的 Index 标题 */
         #home h1 {
-            background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-color) 100%) !important;
+            background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, #ff00aa 100%) !important;
             -webkit-background-clip: text !important;
             -webkit-text-fill-color: transparent !important;
             font-weight: 800 !important;
@@ -151,14 +153,14 @@
             border: none;
             border-radius: 24px; 
             overflow: hidden;
-            background: rgba(16, 10, 36, 0.6);
+            background: rgba(13, 17, 23, 0.5); /* 柔和暗色衬托玻璃质感 */
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             box-shadow: 
                 0 30px 60px rgba(0,0,0,0.8), 
-                0 0 50px rgba(176, 38, 255, 0.15),
+                0 0 50px rgba(255, 227, 179, 0.12),
                 inset 0 0 30px rgba(255, 255, 255, 0.03),
-                inset 0 0 20px rgba(176, 38, 255, 0.05);
+                inset 0 0 20px rgba(255, 227, 179, 0.05);
         }
 
         .ptc-sidebar {
@@ -170,7 +172,7 @@
             display: flex;
             flex-direction: column;
             user-select: none;
-            background: rgba(5, 2, 12, 0.4);
+            background: rgba(3, 3, 7, 0.4);
             box-shadow: 10px 0 30px -10px rgba(0,0,0,0.5);
         }
 
@@ -289,7 +291,7 @@
         .project-node.active {
             color: #fff;
             background: linear-gradient(90deg, var(--gh-active) 0%, rgba(0,0,0,0) 100%);
-            border-left: 3px solid var(--accent-cyan);
+            border-left: 3px solid var(--accent-color);
             border-radius: 4px 8px 8px 4px;
         }
         .project-node .file-icon { margin-right: 8px; font-size: 0.85rem; opacity: 0.8; }
@@ -300,7 +302,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            background: rgba(5, 2, 12, 0.2);
+            background: rgba(3, 3, 7, 0.2);
             overflow: hidden;
         }
 
@@ -342,7 +344,7 @@
         }
         .control-btn:hover { 
             background: var(--gh-hover); 
-            box-shadow: 0 0 20px rgba(176, 38, 255, 0.4), inset 0 0 10px rgba(176, 38, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 227, 179, 0.4), inset 0 0 10px rgba(255, 227, 179, 0.2);
         }
 
         .gallery-viewport {
@@ -381,7 +383,7 @@
             overflow: hidden;
             box-shadow: 
                 0 15px 35px rgba(0,0,0,0.6), 
-                0 0 25px rgba(0, 229, 255, 0.05),
+                0 0 25px rgba(255, 227, 179, 0.05),
                 inset 0 0 20px rgba(255, 255, 255, 0.04);
             transition: all 0.3s ease;
             cursor: pointer;
@@ -389,8 +391,8 @@
         .gallery-card:hover { 
             box-shadow: 
                 0 20px 40px rgba(0,0,0,0.8), 
-                0 0 35px rgba(176, 38, 255, 0.3),
-                inset 0 0 25px rgba(176, 38, 255, 0.15);
+                0 0 35px rgba(255, 227, 179, 0.3),
+                inset 0 0 25px rgba(255, 227, 179, 0.15);
             transform: translateY(-2px);
         }
         .gallery-card img { width: 100%; height: auto; display: block; }
@@ -409,7 +411,7 @@
 
         #lightbox-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(5, 2, 12, 0.95); 
+            background: rgba(3, 3, 7, 0.95); 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             z-index: 2000; display: flex; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; 
@@ -419,7 +421,7 @@
         
         #lightbox-img {
             max-width: 95%; max-height: 90%; object-fit: contain; border-radius: 12px;
-            box-shadow: 0 20px 80px rgba(0,0,0,0.9), 0 0 40px rgba(176, 38, 255, 0.1);
+            box-shadow: 0 20px 80px rgba(0,0,0,0.9), 0 0 40px rgba(255, 227, 179, 0.15);
             transform: scale(0.95);
             opacity: 0;
             transition: all 0.3s ease;
@@ -466,7 +468,7 @@
         </nav>
 
         <div id="home" class="page active">
-            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
+            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300;">KE'S Warehouse</h1>
             <p class="i18n" data-en="Collections" data-zh="设计与工程作品集" style="color: #666; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
         </div>
 
@@ -724,7 +726,7 @@
             <span class="separator">/</span>
             <span>${subcat}</span>
             <span class="separator">/</span>
-            <span style="color: #00e5ff; font-weight: 600;">${project.name}</span>
+            <span style="color: var(--accent-color); font-weight: 600;">${project.name}</span>
           `;
 
           emptyState.style.display = 'none';
@@ -1151,7 +1153,8 @@ async function loadProjectImages(projectObj, sessionToken) {
             lastTime = currentTime;
             globalTime += dt;
             
-            bgCtx.fillStyle = 'rgba(9, 4, 20, 0.15)';
+            /* 清理背景色回归原本的深黑设定 */
+            bgCtx.fillStyle = 'rgba(3, 3, 7, 0.12)';
             bgCtx.fillRect(0, 0, w, h);
             topCtx.globalCompositeOperation = 'lighter';
             topCtx.clearRect(0, 0, w, h);
