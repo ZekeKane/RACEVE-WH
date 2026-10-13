@@ -919,17 +919,6 @@
         }
 
         lightboxOverlay.addEventListener('click', (e) => {
-            if (e.target === lightboxOverlay) closeLightbox();
-        });
-
-        lightboxOverlay.addEventListener('touchend', (e) => {
-            if (e.target === lightboxOverlay) {
-                e.preventDefault(); 
-                closeLightbox();
-            }
-        });
-
-        lightboxImg.addEventListener('click', (e) => {
             const dist = Math.abs(e.clientX - lbClickX) + Math.abs(e.clientY - lbClickY);
             if (dist < 5) closeLightbox();
         });
@@ -966,7 +955,7 @@
             applyZoom(e.clientX, e.clientY, newScale);
         }, { passive: false });
 
-        lightboxImg.addEventListener('mousedown', (e) => {
+        lightboxOverlay.addEventListener('mousedown', (e) => {
             e.preventDefault();
             lbClickX = e.clientX;
             lbClickY = e.clientY;
@@ -999,7 +988,7 @@
             );
         }
 
-        lightboxImg.addEventListener('touchstart', (e) => {
+        lightboxOverlay.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
                 e.preventDefault();
                 initialPinchDist = getPinchDist(e);
@@ -1009,8 +998,8 @@
             } else if (e.touches.length === 1) {
                 lbClickX = e.touches[0].clientX;
                 lbClickY = e.touches[0].clientY;
-                e.preventDefault(); 
                 if (lbScale > 1) {
+                    e.preventDefault(); 
                     lbPanning = true;
                     lbStartX = e.touches[0].clientX - lbPointX;
                     lbStartY = e.touches[0].clientY - lbPointY;
@@ -1019,7 +1008,7 @@
             }
         }, { passive: false });
 
-        lightboxImg.addEventListener('touchmove', (e) => {
+        lightboxOverlay.addEventListener('touchmove', (e) => {
             if (e.touches.length === 2) {
                 e.preventDefault();
                 const currentDist = getPinchDist(e);
@@ -1036,7 +1025,7 @@
             }
         }, { passive: false });
 
-        lightboxImg.addEventListener('touchend', (e) => {
+        lightboxOverlay.addEventListener('touchend', (e) => {
             if (e.touches.length < 2) initialPinchDist = 0;
             if (e.touches.length === 0) lbPanning = false;
             
@@ -1048,6 +1037,7 @@
                 }
             }
         });
+
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
         const topCanvas = document.getElementById('top-canvas');
