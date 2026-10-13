@@ -103,6 +103,9 @@
             transform: scale(0.98); 
             transition: opacity 0.4s ease, transform 0.4s ease;
             overflow: hidden;
+            will-change: opacity, transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
         
         .page.active { 
@@ -176,6 +179,11 @@
 
             box-shadow: inset 0 0 120px rgba(255, 227, 179, 0.05);
             pointer-events: none;
+
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
         .ptc-sidebar {
@@ -554,7 +562,7 @@
                 name: "Clay_Bmw_Gen12", zh: "宝马 Gen12 油泥模型",
                 projects: [
                   { name: "Chassis", zh: "底盘", primary: "images/Transportation/Clay_Bmw_Gen12/Chassis", fallback: "images/Clay_Bmw_Gen12/Chassis" },
-                  { name: "Works", zh: "作品", primary: "images/Transportation/Clay_Bmw_Gen12/Works", fallback: "images/Clay_Bmw_Gen12/Works" }
+                  { name: "Works", zh: "作品", primary: "images/Transportation/Clay_Bmw_Gen12/Works", fallback: "images/Transportation/Clay_Bmw_Gen12/Works" }
                 ]
               },
               {
