@@ -4,17 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>KE's Warehouse</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
             --accent-color: #FFE3B3; 
-            --gh-text-main: #e6edf3;
+            --accent-cyan: #00e5ff; 
+            --accent-purple: #b026ff; 
+            --gh-text-main: #ffffff;
             --gh-text-muted: #8b949e;
-            --gh-border: #30363d;
-            --gh-hover: rgba(177, 186, 196, 0.12);
-            --gh-active: rgba(0, 229, 255, 0.15);
+            --gh-border: rgba(255, 255, 255, 0.08);
+            --gh-hover: rgba(255, 227, 179, 0.12);
+            --gh-active: rgba(255, 227, 179, 0.2);
+            --bg-base: #030307; 
             --font-mono: 'JetBrains Mono', monospace;
-            --font-sans: 'Inter', -apple-system, sans-serif;
+            --font-sans: 'Poppins', -apple-system, sans-serif;
         }
         
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
@@ -26,7 +29,7 @@
             height: 100vh; 
             position: fixed; 
             overflow: hidden; 
-            background-color: #030307; 
+            background-color: var(--bg-base); 
             color: white; 
             font-family: var(--font-sans); 
         }
@@ -49,9 +52,9 @@
             justify-content: center; 
             align-items: center; 
             z-index: 1000; 
-            background: linear-gradient(to bottom, rgba(3,3,7,0.95) 0%, rgba(3,3,7,0) 100%); 
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: linear-gradient(to bottom, rgba(3, 3, 7, 0.95) 0%, rgba(3, 3, 7, 0) 100%); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
         nav button { 
             background: none; 
@@ -61,30 +64,32 @@
             cursor: pointer; 
             font-weight: 600; 
             font-size: 15px; 
-            transition: 0.3s; 
-            letter-spacing: 2px; 
-            font-family: var(--font-mono);
+            transition: all 0.3s ease; 
+            letter-spacing: 1px; 
+            font-family: var(--font-sans);
         }
         nav button.active, nav button:hover { 
             color: var(--accent-color); 
-            text-shadow: 0 0 15px rgba(255,227,179,0.6); 
+            text-shadow: 0 0 15px rgba(255, 227, 179, 0.8); 
         }
         
         .lang-btn {
             position: absolute;
             right: 40px;          
             color: var(--accent-color) !important;
-            border: 1px solid rgba(255, 227, 179, 0.25) !important;
+            border: none !important;
             border-radius: 20px;
-            padding: 4px 14px !important;
+            padding: 6px 16px !important;
             font-size: 12px !important;
             letter-spacing: 1px !important;
             cursor: pointer;
             transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.03);
+            box-shadow: 0 0 15px rgba(255, 227, 179, 0.1), inset 0 0 10px rgba(255, 227, 179, 0.05) !important;
         }
         .lang-btn:hover {
-            border-color: var(--accent-color) !important;
-            box-shadow: 0 0 15px rgba(255, 227, 179, 0.3);
+            box-shadow: 0 0 25px rgba(255, 227, 179, 0.5), inset 0 0 15px rgba(255, 227, 179, 0.2) !important;
+            background: rgba(255, 227, 179, 0.1);
         }
         
         .page { 
@@ -98,6 +103,9 @@
             transform: scale(0.98); 
             transition: opacity 0.4s ease, transform 0.4s ease;
             overflow: hidden;
+            will-change: opacity, transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
         
         .page.active { 
@@ -115,6 +123,21 @@
             padding-top: 18vh; 
         }
 
+        #home h1 {
+            background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, #ff00aa 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            font-weight: 800 !important;
+            letter-spacing: 2px !important;
+            text-transform: uppercase;
+        }
+        
+        #home p {
+            color: var(--gh-text-muted) !important;
+            font-weight: 400 !important;
+            letter-spacing: 6px !important;
+        }
+
         #works {
             padding: 0;
             display: flex;
@@ -128,13 +151,39 @@
             width: calc(100% - 48px); 
             max-width: 1600px;
             height: calc(100% - 40px); 
-            border: 1px solid var(--gh-border);
-            border-radius: 12px;
+            border: none;
             overflow: hidden;
-            background: rgba(13, 17, 23, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ptc-workspace::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            
+            background: radial-gradient(ellipse at center, rgba(13, 17, 23, 0.4) 0%, rgba(13, 17, 23, 0.1) 60%, transparent 100%);
+            
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            
+            -webkit-mask-image: 
+                linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%),
+                linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+            -webkit-mask-composite: source-in;
+            mask-image: 
+                linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%),
+                linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+            mask-composite: intersect;
+
+            box-shadow: inset 0 0 120px rgba(255, 227, 179, 0.05);
+            pointer-events: none;
+
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
         .ptc-sidebar {
@@ -142,11 +191,12 @@
             min-width: 300px;
             flex-shrink: 0;
             height: 100%;
-            border-right: 1px solid var(--gh-border);
+            border-right: none;
             display: flex;
             flex-direction: column;
             user-select: none;
-            background: rgba(1, 4, 9, 0.6);
+            background: rgba(3, 3, 7, 0.4);
+            box-shadow: 10px 0 30px -10px rgba(0,0,0,0.5);
         }
 
         .sidebar-header {
@@ -154,11 +204,12 @@
             min-height: 50px;
             flex-shrink: 0;
             padding: 0 16px;
-            border-bottom: 1px solid var(--gh-border);
+            border-bottom: none;
             display: flex;
             align-items: center;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.3);
             font-family: var(--font-mono);
+            box-shadow: 0 10px 20px -10px rgba(0,0,0,0.4);
         }
 
         .brand-title {
@@ -172,12 +223,13 @@
 
         .tree-nav {
             flex: 1;
+            min-height: 0; 
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 12px 10px;
+            padding: 12px 10px 60px 10px; 
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
         }
 
         .tree-nav::-webkit-scrollbar, .gallery-viewport::-webkit-scrollbar { width: 6px; }
@@ -186,7 +238,7 @@
             border-radius: 3px; 
         }
         .tree-nav::-webkit-scrollbar-thumb:hover, .gallery-viewport::-webkit-scrollbar-thumb:hover { 
-            background: rgba(255, 255, 255, 0.2); 
+            background: rgba(255, 255, 255, 0.3); 
         }
 
         .tree-category { 
@@ -198,37 +250,38 @@
         .title-node {
             display: flex;
             align-items: center;
-            padding: 6px 8px;
+            padding: 8px 10px;
             font-family: var(--font-sans);
             font-size: 0.85rem;
             font-weight: 600;
             color: var(--gh-text-main);
             cursor: pointer;
-            border-radius: 6px;
-            transition: background 0.1s ease;
+            border-radius: 8px;
+            transition: background 0.2s ease;
         }
         .title-node:hover { background-color: var(--gh-hover); }
         .title-node .icon { width: 16px; display: inline-block; font-size: 0.7rem; color: var(--gh-text-muted); }
-        .title-node .folder-icon { margin-right: 6px; font-size: 0.9rem; }
+        .title-node .folder-icon { margin-right: 8px; font-size: 0.9rem; }
 
         .subcategory-list {
             padding-left: 20px;
             margin-left: 6px;
-            border-left: 1px solid var(--gh-border);
+            border-left: none;
             display: none;
             flex-direction: column;
+            box-shadow: inset 2px 0 10px -2px rgba(255, 255, 255, 0.02);
         }
         .subcategory-list.open { display: flex; }
 
         .subcategory-node {
             display: flex;
             align-items: center;
-            padding: 6px 8px;
+            padding: 8px 10px;
             font-family: var(--font-sans);
             font-size: 0.82rem;
             color: var(--gh-text-main);
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-top: 2px;
         }
         .subcategory-node:hover { background-color: var(--gh-hover); }
@@ -237,30 +290,34 @@
         .project-list {
             padding-left: 20px;
             margin-left: 6px;
-            border-left: 1px solid var(--gh-border);
+            border-left: none;
             display: none;
             flex-direction: column;
+            box-shadow: inset 2px 0 10px -2px rgba(255, 255, 255, 0.02);
         }
         .project-list.open { display: flex; }
 
         .project-node {
             display: flex;
             align-items: center;
-            padding: 6px 8px;
+            padding: 8px 10px;
             font-family: var(--font-sans);
             font-size: 0.8rem;
             color: var(--gh-text-muted);
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-top: 2px;
-            transition: all 0.15s ease;
+            transition: all 0.2s ease;
         }
         .project-node:hover { color: var(--gh-text-main); background-color: var(--gh-hover); }
+        
         .project-node.active {
-            color: #00e5ff;
-            background-color: var(--gh-active);
+            color: #fff;
+            background: linear-gradient(90deg, var(--gh-active) 0%, rgba(0,0,0,0) 100%);
+            border-left: 3px solid var(--accent-color);
+            border-radius: 4px 8px 8px 4px;
         }
-        .project-node .file-icon { margin-right: 6px; font-size: 0.85rem; opacity: 0.8; }
+        .project-node .file-icon { margin-right: 8px; font-size: 0.85rem; opacity: 0.8; }
 
         .ptc-main {
             flex: 1;
@@ -268,7 +325,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            background: rgba(13, 17, 23, 0.4);
+            background: rgba(3, 3, 7, 0.2);
             overflow: hidden;
         }
 
@@ -277,11 +334,12 @@
             min-height: 50px;
             flex-shrink: 0;
             padding: 0 24px;
-            border-bottom: 1px solid var(--gh-border);
+            border-bottom: none;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(1, 4, 9, 0.4);
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
         }
 
         .breadcrumb {
@@ -295,23 +353,27 @@
         .breadcrumb .separator { color: var(--gh-border); }
 
         .control-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--gh-border);
+            background: rgba(255, 255, 255, 0.03);
+            border: none;
             color: var(--gh-text-main);
-            padding: 4px 12px;
-            border-radius: 6px;
+            padding: 6px 14px;
+            border-radius: 8px;
             font-family: var(--font-sans);
             font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.05), inset 0 0 10px rgba(255, 255, 255, 0.02);
         }
-        .control-btn:hover { border-color: var(--gh-text-muted); background: var(--gh-hover); }
+        .control-btn:hover { 
+            background: var(--gh-hover); 
+            box-shadow: 0 0 20px rgba(255, 227, 179, 0.4), inset 0 0 10px rgba(255, 227, 179, 0.2);
+        }
 
         .gallery-viewport {
             flex: 1;
             overflow-y: auto;
-            padding: 30px;
+            padding: 40px;
             scroll-behavior: smooth;
         }
 
@@ -331,7 +393,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 24px;
+            gap: 40px;
             max-width: 1000px;
             margin: 0 auto;
         }
@@ -339,31 +401,41 @@
         .gallery-card {
             width: 100%;
             background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--gh-border);
-            border-radius: 8px;
+            border: none;
+            border-radius: 16px; 
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: border-color 0.2s ease;
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.6), 
+                0 0 25px rgba(255, 227, 179, 0.05),
+                inset 0 0 20px rgba(255, 255, 255, 0.04);
+            transition: all 0.3s ease;
             cursor: pointer;
         }
-        .gallery-card:hover { border-color: var(--gh-text-muted); }
+        .gallery-card:hover { 
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.8), 
+                0 0 35px rgba(255, 227, 179, 0.3),
+                inset 0 0 25px rgba(255, 227, 179, 0.15);
+            transform: translateY(-2px);
+        }
         .gallery-card img { width: 100%; height: auto; display: block; }
 
         .card-meta {
-            padding: 10px 16px;
-            background: rgba(1, 4, 9, 0.6);
-            border-top: 1px solid var(--gh-border);
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-top: none;
             font-family: var(--font-mono);
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--gh-text-muted);
             display: flex;
             justify-content: space-between;
+            box-shadow: 0 -10px 25px -5px rgba(0,0,0,0.6);
         }
 
         #lightbox-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(1, 4, 9, 0.9); 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: rgba(3, 3, 7, 0.95); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             z-index: 2000; display: flex; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; 
             transition: opacity 0.3s ease;
@@ -371,15 +443,14 @@
         #lightbox-overlay.active { opacity: 1; pointer-events: auto; }
         
         #lightbox-img {
-            max-width: 95%; max-height: 90%; object-fit: contain; border-radius: 8px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            max-width: 95%; max-height: 90%; object-fit: contain; border-radius: 12px;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.9), 0 0 40px rgba(255, 227, 179, 0.15);
             transform: scale(0.95);
             opacity: 0;
             transition: all 0.3s ease;
         }
         #lightbox-overlay.active #lightbox-img { transform: scale(1); opacity: 1; }
 
-        /* 📱 手机端自适应布局修复 */
         @media (max-width: 768px) {
             .ptc-workspace {
                 flex-direction: column;
@@ -391,7 +462,8 @@
                 min-width: 100%;
                 height: 35%;
                 border-right: none;
-                border-bottom: 1px solid var(--gh-border);
+                border-bottom: none;
+                box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6);
             }
             .ptc-main {
                 height: 65%;
@@ -415,11 +487,11 @@
         <nav>
             <button onclick="window.switchPage('home')" id="btn-home" class="active i18n" data-en="INDEX" data-zh="首页">INDEX</button>
             <button onclick="window.switchPage('works')" id="btn-works" class="i18n" data-en="PROJECTS" data-zh="作品集">PROJECTS</button>
-            <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">中 / EN</button>
+            <button onclick="toggleLanguage()" id="btn-lang" class="lang-btn">EN / 中</button>
         </nav>
 
         <div id="home" class="page active">
-            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300; background: linear-gradient(135deg, #fff 30%, #FFE3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">KE'S Warehouse</h1>
+            <h1 class="i18n" data-en="KE'S Warehouse" data-zh="KE 的设计仓库" style="font-size: 4rem; letter-spacing: 12px; margin: 0; font-weight: 300;">KE'S Warehouse</h1>
             <p class="i18n" data-en="Collections" data-zh="设计与工程作品集" style="color: #666; margin-top: 12px; letter-spacing: 4px; font-size: 13px; text-transform: uppercase;">Collections</p>
         </div>
 
@@ -455,129 +527,134 @@
         </div>
     </div>
 
-    <div id="lightbox-overlay" onclick="closeLightbox()">
+    <div id="lightbox-overlay">
         <img id="lightbox-img" src="" alt="Enlarged View">
     </div>
 
     <script>
         const portfolioData = [
           {
-            title: "Transportation",
+            title: "Transportation", zh: "交通工具",
             subcategories: [
               {
-                name: "Vehicle_researches",
+                name: "Vehicle_researches", zh: "车辆研究",
                 projects: [
-                  { name: "Prototypes", primary: "images/Transportation/Vehicle_researches/Prototypes", fallback: "images/Vehicle_researches/Prototypes" },
-                  { name: "Vehicle_references", primary: "images/Transportation/Vehicle_researches/Vehicle_references", fallback: "images/Vehicle_researches/Vehicle_references" },
-                  { name: "Works", primary: "images/Transportation/Vehicle_researches/Works", fallback: "images/Vehicle_researches/Works" }
+                  { name: "Prototypes", zh: "原型", primary: "images/Transportation/Vehicle_researches/Prototypes", fallback: "images/Vehicle_researches/Prototypes" },
+                  { name: "Vehicle_references", zh: "车辆参考", primary: "images/Transportation/Vehicle_researches/Vehicle_references", fallback: "images/Vehicle_researches/Vehicle_references" },
+                  { name: "Works", zh: "作品", primary: "images/Transportation/Vehicle_researches/Works", fallback: "images/Vehicle_researches/Works" }
                 ]
               },
               {
-                name: "Aircraft_Researches",
+                name: "Aircraft_Researches", zh: "飞行器研究",
                 projects: [
-                  { name: "Aircraft_References", primary: "images/Transportation/Aircraft_Researches/Aircraft_References", fallback: "images/Aircraft_Researches/Aircraft_References" },
-                  { name: "Aircraft_works", primary: "images/Transportation/Aircraft_Researches/Aircraft_works", fallback: "images/Aircraft_Researches/Aircraft_works" }
+                  { name: "Aircraft_References", zh: "飞行器参考", primary: "images/Transportation/Aircraft_Researches/Aircraft_References", fallback: "images/Aircraft_Researches/Aircraft_References" },
+                  { name: "Aircraft_works", zh: "飞行器作品", primary: "images/Transportation/Aircraft_Researches/Aircraft_works", fallback: "images/Aircraft_Researches/Aircraft_works" }
                 ]
               },
               {
-                name: "Derailleur",
+                name: "Derailleur", zh: "拨链器",
                 projects: [
-                  { name: "Fairing", primary: "images/Transportation/Derailleur/Fairing", fallback: "images/Derailleur/Fairing" },
-                  { name: "Hollow_type", primary: "images/Transportation/Derailleur/Hollow_type", fallback: "images/Derailleur/Hollow_type" }
+                  { name: "Fairing", zh: "整流罩", primary: "images/Transportation/Derailleur/Fairing", fallback: "images/Derailleur/Fairing" },
+                  { name: "Hollow_type", zh: "空心型", primary: "images/Transportation/Derailleur/Hollow_type", fallback: "images/Derailleur/Hollow_type" }
                 ]
               },
               {
-                name: "Clay_Bmw_Gen12",
+                name: "Clay_Bmw_Gen12", zh: "宝马 Gen12 油泥模型",
                 projects: [
-                  { name: "Chassis", primary: "images/Transportation/Clay_Bmw_Gen12/Chassis", fallback: "images/Clay_Bmw_Gen12/Chassis" },
-                  { name: "Works", primary: "images/Transportation/Clay_Bmw_Gen12/Works", fallback: "images/Clay_Bmw_Gen12/Works" }
+                  { name: "Chassis", zh: "底盘", primary: "images/Transportation/Clay_Bmw_Gen12/Chassis", fallback: "images/Clay_Bmw_Gen12/Chassis" },
+                  { name: "Works", zh: "作品", primary: "images/Transportation/Clay_Bmw_Gen12/Works", fallback: "images/Transportation/Clay_Bmw_Gen12/Works" }
                 ]
               },
               {
-                name: "E_MP",
+                name: "E_MP", zh: "E_MP",
                 projects: [
-                  { name: "E-MP_References", primary: "images/Transportation/E_MP/E-MP_References", fallback: "images/E_MP/E-MP_References" },
-                  { name: "Main_Gallery", primary: "images/Transportation/E_MP", fallback: "images/E_MP" }
+                  { name: "E-MP_References", zh: "E-MP 参考", primary: "images/Transportation/E_MP/E-MP_References", fallback: "images/E_MP/E-MP_References" },
+                  { name: "Main_Gallery", zh: "主图库", primary: "images/Transportation/E_MP", fallback: "images/E_MP" }
                 ]
               }
             ]
           },
           {
-            title: "Discoveries",
+            title: "Discoveries", zh: "探索与发现",
             subcategories: [
               {
-                name: "Skills",
+                name: "Skills", zh: "技能",
                 projects: [
-                  { name: "Modeling_Work", primary: "images/Discoveries/Skills/Modeling_Work", fallback: "images/Skills/Modeling_Work" },
-                  { name: "Pistol_Study", primary: "images/Discoveries/Skills/Pistol_Study", fallback: "images/Skills/Pistol_Study" },
-                  { name: "Plumbing", primary: "images/Discoveries/Skills/Plumbing", fallback: "images/Skills/Plumbing" },
-                  { name: "Technical_Skills", primary: "images/Discoveries/Skills/Technical_Skills", fallback: "images/Skills/Technical_Skills" },
-                  { name: "Web_Dev", primary: "images/Discoveries/Skills/Web_Dev", fallback: "images/Skills/Web_Dev" }
+                  { name: "Modeling_Work", zh: "建模作品", primary: "images/Discoveries/Skills/Modeling_Work", fallback: "images/Skills/Modeling_Work" },
+                  { name: "Pistol_Study", zh: "手枪研究", primary: "images/Discoveries/Skills/Pistol_Study", fallback: "images/Skills/Pistol_Study" },
+                  { name: "Plumbing", zh: "管道", primary: "images/Discoveries/Skills/Plumbing", fallback: "images/Skills/Plumbing" },
+                  { name: "Technical_Skills", zh: "技术技能", primary: "images/Discoveries/Skills/Technical_Skills", fallback: "images/Skills/Technical_Skills" },
+                  { name: "Web_Dev", zh: "网页开发", primary: "images/Discoveries/Skills/Web_Dev", fallback: "images/Skills/Web_Dev" }
                 ]
               },
               {
-                name: "Topology_researches",
+                name: "Topology_researches", zh: "拓扑研究",
                 projects: [
-                  { name: "Topology_researches", primary: "images/Discoveries/Topology_researches", fallback: "images/Topology_researches" }
+                  { name: "Topology_researches", zh: "拓扑研究", primary: "images/Discoveries/Topology_researches", fallback: "images/Topology_researches" }
                 ]
               }
             ]
           },
           {
-            title: "Commissioned_Works",
+            title: "Commissioned_Works", zh: "委托项目",
             subcategories: [
               {
-                name: "Course_Projects",
+                name: "Course_Projects", zh: "课程项目",
                 projects: [
-                  { name: "Campus_display_board", primary: "images/Commissioned_Works/Course_Projects/Campus_display_board", fallback: "images/Course_Projects/Campus_display_board" },
-                  { name: "Competitions", primary: "images/Commissioned_Works/Course_Projects/Competitions", fallback: "images/Course_Projects/Competitions" },
-                  { name: "Courseworks", primary: "images/Commissioned_Works/Course_Projects/Courseworks", fallback: "images/Course_Projects/Courseworks" },
-                  { name: "Lamps", primary: "images/Commissioned_Works/Course_Projects/Lamps", fallback: "images/Course_Projects/Lamps" }
+                  { name: "Campus_display_board", zh: "校园展示板", primary: "images/Commissioned_Works/Course_Projects/Campus_display_board", fallback: "images/Course_Projects/Campus_display_board" },
+                  { name: "Competitions", zh: "竞赛", primary: "images/Commissioned_Works/Course_Projects/Competitions", fallback: "images/Course_Projects/Competitions" },
+                  { name: "Courseworks", zh: "课程作业", primary: "images/Commissioned_Works/Course_Projects/Courseworks", fallback: "images/Course_Projects/Courseworks" },
+                  { name: "Lamps", zh: "灯具", primary: "images/Commissioned_Works/Course_Projects/Lamps", fallback: "images/Course_Projects/Lamps" }
                 ]
               },
               {
-                name: "Client_projects",
+                name: "Client_projects", zh: "客户项目",
                 projects: [
-                  { name: "Client_projects", primary: "images/Commissioned_Works/Client_projects", fallback: "images/Client_projects" }
+                  { name: "Client_projects", zh: "客户项目", primary: "images/Commissioned_Works/Client_projects", fallback: "images/Client_projects" }
                 ]
               }
             ]
           },
           {
-            title: "Others",
+            title: "Others", zh: "其他",
             subcategories: [
               {
-                name: "Everyday_Items",
+                name: "Everyday_Items", zh: "日常物品",
                 projects: [
-                  { name: "Brackets", primary: "images/Others/Everyday_Items/Brackets", fallback: "images/Everyday_Items/Brackets" },
-                  { name: "Others", primary: "images/Others/Everyday_Items/Others", fallback: "images/Everyday_Items/Others" },
-                  { name: "Trash_bin", primary: "images/Others/Everyday_Items/Trash_bin", fallback: "images/Everyday_Items/Trash_bin" }
+                  { name: "Brackets", zh: "支架", primary: "images/Others/Everyday_Items/Brackets", fallback: "images/Everyday_Items/Brackets" },
+                  { name: "Others", zh: "其他", primary: "images/Others/Everyday_Items/Others", fallback: "images/Everyday_Items/Others" },
+                  { name: "Trash_bin", zh: "垃圾桶", primary: "images/Others/Everyday_Items/Trash_bin", fallback: "images/Everyday_Items/Trash_bin" }
                 ]
               },
               {
-                name: "References",
+                name: "References", zh: "参考",
                 projects: [
-                  { name: "References", primary: "images/Others/References", fallback: "images/References" }
+                  { name: "References", zh: "参考", primary: "images/Others/References", fallback: "images/References" }
                 ]
               }
             ]
           }
         ];
 
-        /* 精简了探测后缀名，极大提升探测速度 */
-        const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.JPG', '.PNG'];
+        const IMAGE_EXTENSIONS = ['.jpg', '.png', '.jpeg', '.webp', '.JPG', '.PNG'];
         const MAX_IMAGES_PER_FOLDER = 99;
+        
+        const projectImageCache = {};
         
         let currentLoadSession = 0;
         let currentLang = 'en';
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'zh' : 'en';
+        function applyLanguage() {
             document.querySelectorAll('.i18n').forEach(el => {
                 const text = el.getAttribute(`data-${currentLang}`);
                 if (text) el.textContent = text;
             });
             document.getElementById('btn-lang').textContent = currentLang === 'en' ? '中 / EN' : 'EN / 中';
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            applyLanguage();
         }
 
         window.switchPage = function(p) {
@@ -602,7 +679,7 @@
 
             const titleNode = document.createElement('div');
             titleNode.className = 'title-node';
-            titleNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> <span class="i18n" data-en="${category.title}" data-zh="${category.title}">${category.title}</span>`;
+            titleNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> <span class="i18n" data-en="${category.title}" data-zh="${category.zh}">${category.title}</span>`;
 
             const subCatList = document.createElement('div');
             subCatList.className = 'subcategory-list';
@@ -610,7 +687,7 @@
             category.subcategories.forEach((subcat) => {
               const subCatNode = document.createElement('div');
               subCatNode.className = 'subcategory-node';
-              subCatNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> <span class="i18n" data-en="${subcat.name}" data-zh="${subcat.name}">${subcat.name}</span>`;
+              subCatNode.innerHTML = `<span class="icon">▸</span> <span class="folder-icon">📁</span> <span class="i18n" data-en="${subcat.name}" data-zh="${subcat.zh}">${subcat.name}</span>`;
 
               const projectList = document.createElement('div');
               projectList.className = 'project-list';
@@ -618,11 +695,11 @@
               subcat.projects.forEach((proj) => {
                 const projNode = document.createElement('div');
                 projNode.className = 'project-node';
-                projNode.innerHTML = `<span class="file-icon">📄</span> <span class="i18n" data-en="${proj.name}" data-zh="${proj.name}">${proj.name}</span>`;
+                projNode.innerHTML = `<span class="file-icon">📄</span> <span class="i18n" data-en="${proj.name}" data-zh="${proj.zh}">${proj.name}</span>`;
 
                 projNode.addEventListener('click', (e) => {
                   e.stopPropagation();
-                  setActiveProject(projNode, category.title, subcat.name, proj);
+                  setActiveProject(projNode, category, subcat, proj);
                 });
 
                 projectList.appendChild(projNode);
@@ -660,20 +737,22 @@
             treeNav.appendChild(catDiv);
           });
           
-          toggleLanguage();
+          applyLanguage();
         }
 
-        function setActiveProject(node, title, subcat, project) {
+        function setActiveProject(node, category, subcat, project) {
           document.querySelectorAll('.project-node').forEach(n => n.classList.remove('active'));
           node.classList.add('active');
 
           breadcrumb.innerHTML = `
-            <span style="color: var(--gh-text-main)">${title}</span>
+            <span class="i18n" data-en="${category.title}" data-zh="${category.zh}" style="color: var(--gh-text-main)">${category.title}</span>
             <span class="separator">/</span>
-            <span>${subcat}</span>
+            <span class="i18n" data-en="${subcat.name}" data-zh="${subcat.zh}">${subcat.name}</span>
             <span class="separator">/</span>
-            <span style="color: #00e5ff; font-weight: 600;">${project.name}</span>
+            <span class="i18n" data-en="${project.name}" data-zh="${project.zh}" style="color: var(--accent-color); font-weight: 600;">${project.name}</span>
           `;
+          
+          applyLanguage();
 
           emptyState.style.display = 'none';
           imageStream.innerHTML = '';
@@ -684,29 +763,53 @@
         }
 
         async function loadProjectImages(projectObj, sessionToken) {
+          const cacheKey = projectObj.primary; 
+
+          if (projectImageCache[cacheKey]) {
+            const cachedUrls = projectImageCache[cacheKey];
+            cachedUrls.forEach((url, i) => {
+              const paddedNum = String(i + 1).padStart(2, '0');
+              renderImageCard(url, paddedNum);
+            });
+            return; 
+          }
+
           let activeIndex = 1;
+          const validUrls = []; 
+          let retryCount = 0;
+          const MAX_RETRIES = 2;
 
           while (activeIndex <= MAX_IMAGES_PER_FOLDER) {
             if (sessionToken !== currentLoadSession) return;
 
             const paddedNum = String(activeIndex).padStart(2, '0');
             
-            let foundImage = await testImageSrc(projectObj.primary, paddedNum);
+            let foundImage = await testImageSrc(projectObj.primary, paddedNum, sessionToken);
             
             if (sessionToken !== currentLoadSession) return;
 
             if (!foundImage && projectObj.fallback) {
-              foundImage = await testImageSrc(projectObj.fallback, paddedNum);
+              foundImage = await testImageSrc(projectObj.fallback, paddedNum, sessionToken);
             }
             
             if (sessionToken !== currentLoadSession) return;
 
             if (foundImage) {
+              validUrls.push(foundImage); 
               renderImageCard(foundImage, paddedNum);
               activeIndex++;
+              retryCount = 0; 
             } else {
-              break;
+              retryCount++;
+              if (retryCount > MAX_RETRIES) {
+                break; 
+              }
+              await new Promise(r => setTimeout(r, 1200));
             }
+          }
+
+          if (validUrls.length > 0 && sessionToken === currentLoadSession) {
+            projectImageCache[cacheKey] = validUrls;
           }
 
           if (activeIndex === 1 && sessionToken === currentLoadSession) {
@@ -714,27 +817,63 @@
               <div class="empty-state">
                 <div style="font-size: 2.5rem; margin-bottom: 16px; color: var(--gh-border);">🚫</div>
                 <h3 class="i18n" data-en="No images detected" data-zh="未检测到图片">No images detected</h3>
-                <p class="i18n" data-en="Ensure images are named '01.png', '02.jpg', etc., in the repository." data-zh="请确保仓库中的图片严格命名为 '01.png', '02.jpg' 等。">Ensure images are named '01.png', '02.jpg', etc., in the repository.</p>
+                <p class="i18n" data-en="Ensure images are named '01.png', '02.jpg', etc., in the repository." data-zh="请确保代码仓库中的图片命名格式为 '01.png', '02.jpg' 等。">Ensure images are named '01.png', '02.jpg', etc., in the repository.</p>
               </div>
             `;
-            toggleLanguage();
+            applyLanguage();
           }
         }
 
-        /* 串行探测并加入了5秒超时熔断机制，防止无VPN时网络防火墙静默丢弃导致长达几分钟的假死 */
-        async function testImageSrc(folderPath, num) {
-          for (let ext of IMAGE_EXTENSIONS) {
-            const testUrl = encodeURI(`${folderPath}/${num}${ext}`);
-            const exists = await new Promise((resolve) => {
-              const img = new Image();
-              const timer = setTimeout(() => { img.src = ''; resolve(false); }, 5000); 
-              img.onload = () => { clearTimeout(timer); resolve(true); };
-              img.onerror = () => { clearTimeout(timer); resolve(false); };
-              img.src = testUrl;
+        function testImageSrc(folderPath, num, sessionToken) {
+          return new Promise((resolve) => {
+            let failedCount = 0;
+            let resolved = false;
+            const imgObjects = [];
+
+            const checkSession = setInterval(() => {
+                if (sessionToken !== currentLoadSession && !resolved) {
+                    resolved = true;
+                    clearInterval(checkSession);
+                    imgObjects.forEach(img => img.src = ''); 
+                    resolve(null);
+                }
+            }, 100);
+
+            IMAGE_EXTENSIONS.forEach(ext => {
+                const testUrl = encodeURI(`${folderPath}/${num}${ext}`);
+                const img = new Image();
+                imgObjects.push(img);
+                
+                img.onload = () => {
+                    if (!resolved) {
+                        resolved = true;
+                        clearInterval(checkSession);
+                        resolve(testUrl);
+                    }
+                };
+                
+                img.onerror = () => {
+                    if (resolved) return;
+                    failedCount++;
+                    if (failedCount === IMAGE_EXTENSIONS.length) {
+                        resolved = true;
+                        clearInterval(checkSession);
+                        resolve(null);
+                    }
+                };
+                
+                img.src = testUrl;
             });
-            if (exists) return testUrl;
-          }
-          return null;
+            
+            setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    clearInterval(checkSession);
+                    imgObjects.forEach(img => img.src = '');
+                    resolve(null);
+                }
+            }, 8000); 
+          });
         }
 
         function renderImageCard(src, indexStr) {
@@ -744,7 +883,8 @@
 
           const img = document.createElement('img');
           img.src = src;
-          img.loading = 'lazy';
+          img.decoding = 'async';
+          img.loading = 'eager'; 
           img.alt = `Design Sheet ${indexStr}`;
 
           const meta = document.createElement('div');
@@ -763,16 +903,148 @@
           galleryViewport.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
+       const lightboxOverlay = document.getElementById('lightbox-overlay');
+        const lightboxImg = document.getElementById('lightbox-img');
+        let lbScale = 1, lbPanning = false, lbPointX = 0, lbPointY = 0, lbStartX = 0, lbStartY = 0;
+        let lbClickX = 0, lbClickY = 0; 
+        
+        let initialPinchDist = 0;
+        let initialScale = 1;
+
         function openLightbox(url) {
-            const overlay = document.getElementById('lightbox-overlay');
-            const img = document.getElementById('lightbox-img');
-            img.src = url;
-            overlay.classList.add('active');
+            lbScale = 1; lbPointX = 0; lbPointY = 0;
+            lightboxImg.style.transition = ''; 
+            lightboxImg.style.transform = ''; 
+            lightboxImg.style.cursor = 'default';
+            lightboxImg.src = url;
+            lightboxOverlay.classList.add('active');
         }
 
         function closeLightbox() {
-            document.getElementById('lightbox-overlay').classList.remove('active');
+            lightboxOverlay.classList.remove('active');
+            lightboxImg.style.transition = '';
+            lightboxImg.style.transform = ''; 
         }
+
+        lightboxOverlay.addEventListener('click', (e) => {
+            const dist = Math.abs(e.clientX - lbClickX) + Math.abs(e.clientY - lbClickY);
+            if (dist < 5) closeLightbox();
+        });
+
+        function applyZoom(clientX, clientY, newScale) {
+            const rect = lightboxImg.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const dx = clientX - centerX;
+            const dy = clientY - centerY;
+            
+            const ratio = newScale / lbScale;
+            
+            lbScale = newScale;
+            if (lbScale === 1) {
+                lbPointX = 0; 
+                lbPointY = 0;
+            } else {
+                lbPointX -= dx * (ratio - 1);
+                lbPointY -= dy * (ratio - 1);
+            }
+            
+            lightboxImg.style.transform = `translate(${lbPointX}px, ${lbPointY}px) scale(${lbScale})`;
+            lightboxImg.style.cursor = lbScale > 1 ? 'grab' : 'default';
+        }
+
+        lightboxOverlay.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            lightboxImg.style.transition = 'none'; 
+            const zoomSpeed = 0.15;
+            const delta = e.deltaY < 0 ? 1 : -1;
+            const newScale = Math.min(Math.max(1, lbScale + delta * zoomSpeed * lbScale), 8); 
+            applyZoom(e.clientX, e.clientY, newScale);
+        }, { passive: false });
+
+        lightboxOverlay.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            lbClickX = e.clientX;
+            lbClickY = e.clientY;
+            if (lbScale <= 1) return;
+            lbPanning = true;
+            lbStartX = e.clientX - lbPointX;
+            lbStartY = e.clientY - lbPointY;
+            lightboxImg.style.cursor = 'grabbing';
+            lightboxImg.style.transition = 'none'; 
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!lbPanning) return;
+            lbPointX = e.clientX - lbStartX;
+            lbPointY = e.clientY - lbStartY;
+            lightboxImg.style.transform = `translate(${lbPointX}px, ${lbPointY}px) scale(${lbScale})`;
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (lbPanning) {
+                lbPanning = false;
+                lightboxImg.style.cursor = 'grab';
+            }
+        });
+
+        function getPinchDist(e) {
+            return Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+        }
+
+        lightboxOverlay.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                initialPinchDist = getPinchDist(e);
+                initialScale = lbScale;
+                lbPanning = false; 
+                lightboxImg.style.transition = 'none';
+            } else if (e.touches.length === 1) {
+                lbClickX = e.touches[0].clientX;
+                lbClickY = e.touches[0].clientY;
+                if (lbScale > 1) {
+                    e.preventDefault(); 
+                    lbPanning = true;
+                    lbStartX = e.touches[0].clientX - lbPointX;
+                    lbStartY = e.touches[0].clientY - lbPointY;
+                    lightboxImg.style.transition = 'none';
+                }
+            }
+        }, { passive: false });
+
+        lightboxOverlay.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const currentDist = getPinchDist(e);
+                const scaleFactor = currentDist / initialPinchDist;
+                const newScale = Math.min(Math.max(1, initialScale * scaleFactor), 8);
+                const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                applyZoom(midX, midY, newScale);
+            } else if (e.touches.length === 1 && lbPanning) {
+                e.preventDefault();
+                lbPointX = e.touches[0].clientX - lbStartX;
+                lbPointY = e.touches[0].clientY - lbStartY;
+                lightboxImg.style.transform = `translate(${lbPointX}px, ${lbPointY}px) scale(${lbScale})`;
+            }
+        }, { passive: false });
+
+        lightboxOverlay.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) initialPinchDist = 0;
+            if (e.touches.length === 0) lbPanning = false;
+            
+            if (e.changedTouches.length === 1 && !lbPanning) {
+                const dist = Math.abs(e.changedTouches[0].clientX - lbClickX) + Math.abs(e.changedTouches[0].clientY - lbClickY);
+                if (dist < 5) {
+                    e.preventDefault(); 
+                    closeLightbox();
+                }
+            }
+        });
 
         const bgCanvas = document.getElementById('bg-canvas');
         const bgCtx = bgCanvas.getContext('2d');
