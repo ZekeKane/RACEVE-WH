@@ -637,6 +637,7 @@
           }
         ];
 
+        const BASE_URL = "https://repository-ck-1517998768.cos.accelerate.myqcloud.com/";
         const IMAGE_EXTENSIONS = ['.jpg', '.png', '.jpeg', '.webp', '.JPG', '.PNG'];
         const MAX_IMAGES_PER_FOLDER = 99;
         
@@ -841,7 +842,7 @@
             }, 100);
 
             IMAGE_EXTENSIONS.forEach(ext => {
-                const testUrl = encodeURI(`${folderPath}/${num}${ext}`);
+                const testUrl = encodeURI(`${BASE_URL}${folderPath}/${num}${ext}`);
                 const img = new Image();
                 imgObjects.push(img);
                 
